@@ -3,24 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>PRF Dashboard Pro</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js"></script>
 </head>
 <body>
     <header>
-        <h1>Welcome to PRF Dashboard Pro</h1>
+        <h1>PRF Dashboard Pro</h1>
     </header>
     <main>
-        <section id="dashboard">
-            <h2>Dashboard Overview</h2>
-            <div id="data-display">
-                <!-- Dynamic data will be displayed here -->
-            </div>
+        <section id="import-materials">
+            <h2>Import Materials</h2>
+            <input type="file" id="materialFile" />
+            <button onclick="importMaterials()">Import</button>
+        </section>
+        <section id="daily-tasks">
+            <h2>Daily Tasks</h2>
+            <ul id="tasksList"></ul>
+            <input type="text" id="newTask" placeholder="New Task" />
+            <button onclick="addTask()">Add Task</button>
+        </section>
+        <section id="weekly-scheduler">
+            <h2>Weekly Scheduler</h2>
+            <div id="scheduler"></div>
+        </section>
+        <section id="performance-tracking">
+            <h2>Performance Tracking</h2>
+            <div id="performanceData"></div>
+        </section>
+        <section id="backup-functionality">
+            <h2>Backup Functionality</h2>
+            <button onclick="backupData()">Backup</button>
         </section>
     </main>
-    <footer>
-        <p>&copy; 2026 PRF Dashboard Pro</p>
-    </footer>
+    <script src="script.js"></script>
 </body>
 </html>
