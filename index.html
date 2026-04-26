@@ -3,52 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI COMMAND v.49 - PRF MATHEUS</title>
+    <title>OMNI COMMAND v.51 - PRF MATHEUS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #0f172a; --sidebar-active: #1e293b; --accent: #3b82f6;
-            --bg: #f8fafc; --border: #e2e8f0; --text-main: #1e293b; --text-sec: #64748b;
+            --primary: #0f172a; --accent: #3b82f6; --bg: #f8fafc;
+            --border: #e2e8f0; --text-main: #1e293b; --text-sec: #64748b;
             --color-e: #3b82f6; --color-res: #8b5cf6; --color-rev: #f59e0b; --color-ex: #10b981;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); display: flex; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR */
         .sidebar { width: 280px; background: var(--primary); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; overflow-y: auto; }
         .logo-box { padding: 30px; color: white; display: flex; align-items: center; gap: 10px; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .nav-item { padding: 15px 30px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 15px; font-weight: 600; transition: 0.2s; }
         .nav-item:hover, .nav-item.active { background: #1e293b; color: white; }
-        
         .submenu { background: rgba(0,0,0,0.2); display: none; flex-direction: column; }
         .submenu.show { display: flex; }
         .sub-link { padding: 12px 30px 12px 70px; color: #64748b; font-size: 0.85rem; cursor: pointer; font-weight: 500; }
         .sub-link:hover { color: white; }
 
-        /* MAIN */
         .main { flex: 1; height: 100vh; overflow-y: auto; padding: 45px; -webkit-overflow-scrolling: touch; }
         .container { max-width: 1000px; margin: 0 auto; }
 
-        /* PASTAS E RECUOS */
-        .folder { background: white; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 12px; }
-        .folder-header { padding: 20px 25px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-        .folder-content { display: none; padding-bottom: 10px; border-top: 1px solid #f8fafc; background: #fcfcfc; }
-        .folder-content.open { display: block; }
-        
-        .subject-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 25px 14px 55px; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
-        .subject-row.done { color: var(--accent); font-weight: 700; background: #eff6ff; }
-        .subject-row i.fa-check { display: none; color: var(--accent); }
-        .subject-row.done i.fa-check { display: inline-block; }
-
-        /* FLOW GRID */
-        .flow-card { background: white; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 15px; padding: 20px; }
-        .flow-grid { display: grid; grid-template-columns: 2fr repeat(4, 1fr); gap: 10px; margin-top: 15px; align-items: center; text-align: center; }
-        .flow-grid input[type="number"] { width: 50px; padding: 4px; border: 1px solid var(--border); border-radius: 6px; text-align: center; }
-
-        /* PAINEL DIARIO */
         .task-card { background: white; border-radius: 18px; padding: 25px; margin-bottom: 15px; border: 1px solid var(--border); border-left: 12px solid #ccc; display: flex; justify-content: space-between; align-items: center; }
         .tag { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 5px 10px; border-radius: 6px; color: white; }
+        
+        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px; }
+        .day-box { background: white; border-radius: 12px; border: 1px solid var(--border); min-height: 250px; overflow-y: auto; }
+        .day-label { background: #f1f5f9; padding: 10px; text-align: center; font-weight: 800; font-size: 0.75rem; border-bottom: 1px solid var(--border); position: sticky; top: 0; }
+        .week-task { margin: 5px; padding: 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; color: white; line-height: 1.2; }
+        
+        .type-e { background: var(--color-e); } .type-res { background: var(--color-res); } .type-rev { background: var(--color-rev); } .type-ex { background: var(--color-ex); }
 
         .btn { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 15px; }
         input, textarea { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; margin-top: 8px; font-family: inherit; }
@@ -64,7 +51,6 @@
     <div id="login-screen">
         <div class="login-card">
             <h1>🚓</h1>
-            <h2 style="margin: 20px 0;">SGE PRF OMNI</h2>
             <input type="password" id="pass-input" placeholder="Senha" style="text-align:center;">
             <button class="btn" onclick="checkAccess()">ENTRAR</button>
         </div>
@@ -78,7 +64,6 @@
         <div id="sub-plano" class="submenu">
             <div class="sub-link" onclick="showTab('edital')">Edital Verticalizado</div>
             <div class="sub-link" onclick="showTab('sinalizar')">Sinalizar Estudados</div>
-            <div class="sub-link" onclick="showTab('rever')">Rever Finalizados</div>
             <div class="sub-link" onclick="showTab('fluxo')">Controle de Fluxo</div>
             <div class="sub-link" onclick="showTab('ciclo')">Ciclo Ativo</div>
             <div class="sub-link" onclick="showTab('config-h')">Configurar Horas/Dia</div>
@@ -88,53 +73,54 @@
     <main class="main">
         <div class="container">
             <div id="diaria" class="page active">
-                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:30px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
                     <div><h1>Meta de Hoje 🚓</h1><p id="meta-status" style="color:var(--text-sec); font-weight:700;"></p></div>
-                    <button class="btn" style="width:auto; margin:0;" onclick="regenerateDaily()">🔄 Resetar Dia</button>
+                    <button class="btn" style="width:auto; margin:0;" onclick="regenerateDaily()">🔄 Forçar Atualização</button>
                 </div>
                 <div id="lista-diaria"></div>
             </div>
 
-            <div id="semanal" class="page"><h1>Relatório Semanal</h1><div id="grid-semanal" style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; margin-top:20px;"></div></div>
-
-            <div id="sinalizar" class="page"><h1>Sinalizar Bagagem</h1><div id="tree-container" style="margin-top:20px;"></div></div>
-
-            <div id="rever" class="page"><h1>Rever Finalizados</h1><div id="rever-container" style="margin-top:20px;"></div></div>
-
-            <div id="fluxo" class="page"><h1>Controle de Fluxo</h1><div id="corpo-fluxo" style="margin-top:20px;"></div></div>
+            <div id="semanal" class="page"><h1>Grade Semanal</h1><div id="grid-semanal" class="grid-7"></div></div>
 
             <div id="edital" class="page">
-                <h1>Cadastrar Edital</h1>
-                <div class="flow-card" style="padding:30px; margin-top:20px;">
-                    <input type="text" id="add-mat" placeholder="Matéria">
-                    <textarea id="add-ass" placeholder="Assuntos (um por linha)" style="height:120px;"></textarea>
-                    <button class="btn" onclick="saveEdital()">SALVAR NO BANCO</button>
+                <h1>Cadastrar Edital com Horas</h1>
+                <div class="task-card" style="padding:30px; margin-top:20px; display:block;">
+                    <label>Matéria:</label>
+                    <input type="text" id="add-mat" placeholder="Ex: Legislação de Trânsito">
+                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin: 15px 0;">
+                        <div><small>Hrs Estudo</small><input type="number" id="h-e-padrao" value="1.5" step="0.5"></div>
+                        <div><small>Hrs Resumo</small><input type="number" id="h-res-padrao" value="1.0" step="0.5"></div>
+                        <div><small>Hrs Revisão</small><input type="number" id="h-rev-padrao" value="0.5" step="0.5"></div>
+                        <div><small>Hrs Exerc.</small><input type="number" id="h-ex-padrao" value="1.0" step="0.5"></div>
+                    </div>
+                    <label>Assuntos (um por linha):</label>
+                    <textarea id="add-ass" placeholder="Assunto 1&#10;Assunto 2" style="height:120px;"></textarea>
+                    <button class="btn" onclick="saveEdital()">SALVAR TUDO</button>
                 </div>
             </div>
 
+            <div id="fluxo" class="page"><h1>Controle de Fluxo</h1><div id="corpo-fluxo" style="margin-top:20px;"></div></div>
             <div id="config-h" class="page">
                 <h1>Configurar Horas</h1>
-                <div class="flow-card" style="margin-top:20px;">
+                <div class="task-card" style="display:block; margin-top:20px;">
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-                        <div><label>Seg a Sex (h)</label><input type="number" id="q-util" onchange="applyQ('util', this.value)"></div>
-                        <div><label>Sáb e Dom (h)</label><input type="number" id="q-fds" onchange="applyQ('fds', this.value)"></div>
+                        <div><label>Seg a Sex</label><input type="number" id="q-util" onchange="applyQ('util', this.value)"></div>
+                        <div><label>Sáb e Dom</label><input type="number" id="q-fds" onchange="applyQ('fds', this.value)"></div>
                     </div>
                     <div id="grid-horas-manual" style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; margin-top:20px; text-align:center;"></div>
                     <button class="btn" onclick="saveH()">SALVAR</button>
                 </div>
             </div>
-
-            <div id="ciclo" class="page"><h1>Ciclo Ativo</h1><div id="checks-ciclo" class="flow-card" style="columns:2;"></div><button class="btn" onclick="saveC()">SALVAR CICLO</button></div>
+            <div id="sinalizar" class="page"><h1>Sinalizar Bagagem</h1><div id="tree-container" style="margin-top:20px;"></div></div>
+            <div id="ciclo" class="page"><h1>Ciclo Ativo</h1><div id="checks-ciclo" class="task-card" style="columns:2; display:block;"></div><button class="btn" onclick="saveC()">SALVAR CICLO</button></div>
         </div>
     </main>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('prf_v49')) || { 
+    let db = JSON.parse(localStorage.getItem('prf_v51')) || { 
         lista: [], ciclo: [], h: {0:4,1:4,2:4,3:4,4:4,5:4,6:4}, pass: "123", metaFixa: {} 
     };
-    let openedFolders = new Set();
-
-    function save() { localStorage.setItem('prf_v49', JSON.stringify(db)); }
+    function save() { localStorage.setItem('prf_v51', JSON.stringify(db)); }
 
     function checkAccess() {
         if(document.getElementById('pass-input').value === db.pass || document.getElementById('pass-input').value === "123") {
@@ -142,7 +128,7 @@
         } else alert("Senha Incorreta!");
     }
 
-    function init() { renderH(); renderDiario(); renderTree(); }
+    function init() { renderH(); renderDiario(); }
     function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
 
     function showTab(id, el) {
@@ -151,22 +137,21 @@
         document.getElementById(id).classList.add('active');
         if(el && el.classList.contains('nav-item')) el.classList.add('active');
         if(id === 'semanal') renderSemanal();
-        if(id === 'sinalizar') renderTree();
-        if(id === 'rever') renderRever();
         if(id === 'fluxo') renderFluxo();
+        if(id === 'diaria') renderDiario();
+        if(id === 'sinalizar') renderTree();
         if(id === 'ciclo') renderCiclo();
     }
 
-    // --- MOTOR DE CICLO POR HORAS ---
     function getPool() {
         let pool = [];
         db.ciclo.forEach(m => {
             const assuntos = db.lista.filter(x => x.m === m && !x.f);
             assuntos.forEach(ass => {
-                const rito = [{k:'E', l:'Estudo', c:'var(--color-e)'}, {k:'Res', l:'Resumo', c:'var(--color-res)'}, {k:'Rev', l:'Revisão', c:'var(--color-rev)'}, {k:'Ex', l:'Exercícios', c:'var(--color-ex)'}];
+                const rito = [{k:'E', l:'Estudo', c:'type-e'}, {k:'Res', l:'Resumo', c:'type-res'}, {k:'Rev', l:'Revisão', c:'type-rev'}, {k:'Ex', l:'Exercícios', c:'type-ex'}];
                 for(let s of rito) {
                     if(ass.act[s.k] && !ass.done[s.k]) {
-                        pool.push({ m: ass.m, a: ass.a, label: s.l, color: s.c, key: s.k, hrs: parseFloat(ass.h[s.k] || 1) });
+                        pool.push({ m: ass.m, a: ass.a, label: s.l, type: s.c, key: s.k, hrs: parseFloat(ass.h[s.k]) });
                         return;
                     }
                 }
@@ -177,30 +162,20 @@
 
     function renderDiario() {
         const hj = new Date().toLocaleDateString();
-        const hrsMeta = parseFloat(db.h[new Date().getDay()] || 4);
-        
+        const metaH = parseFloat(db.h[new Date().getDay()] || 4);
         if(!db.metaFixa[hj]) {
-            const raw = getPool();
-            let metaDia = []; let soma = 0;
-            for(let t of raw) {
-                if(soma + t.hrs <= hrsMeta + 0.5) { // Margem pequena de 0.5h
-                    metaDia.push({...t, completed: false});
-                    soma += t.hrs;
-                }
-                if(soma >= hrsMeta) break;
-            }
+            const raw = getPool(); let metaDia = []; let soma = 0;
+            for(let t of raw) { metaDia.push({...t, completed: false}); soma += t.hrs; if(soma >= metaH) break; }
             db.metaFixa[hj] = metaDia; save();
         }
-
         const meta = db.metaFixa[hj];
         const somaAtual = meta.reduce((acc, t) => acc + t.hrs, 0);
-        document.getElementById('meta-status').innerText = `Carga Horária: ${somaAtual}h / ${hrsMeta}h`;
-
+        document.getElementById('meta-status').innerText = `Total Alocado: ${somaAtual}h / Meta: ${metaH}h`;
         document.getElementById('lista-diaria').innerHTML = meta.map((t, i) => `
-            <div class="task-card ${t.completed?'done':''}" style="border-left-color:${t.color}">
-                <div><span class="tag" style="background:${t.color}">${t.label} (${t.hrs}h)</span><div style="font-weight:800; font-size:1.2rem; margin-top:8px;">${t.m}: ${t.a}</div></div>
+            <div class="task-card" style="border-left-color:var(--color-${t.key.toLowerCase()})">
+                <div><span class="tag ${t.type}">${t.label} (${t.hrs}h)</span><div style="font-weight:800; font-size:1.2rem; margin-top:8px;">${t.m}: ${t.a}</div></div>
                 <input type="checkbox" style="width:30px; height:30px;" ${t.completed?'checked':''} onclick="concluir(${i},'${t.m}','${t.a}','${t.key}')">
-            </div>`).join('') || "Sem metas!";
+            </div>`).join('') || "<p>Verifique o Ciclo e o Edital!</p>";
     }
 
     function concluir(idx, m, a, k) {
@@ -209,48 +184,53 @@
         db.metaFixa[hj][idx].completed = done;
         const it = db.lista.find(x => x.m === m && x.a === a);
         it.done[k] = done;
-        const sAtivos = Object.keys(it.act).filter(key => it.act[key]);
-        if(sAtivos.every(key => it.done[key])) it.f = true;
+        if(Object.keys(it.act).filter(key => it.act[key]).every(key => it.done[key])) it.f = true;
         save(); renderDiario();
     }
 
     function regenerateDaily() { delete db.metaFixa[new Date().toLocaleDateString()]; save(); renderDiario(); }
 
-    // --- PASTAS E RECUOS ---
-    function renderTree() {
-        const mats = [...new Set(db.lista.map(x => x.m))];
-        document.getElementById('tree-container').innerHTML = mats.map(m => {
-            const ass = db.lista.filter(x => x.m === m);
-            const isOpen = openedFolders.has(m) ? 'open' : '';
-            return `<div class="folder"><div class="folder-header" onclick="toggleFolder('${m}')"><div style="display:flex; align-items:center; gap:15px;"><input type="checkbox" onclick="event.stopPropagation(); toggleMat('${m}', this.checked)" ${ass.every(a=>a.done.E)?'checked':''}><b>${m}</b></div><i class="fas fa-chevron-down ${isOpen?'fa-rotate-180':''}"></i></div><div class="folder-content ${isOpen}">${ass.map(a => `<div class="subject-row ${a.done.E?'done':''}" onclick="toggleVet('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-check"></i></div>`).join('')}</div></div>`;
+    function renderSemanal() {
+        const p = getPool(); let idx = 0;
+        document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(i => {
+            let h = `<div class="day-box"><div class="day-label">${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][i]}</div>`;
+            const metaDia = parseFloat(db.h[i]); let soma = 0;
+            while(idx < p.length && soma < metaDia) {
+                h += `<div class="week-task ${p[idx].type}">${p[idx].m}<br>${p[idx].label}</div>`;
+                soma += p[idx].hrs; idx++;
+            }
+            return h + "</div>";
         }).join('');
-    }
-    function toggleFolder(m) { if(openedFolders.has(m)) openedFolders.delete(m); else openedFolders.add(m); renderTree(); }
-    function toggleMat(m, v) { db.lista.filter(x => x.m === m).forEach(a => { a.done.E = v; if(v) a.done.Res = v; }); save(); renderTree(); renderDiario(); }
-    function toggleVet(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.done.E = !it.done.E; if(it.done.E) it.done.Res = true; save(); renderTree(); renderDiario(); }
-
-    // --- REVER ---
-    function renderRever() {
-        const fin = db.lista.filter(x => x.f || x.done.Ex);
-        const mats = [...new Set(fin.map(x => x.m))];
-        document.getElementById('rever-container').innerHTML = mats.map(m => {
-            const ass = fin.filter(x => x.m === m);
-            return `<div class="folder"><div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b><i class="fas fa-chevron-down"></i></div><div class="folder-content">${ass.map(a => `<div class="subject-row done" onclick="resetA('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-undo"></i></div>`).join('')}</div></div>`;
-        }).join('') || "Nenhum finalizado.";
-    }
-    function resetA(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.f=false; it.done={E:false,Res:false,Rev:false,Ex:false}; save(); renderRever(); renderDiario(); alert("Resetado!"); }
-
-    // --- FLUXO ---
-    function renderFluxo() {
-        document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `<div class="flow-card"><b>${it.m}: ${it.a}</b><div class="flow-grid"><small>Etapas:</small>${['E','Res','Rev','Ex'].map(k => `<div><input type="checkbox" onchange="db.lista[${i}].act.${k}=this.checked;save()" ${it.act[k]?'checked':''}> <input type="number" step="0.5" value="${it.h[k]}" onchange="db.lista[${i}].h.${k}=this.value;save()"></div>`).join('')}</div></div>`).join('');
     }
 
     function saveEdital() {
         const m = document.getElementById('add-mat').value;
         const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
-        ass.forEach(a => db.lista.push({ m, a: a.trim(), f: false, act: {E:true, Res:true, Rev:true, Ex:true}, done: {E:false, Res:false, Rev:false, Ex:false}, h: {E:1, Res:1, Rev:1, Ex:1} }));
-        document.getElementById('add-mat').value = ""; document.getElementById('add-ass').value = "";
-        save(); alert("Salvo!");
+        const h_e = document.getElementById('h-e-padrao').value;
+        const h_res = document.getElementById('h-res-padrao').value;
+        const h_rev = document.getElementById('h-rev-padrao').value;
+        const h_ex = document.getElementById('h-ex-padrao').value;
+
+        ass.forEach(a => db.lista.push({ 
+            m, a: a.trim(), f: false, 
+            act: {E:true, Res:true, Rev:true, Ex:true}, 
+            done: {E:false, Res:false, Rev:false, Ex:false}, 
+            h: {E:h_e, Res:h_res, Rev:h_rev, Ex:h_ex} 
+        }));
+        
+        document.getElementById('add-mat').value = ""; 
+        document.getElementById('add-ass').value = "";
+        save(); alert("Salvo com sucesso!"); regenerateDaily();
+    }
+
+    function renderFluxo() {
+        document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `
+            <div class="task-card" style="display:block">
+                <b>${it.m}: ${it.a}</b>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:10px;">
+                    ${['E','Res','Rev','Ex'].map(k => `<div><small>${k}</small><br><input type="number" step="0.5" value="${it.h[k]}" onchange="db.lista[${i}].h.${k}=this.value;save()" style="width:100%"></div>`).join('')}
+                </div>
+            </div>`).join('');
     }
 
     function renderH() {
@@ -258,20 +238,20 @@
         document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `<div><small>${x}</small><input type="number" id="h-in-${i}" value="${db.h[i]}" style="width:100%; text-align:center;"></div>`).join('');
     }
     function applyQ(m, v) { (m === 'util' ? [1,2,3,4,5] : [0,6]).forEach(i => document.getElementById(`h-in-${i}`).value = v); }
-    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); alert("Horas Salvas!"); renderDiario(); }
-    function renderSemanal() {
-        const p = getPool(); let idx = 0;
-        document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(i => {
-            let h = `<div class="day-box"><div class="day-label">${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][i]}</div>`;
-            for(let j=0; j<3; j++) { if(p[idx]) { h += `<div style="padding:10px; border-left:4px solid var(--color-${p[idx].t}); font-size:0.7rem;"><b>${p[idx].m}</b><br>${p[idx].a}</div>`; idx++; } }
-            return h + "</div>";
+    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); alert("Horas Salvas!"); regenerateDaily(); }
+    function renderTree() {
+        const mats = [...new Set(db.lista.map(x => x.m))];
+        document.getElementById('tree-container').innerHTML = mats.map(m => {
+            const ass = db.lista.filter(x => x.m === m);
+            return `<div class="task-card" style="display:block"><b>${m}</b>${ass.map(a => `<div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;"><span>${a.a}</span><input type="checkbox" onchange="toggleV('${m}','${a.a}',this.checked)" ${a.done.E?'checked':''}></div>`).join('')}</div>`;
         }).join('');
     }
+    function toggleV(m, a, v) { const it = db.lista.find(x => x.m === m && x.a === a); it.done.E = v; if(v) it.done.Res = v; save(); }
     function renderCiclo() {
         const m = [...new Set(db.lista.map(x => x.m))];
         document.getElementById('checks-ciclo').innerHTML = m.map(x => `<label style="display:block; padding:10px;"><input type="checkbox" class="ckc" value="${x}" ${db.ciclo.includes(x)?'checked':''}> ${x}</label>`).join('');
     }
-    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); renderDiario(); alert("Ciclo salvo!"); }
+    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); regenerateDaily(); alert("Ciclo salvo!"); }
 </script>
 </body>
 </html>
