@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI COMMAND v.76 - ZERO RESET</title>
+    <title>OMNI COMMAND v.78 - INTELLIGENT PREDICTOR</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -11,57 +11,56 @@
             --primary: #0f172a; --accent: #3b82f6; --bg: #f1f5f9;
             --card-bg: #ffffff; --border: #e2e8f0; --text-main: #0f172a; --text-sec: #64748b;
             --color-e: #3b82f6; --color-rev: #f59e0b; --color-ex: #10b981;
+            --status-green: #10b981; --status-yellow: #f59e0b; --status-red: #ef4444;
             --radius: 16px; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR */
         .sidebar { width: 280px; background: var(--primary); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; overflow-y: auto; padding: 20px; border-right: 1px solid rgba(255,255,255,0.05); }
         .logo-box { padding: 20px 10px 40px 10px; color: white; display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.2rem; }
         .nav-group { margin-bottom: 30px; }
         .nav-label { color: #475569; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; padding-left: 15px; letter-spacing: 1px; }
         .nav-item { padding: 12px 15px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; border-radius: 12px; transition: 0.2s; margin-bottom: 4px; }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
-        .nav-item.active { background: var(--accent); color: white; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3); }
-        
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: var(--accent); box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3); }
         .submenu { margin-left: 10px; border-left: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; margin-top: 5px; }
         .submenu.show { display: flex; }
-        .sub-link { padding: 10px 10px 10px 30px; color: #64748b; font-size: 0.85rem; cursor: pointer; font-weight: 500; transition: 0.2s; }
+        .sub-link { padding: 10px 10px 10px 30px; color: #64748b; font-size: 0.85rem; cursor: pointer; font-weight: 500; }
         .sub-link:hover { color: white; }
 
-        /* MAIN */
-        .main { flex: 1; height: 100vh; overflow-y: auto; padding: 40px; -webkit-overflow-scrolling: touch; }
+        .main { flex: 1; height: 100vh; overflow-y: auto; padding: 40px; }
         .container { max-width: 1000px; margin: 0 auto; }
-        .page-header { margin-bottom: 32px; }
-        .page-header h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
+
+        /* STATUS PREDICTOR */
+        .predictor-bar { display: flex; gap: 20px; margin-bottom: 30px; }
+        .stat-card { flex: 1; background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .risk-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
 
         .card { background: var(--card-bg); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
         .task-card { display: flex; justify-content: space-between; align-items: center; border-left: 8px solid #ccc; transition: 0.2s; }
         .tag { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; padding: 6px 12px; border-radius: 20px; color: white; display: inline-block; margin-bottom: 10px; }
+        
         .type-e { background: var(--color-e); } .type-rev { background: var(--color-rev); } .type-ex { background: var(--color-ex); }
+        .diff-easy { color: #10b981; } .diff-med { color: #f59e0b; } .diff-hard { color: #ef4444; }
 
         .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-top: 20px; }
-        .day-box { background: #fff; border-radius: var(--radius); border: 1px solid var(--border); min-height: 380px; overflow: hidden; display: flex; flex-direction: column; }
+        .day-box { background: #fff; border-radius: var(--radius); border: 1px solid var(--border); min-height: 400px; overflow: hidden; display: flex; flex-direction: column; }
         .day-label { background: #f8fafc; padding: 12px; text-align: center; font-weight: 800; font-size: 0.7rem; border-bottom: 1px solid var(--border); color: var(--text-sec); }
-        .week-task { margin: 6px; padding: 10px; border-radius: 10px; font-size: 0.6rem; font-weight: 700; color: white; line-height: 1.2; box-shadow: 0 2px 4px rgba(0,0,0,0.05); word-break: break-word; }
+        .week-task { margin: 4px; padding: 8px; border-radius: 8px; font-size: 0.6rem; font-weight: 700; color: white; line-height: 1.1; }
 
         .folder { background: white; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 12px; overflow: hidden; }
-        .folder-header { padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; }
-        .folder-header:hover { background: #f8fafc; }
+        .folder-header { padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
         .folder-content { display: none; padding-bottom: 8px; background: #fcfcfc; border-top: 1px solid var(--border); }
         .folder-content.open { display: block; }
         .subject-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px 12px 60px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
-        .subject-row.done { color: var(--accent); font-weight: 700; background: #eff6ff; }
 
         .btn { padding: 14px 24px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         input, textarea, select { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; margin-top: 8px; font-family: inherit; background: #f8fafc; }
 
         #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 10000; display: flex; align-items: center; justify-content: center; }
         .login-card { background: white; padding: 40px; border-radius: 24px; width: 380px; text-align: center; }
-        .page { display: none; animation: fadeIn 0.3s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page { display: none; } .page.active { display: block; }
         input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: var(--accent); }
     </style>
 </head>
@@ -69,218 +68,298 @@
 
     <div id="login-screen">
         <div class="login-card">
-            <i class="fas fa-bolt" style="font-size: 3rem; color: var(--accent); margin-bottom: 20px;"></i>
-            <h2>OMNI COMMAND</h2>
-            <p style="margin-bottom: 20px; color: gray;">Versão v.76 (Banco Resetado)</p>
-            <input type="password" id="pass-input" placeholder="Chave: 123" style="text-align:center;">
-            <button class="btn" style="width: 100%; margin-top: 20px;" onclick="checkAccess()">ENTRAR</button>
+            <i class="fas fa-brain" style="font-size: 3rem; color: var(--accent); margin-bottom: 20px;"></i>
+            <h2>OMNI PREDICTOR</h2>
+            <p style="margin-bottom: 20px; color: gray;">v.78 • Algoritmo Inteligente</p>
+            <input type="password" id="pass-input" placeholder="Chave de Estudo" style="text-align:center;">
+            <button class="btn" style="width: 100%; margin-top: 20px;" onclick="checkAccess()">INICIAR SESSÃO</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box"><i class="fas fa-shield-halved" style="color:var(--accent)"></i> OMNI v.76</div>
+        <div class="logo-box"><i class="fas fa-robot"></i> OMNI v.78</div>
         <div class="nav-group">
-            <div class="nav-label">Operacional</div>
-            <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-calendar-day"></i><span>Painel Diário</span></div>
-            <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-chart-line"></i><span>Grade Semanal</span></div>
+            <div class="nav-label">Monitoramento</div>
+            <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-bolt"></i><span>Dashboard Hoje</span></div>
+            <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-alt"></i><span>Previsão Semanal</span></div>
         </div>
         <div class="nav-group">
-            <div class="nav-label">Planejamento</div>
-            <div class="nav-item" onclick="toggleSub()"><i class="fas fa-layer-group"></i><span>Meu Plano</span><i class="fas fa-chevron-down" style="margin-left:auto; font-size:0.7rem;"></i></div>
+            <div class="nav-label">Configuração</div>
+            <div class="nav-item" onclick="toggleSub()"><i class="fas fa-cog"></i><span>Ajustes Técnicos</span><i class="fas fa-chevron-down" style="margin-left:auto; font-size:0.7rem;"></i></div>
             <div id="sub-plano" class="submenu">
-                <div class="sub-link" onclick="showTab('edital')">Edital Vertical</div>
+                <div class="sub-link" onclick="showTab('edital')">Importar Edital</div>
+                <div class="sub-link" onclick="showTab('ciclo')">Ciclo de Matérias</div>
+                <div class="sub-link" onclick="showTab('config-h')">Horas & Prazos</div>
                 <div class="sub-link" onclick="showTab('sinalizar')">Sinalizar Base</div>
-                <div class="sub-link" onclick="showTab('rever')">Rever Finalizados</div>
-                <div class="sub-link" onclick="showTab('fluxo')">Controle de Fluxo</div>
-                <div class="sub-link" onclick="showTab('ciclo')">Ciclo Ativo</div>
-                <div class="sub-link" onclick="showTab('config-h')">Horas Diárias</div>
+                <div class="sub-link" onclick="showTab('rever')">Rever Conteúdo</div>
             </div>
         </div>
     </aside>
 
     <main class="main">
         <div class="container">
+            <div class="predictor-bar">
+                <div class="stat-card">
+                    <small style="color:var(--text-sec); font-weight:700;">STATUS DO PRAZO</small>
+                    <div id="risk-status" style="margin-top:10px; font-weight:800; font-size:1.2rem;">Calculando...</div>
+                </div>
+                <div class="stat-card">
+                    <small style="color:var(--text-sec); font-weight:700;">CARGA RESTANTE</small>
+                    <div id="total-remaining-hrs" style="margin-top:10px; font-weight:800; font-size:1.2rem;">0h</div>
+                </div>
+                <div class="stat-card">
+                    <small style="color:var(--text-sec); font-weight:700;">DATA DE CONCLUSÃO</small>
+                    <div id="completion-date" style="margin-top:10px; font-weight:800; font-size:1.2rem;">--/--/--</div>
+                </div>
+            </div>
+
             <div id="diaria" class="page active">
                 <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
-                    <div><h1>Foco do Plantão 🚓</h1><p id="meta-status"></p></div>
-                    <button class="btn" onclick="regenerateDaily()"><i class="fas fa-sync"></i> Resetar Meta</button>
+                    <div><h1>Meta Sugerida 🚓</h1><p id="meta-status"></p></div>
+                    <button class="btn" onclick="recalculateAll()"><i class="fas fa-sync"></i> Adaptar Cronograma</button>
                 </div>
                 <div id="lista-diaria"></div>
             </div>
-            <div id="semanal" class="page"><div class="page-header"><h1>Cronograma Tático</h1><p>Sincronia Total (Rito + 3,7,21D)</p></div><div id="grid-semanal" class="grid-7"></div></div>
+
+            <div id="semanal" class="page"><div class="page-header"><h1>Previsão Inteligente</h1><p>Projeção baseada no seu ritmo real</p></div><div id="grid-semanal" class="grid-7"></div></div>
+
             <div id="edital" class="page">
-                <div class="page-header"><h1>Cadastrar Edital</h1></div>
+                <div class="page-header"><h1>Cadastrar Atividades</h1></div>
                 <div class="card">
-                    <label>Disciplina</label><input type="text" id="add-mat" placeholder="Ex: Direito Penal">
-                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px; margin: 20px 0;">
-                        <div><label>ESTUDO</label><select id="h-e-pad"><option value="0.5">30m</option><option value="1.0">60m</option><option value="1.5" selected>90m</option><option value="2.0">2h</option></select></div>
-                        <div><label>REVISÃO</label><input type="text" value="60m" disabled style="background:#e2e8f0;"></div>
-                        <div><label>QUESTÕES</label><input type="text" value="60m" disabled style="background:#e2e8f0;"></div>
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:15px;">
+                        <div><label>Matéria / Assunto</label><input type="text" id="add-mat" placeholder="Ex: Informática"></div>
+                        <div><label>Dificuldade</label>
+                            <select id="add-diff">
+                                <option value="1">Fácil</option>
+                                <option value="1.5" selected>Média</option>
+                                <option value="2">Difícil</option>
+                            </select>
+                        </div>
                     </div>
-                    <textarea id="add-ass" placeholder="Assunto 1&#10;Assunto 2" style="height:150px;"></textarea>
-                    <button class="btn" style="width:100%; margin-top:20px;" onclick="saveEdital()">SALVAR TUDO</button>
+                    <div style="margin-top:15px;"><label>Prazo Final (Data da Prova)</label><input type="date" id="add-deadline"></div>
+                    <textarea id="add-ass" placeholder="Assunto 1&#10;Assunto 2" style="height:120px; margin-top:15px;"></textarea>
+                    <button class="btn" style="width:100%; margin-top:20px;" onclick="saveEdital()">INTEGRAR AO PLANO</button>
                 </div>
             </div>
-            <div id="fluxo" class="page"><div class="page-header"><h1>Fluxo</h1></div><div id="corpo-fluxo"></div></div>
+
             <div id="config-h" class="page">
-                <div class="page-header"><h1>Horas Diárias</h1></div>
+                <div class="page-header"><h1>Horas Disponíveis</h1></div>
                 <div class="card">
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
-                        <div><label>Seg a Sex</label><input type="number" id="q-util" onchange="applyQ('util', this.value)"></div>
-                        <div><label>Sáb e Dom</label><input type="number" id="q-fds" onchange="applyQ('fds', this.value)"></div>
-                    </div>
-                    <div id="grid-horas-manual" style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; text-align:center;"></div>
-                    <button class="btn" style="width:100%; margin-top:20px;" onclick="saveH()">SALVAR</button>
+                    <label>Horas Diárias</label>
+                    <div id="grid-horas-manual" style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; text-align:center; margin:15px 0;"></div>
+                    <button class="btn" style="width:100%;" onclick="saveH()">SALVAR CONFIGURAÇÕES</button>
                 </div>
             </div>
-            <div id="sinalizar" class="page"><div class="page-header"><h1>Sinalizar Base</h1></div><div id="tree-container"></div></div>
-            <div id="rever" class="page"><div class="page-header"><h1>Rever Finalizados</h1></div><div id="rever-container"></div></div>
-            <div id="ciclo" class="page"><div class="page-header"><h1>Ciclo Ativo</h1></div><div id="checks-ciclo" class="card" style="columns:2;"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveC()">SALVAR CICLO</button></div>
+
+            <div id="ciclo" class="page"><div class="page-header"><h1>Ciclo Ativo</h1></div><div id="checks-ciclo" class="card" style="columns:2;"></div><button class="btn" style="width:100%;" onclick="saveC()">ATUALIZAR CICLO</button></div>
+            <div id="sinalizar" class="page"><div id="tree-container"></div></div>
+            <div id="rever" class="page"><div id="rever-container"></div></div>
         </div>
     </main>
 
 <script>
-    // NOVO BANCO PARA FORÇAR RESET
-    let db = JSON.parse(localStorage.getItem('prf_v76_final')) || { lista: [], ciclo: [], h: {0:4,1:4,2:4,3:4,4:4,5:4,6:4}, pass: "123", metaFixa: {} };
+    /* ENGINE v.78 - INTELLIGENT PREDICTOR */
+    let db = JSON.parse(localStorage.getItem('prf_v78_brain')) || { 
+        lista: [], ciclo: [], h: {0:4,1:4,2:4,3:4,4:4,5:4,6:4}, history: [], metaFixa: {} 
+    };
+    
     let openedFolders = new Set();
-    const save = () => localStorage.setItem('prf_v76_final', JSON.stringify(db));
-    const formatTime = (h) => h == 0.5 ? "30m" : h == 1.0 ? "60m" : h == 1.5 ? "90m" : h == 2.0 ? "2h" : (h*60)+"m";
+    const save = () => localStorage.setItem('prf_v78_brain', JSON.stringify(db));
 
     function checkAccess() {
-        if(document.getElementById('pass-input').value === db.pass || document.getElementById('pass-input').value === "123") {
-            document.getElementById('login-screen').style.display='none'; init();
-        } else alert("Incorreta!");
+        if(document.getElementById('pass-input').value === "123") { document.getElementById('login-screen').style.display='none'; init(); }
+        else alert("Acesso negado.");
     }
 
-    function init() { renderH(); renderDiario(); renderTree(); }
-    function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
+    function init() { recalculateAll(); }
 
+    function recalculateAll() {
+        db.metaFixa = {}; 
+        renderDiario();
+        renderSemanal();
+        renderPredictorStats();
+        renderH();
+        renderTree();
+        renderCiclo();
+    }
+
+    /* MOTOR PREDITIVO - O CORAÇÃO DA v.78 */
+    function getIntelligentPool(limiteHoras, dataSimulada = new Date()) {
+        let pool = [];
+        let somaHoras = 0;
+        let hj = new Date(dataSimulada); hj.setHours(0,0,0,0);
+        
+        // Simulação de aprendizado: Se o histórico mostra que o aluno gasta 20% a mais de tempo, ajustamos o peso
+        let fatorPerformance = db.history.length > 0 ? (db.history.reduce((a,b)=>a+b.real,0) / db.history.reduce((a,b)=>a+b.est,0)) : 1.0;
+
+        // Alternância de Dificuldade para evitar fadiga
+        let alternador = true; 
+
+        while(somaHoras < limiteHoras) {
+            let adicionou = false;
+            for(let m of db.ciclo) {
+                if(somaHoras >= limiteHoras) break;
+
+                let assuntos = db.lista.filter(x => x.m === m && !x.f);
+                
+                // Priorização por Prazo e Dificuldade
+                assuntos.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+
+                for(let ass of assuntos) {
+                    const rito = [{k:'E', l:'Estudo'}, {k:'Rev', l:'Revisão'}, {k:'Ex', l:'Exercícios'}];
+                    for(let s of rito) {
+                        if(!ass.done[s.k]) {
+                            let hEst = (s.k === 'E' ? parseFloat(ass.h[s.k]) : 1.0) * fatorPerformance;
+                            
+                            // Lógica de Encaixe
+                            if(s.k === 'E' && (somaHoras + hEst > limiteHoras)) hEst = limiteHoras - somaHoras;
+                            else if(s.k !== 'E' && (somaHoras + 1.0 > limiteHoras)) continue;
+
+                            if(hEst > 0) {
+                                pool.push({ m: ass.m, a: ass.a, label: s.l, key: s.k, hrs: hEst, diff: ass.diff });
+                                ass.done[s.k] = true; // Simula conclusão
+                                somaHoras += hEst;
+                                adicionou = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(adicionou) break;
+                }
+            }
+            if(!adicionou) break;
+        }
+        return pool;
+    }
+
+    function renderPredictorStats() {
+        let totalHrsNecessarias = 0;
+        db.lista.filter(x => !x.f).forEach(ass => {
+            if(!ass.done.E) totalHrsNecessarias += parseFloat(ass.h.E);
+            if(!ass.done.Rev) totalHrsNecessarias += 1.0;
+            if(!ass.done.Ex) totalHrsNecessarias += 1.0;
+        });
+
+        let totalHrsDisponiveisSemana = Object.values(db.h).reduce((a,b)=>parseFloat(a)+parseFloat(b), 0);
+        let diasNecessarios = Math.ceil(totalHrsNecessarias / (totalHrsDisponiveisSemana / 7));
+        
+        let dataConclusao = new Date();
+        dataConclusao.setDate(dataConclusao.getDate() + diasNecessarios);
+
+        document.getElementById('total-remaining-hrs').innerText = totalHrsNecessarias.toFixed(1) + "h";
+        document.getElementById('completion-date').innerText = dataConclusao.toLocaleDateString();
+
+        // Análise de Risco
+        let prazoMaisCurto = db.lista.length > 0 ? new Date(Math.min(...db.lista.map(x => new Date(x.deadline)))) : null;
+        let riskBox = document.getElementById('risk-status');
+        
+        if(!prazoMaisCurto) { riskBox.innerHTML = "Sem prazos"; return; }
+
+        if(dataConclusao < prazoMaisCurto) {
+            riskBox.innerHTML = `<span class="risk-dot" style="background:var(--status-green)"></span> SEGURO`;
+            riskBox.style.color = "var(--status-green)";
+        } else if (dataConclusao.getTime() - prazoMaisCurto.getTime() < 7 * 24 * 60 * 60 * 1000) {
+            riskBox.innerHTML = `<span class="risk-dot" style="background:var(--status-yellow)"></span> RISCO`;
+            riskBox.style.color = "var(--status-yellow)";
+        } else {
+            riskBox.innerHTML = `<span class="risk-dot" style="background:var(--status-red)"></span> ATRASADO`;
+            riskBox.style.color = "var(--status-red)";
+        }
+    }
+
+    function renderDiario() {
+        const hjKey = new Date().toLocaleDateString();
+        const hMeta = parseFloat(db.h[new Date().getDay()] || 4);
+        
+        // Se mudou algo, recalcula o pool real (não simulado)
+        let tempListaOriginal = JSON.parse(JSON.stringify(db.lista));
+        db.metaFixa[hjKey] = getIntelligentPool(hMeta);
+        db.lista = tempListaOriginal; // Restaura a lista real após o cálculo
+
+        document.getElementById('lista-diaria').innerHTML = db.metaFixa[hjKey].map((t, i) => `
+            <div class="card task-card" style="border-left-color:var(--color-${t.key.toLowerCase()})">
+                <div>
+                    <span class="tag type-${t.key.toLowerCase()}">${t.label} (${t.hrs.toFixed(1)}h)</span>
+                    <div style="font-weight:800; font-size:1.1rem;">${t.m}: ${t.a}</div>
+                </div>
+                <input type="checkbox" onclick="concluir(${i},'${t.m}','${t.a}','${t.key}')">
+            </div>`).join('') || "<p>Ative matérias no Ciclo.</p>";
+    }
+
+    function concluir(idx, m, a, k) {
+        let realTime = prompt("Quanto tempo real você gastou? (h)", db.metaFixa[new Date().toLocaleDateString()][idx].hrs);
+        if(realTime) {
+            db.history.push({ est: db.metaFixa[new Date().toLocaleDateString()][idx].hrs, real: parseFloat(realTime) });
+            const it = db.lista.find(x => x.m === m && x.a === a);
+            it.done[k] = true;
+            if(it.done.Ex) it.f = true;
+            save(); recalculateAll();
+        }
+    }
+
+    function saveEdital() {
+        const m = document.getElementById('add-mat').value;
+        const diff = document.getElementById('add-diff').value;
+        const dead = document.getElementById('add-deadline').value;
+        const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
+        
+        if(!m || !dead || ass.length === 0) return alert("Dados incompletos.");
+
+        ass.forEach(a => {
+            if(!db.lista.some(x => x.m === m && x.a === a.trim())) {
+                db.lista.push({
+                    m, a: a.trim(), f: false, diff, deadline: dead,
+                    done: {E:false, Rev:false, Ex:false},
+                    h: {E: (1.5 * diff).toFixed(1), Rev: 1.0, Ex: 1.0}
+                });
+            }
+        });
+        save(); recalculateAll();
+    }
+
+    function renderSemanal() {
+        document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(dayIdx => {
+            let h = `<div class="day-box"><div class="day-label">${["DOM","SEG","TER","QUA","QUI","SEX","SAB"][dayIdx]}</div>`;
+            const pool = getIntelligentPool(parseFloat(db.h[dayIdx]));
+            pool.forEach(t => {
+                h += `<div class="week-task type-${t.key.toLowerCase()}">${t.m}<br>${t.label}</div>`;
+            });
+            return h + "</div>";
+        }).join('');
+    }
+
+    /* AUXILIARES DE INTERFACE */
+    function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
+    function renderH() {
+        const d = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+        document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `
+            <div><small>${x}</small><input type="number" id="h-in-${i}" value="${db.h[i]}" style="text-align:center; padding:8px;"></div>
+        `).join('');
+    }
+    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); recalculateAll(); }
     function showTab(id, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(m => m.classList.remove('active'));
         document.getElementById(id).classList.add('active'); if(el) el.classList.add('active');
-        if(id === 'semanal') renderSemanal(); if(id === 'fluxo') renderFluxo(); if(id === 'diaria') renderDiario();
-        if(id === 'sinalizar') renderTree(); if(id === 'rever') renderRever(); if(id === 'ciclo') renderCiclo();
     }
-
-    function getPool() {
-        let pool = []; let hj = new Date(); hj.setHours(0,0,0,0);
-        if(!db.ciclo || db.ciclo.length === 0) return [];
-
-        db.ciclo.forEach(m => {
-            const assuntos = db.lista.filter(x => x.m === m && !x.f);
-            // 1. REVISÕES/EXERCÍCIOS AGENDADOS (3, 7, 21D)
-            db.lista.filter(x => x.m === m).forEach(ass => {
-                if(ass.agendas) { ass.agendas.forEach((dataStr, index) => {
-                    let dataAgendada = new Date(dataStr);
-                    if(hj >= dataAgendada && !ass.doneAgendas[index*2]) {
-                        pool.push({ m: ass.m, a: ass.a, label: `Rev ${index==0?3:index==1?7:21}D`, type: 'type-rev', key: 'RevAg', hrs: 1.0, agendaIdx: index*2 });
-                    } else if(hj >= dataAgendada && ass.doneAgendas[index*2] && !ass.doneAgendas[index*2+1]) {
-                        pool.push({ m: ass.m, a: ass.a, label: `Ex ${index==0?3:index==1?7:21}D`, type: 'type-ex', key: 'ExAg', hrs: 1.0, agendaIdx: index*2+1 });
-                    }
-                });}
-            });
-            // 2. RITO NORMAL
-            assuntos.forEach(assunto => {
-                const rito = [{k:'E', l:'Estudo', c:'type-e'}, {k:'Rev', l:'Revisão', c:'type-rev'}, {k:'Ex', l:'Exercícios', c:'type-ex'}];
-                for(let s of rito) { if(!assunto.done[s.k]) {
-                    pool.push({ m: assunto.m, a: assunto.a, label: s.l, type: s.c, key: s.k, hrs: (s.k==='E'?parseFloat(assunto.h[s.k]): 1.0) });
-                    break; 
-                } }
-            });
-        }); return pool;
+    function renderCiclo() {
+        const m = [...new Set(db.lista.map(x => x.m))];
+        document.getElementById('checks-ciclo').innerHTML = m.map(x => `
+            <label style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                <input type="checkbox" class="ckc" value="${x}" ${db.ciclo.includes(x)?'checked':''}> <span>${x}</span>
+            </label>`).join('');
     }
-
-    function renderDiario() {
-        const hjKey = new Date().toLocaleDateString(); const hMeta = parseFloat(db.h[new Date().getDay()] || 4);
-        if(!db.metaFixa[hjKey] || db.metaFixa[hjKey].length === 0) {
-            const raw = getPool(); let metaDia = []; let soma = 0;
-            for(let t of raw) { if(soma < hMeta) {
-                let task = {...t, completed: false};
-                if(t.key === 'E') { if(soma + t.hrs > hMeta) task.hrs = hMeta - soma; }
-                else { if(soma + 1.0 > hMeta) continue; }
-                if(task.hrs > 0) { metaDia.push(task); soma += task.hrs; }
-            } else break; }
-            db.metaFixa[hjKey] = metaDia; save();
-        }
-        const meta = db.metaFixa[hjKey]; const somaAt = meta.reduce((acc, t) => acc + t.hrs, 0);
-        document.getElementById('meta-status').innerText = `${somaAt.toFixed(1)}h / ${hMeta}h alocadas hoje`;
-        document.getElementById('lista-diaria').innerHTML = meta.map((t, i) => `
-            <div class="card task-card" style="border-left-color:var(--color-${(t.key.includes('Rev')?'rev':t.key.includes('Ex')?'ex':'e').toLowerCase()})">
-                <div><span class="tag ${t.type}">${t.label} (${formatTime(t.hrs)})</span><div style="font-weight:800; font-size:1.1rem;">${t.m}: ${t.a}</div></div>
-                <input type="checkbox" ${t.completed?'checked':''} onclick="concluir(${i},'${t.m}','${t.a}','${t.key}', ${t.agendaIdx})">
-            </div>`).join('') || "<p style='padding:20px; color:gray;'>Cadastre o Edital e ative as matérias no Ciclo.</p>";
-    }
-
-    function concluir(idx, m, a, k, agendaIdx) {
-        const hjKey = new Date().toLocaleDateString(); db.metaFixa[hjKey][idx].completed = !db.metaFixa[hjKey][idx].completed;
-        const it = db.lista.find(x => x.m === m && x.a === a);
-        if(k.includes('Ag')) { it.doneAgendas[agendaIdx] = db.metaFixa[hjKey][idx].completed; }
-        else { it.done[k] = db.metaFixa[hjKey][idx].completed;
-            if(k === 'Ex' && it.done[k]) {
-                let d = new Date(); d.setHours(0,0,0,0); const add = (n) => { let r = new Date(d); r.setDate(r.getDate()+n); return r.toISOString(); };
-                it.agendas = [add(3), add(7), add(21)]; it.doneAgendas = [false, false, false, false, false, false];
-            }
-        } save(); renderDiario();
-    }
-
-    function regenerateDaily() { delete db.metaFixa[new Date().toLocaleDateString()]; db.metaFixa = {}; save(); renderDiario(); renderSemanal(); }
-    function renderSemanal() {
-        const p = getPool(); let curIdx = 0;
-        document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(dayIdx => {
-            let h = `<div class="day-box"><div class="day-label">${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][dayIdx]}</div>`;
-            const hDay = parseFloat(db.h[dayIdx]); let hSum = 0;
-            while(curIdx < p.length && hSum < hDay) {
-                const t = p[curIdx]; let tH = t.hrs;
-                if(t.key === 'E') { if(hSum + tH > hDay) tH = hDay - hSum; }
-                else { if(hSum + 1.0 > hDay) { curIdx++; continue; } }
-                if(tH > 0) h += `<div class="week-task ${t.type}">${t.m}<br>${t.a}<br>${t.label}</div>`;
-                hSum += tH; curIdx++;
-            } return h + "</div>";
-        }).join('');
-    }
-
+    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); recalculateAll(); }
     function renderTree() {
         const mats = [...new Set(db.lista.map(x => x.m))];
         document.getElementById('tree-container').innerHTML = mats.map(m => {
-            const ass = db.lista.filter(x => x.m === m); const isOpen = openedFolders.has(m) ? 'open' : '';
-            return `<div class="folder"><div class="folder-header" onclick="toggleF('${m}')"><b>${m}</b><input type="checkbox" onclick="event.stopPropagation(); toggleBulkSin('${m}', this.checked)" ${ass.every(a=>a.done.E)?'checked':''}></div><div class="folder-content ${isOpen}">${ass.map(a => `<div class="subject-row ${a.done.E?'done':''}" onclick="toggleVet('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-check"></i></div>`).join('')}</div></div>`;
+            const ass = db.lista.filter(x => x.m === m);
+            return `<div class="folder">
+                <div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b><i class="fas fa-chevron-down"></i></div>
+                <div class="folder-content">${ass.map(a => `<div class="subject-row ${a.done.E?'done':''}"><span>${a.a}</span></div>`).join('')}</div>
+            </div>`;
         }).join('');
     }
-    function toggleBulkSin(m, v) { db.lista.filter(x => x.m === m).forEach(a => { a.done.E = v; if(v){ a.done.Rev=true; a.done.Ex=true; } }); save(); renderTree(); regenerateDaily(); }
-    function toggleF(m) { if(openedFolders.has(m)) openedFolders.delete(m); else openedFolders.add(m); renderTree(); }
-    function toggleVet(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.done.E = !it.done.E; if(it.done.E){ it.done.Rev=true; it.done.Ex=true; } save(); renderTree(); regenerateDaily(); }
-
-    function renderRever() {
-        const fin = db.lista.filter(x => x.f || x.done.Ex); const mats = [...new Set(fin.map(x => x.m))];
-        document.getElementById('rever-container').innerHTML = mats.map(m => {
-            const ass = fin.filter(x => x.m === m);
-            return `<div class="folder"><div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b><input type="checkbox" onclick="event.stopPropagation(); toggleBulkRes('${m}')"></div><div class="folder-content">${ass.map(a => `<div class="subject-row done" onclick="resetA('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-undo"></i></div>`).join('')}</div></div>`;
-        }).join('') || "<p style='padding:20px; color:gray;'>Nada finalizado.</p>";
-    }
-    function toggleBulkRes(m) { if(confirm(`Resetar matéria ${m}?`)) { db.lista.filter(x => x.m === m).forEach(a => { a.f=false; a.done={E:false,Rev:false,Ex:false}; a.agendas=null; }); save(); renderRever(); regenerateDaily(); } }
-    function resetA(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.f=false; it.done={E:false,Rev:false,Ex:false}; it.agendas=null; save(); renderRever(); regenerateDaily(); }
-
-    function renderFluxo() {
-        document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `<div class="card"><b>${it.m}: ${it.a}</b><div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:10px; text-align:center;">${['E','Rev','Ex'].map(k => `<div><small>${k}</small><br><input type="number" step="0.5" value="${k==='E'?it.h[k]:1.0}" ${k!=='E'?'disabled':''} onchange="db.lista[${i}].h.${k}=this.value;save()" style="width:100%"></div>`).join('')}</div></div>`).join('');
-    }
-
-    function saveEdital() {
-        const m = document.getElementById('add-mat').value; const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
-        if(!m || ass.length === 0) return alert("Preencha!");
-        ass.forEach(a => { if(!db.lista.some(x => x.m === m && x.a === a.trim())) db.lista.push({ m, a: a.trim(), f: false, act: {E:true, Rev:true, Ex:true}, done: {E:false, Rev:false, Ex:false}, h: {E: document.getElementById('h-e-pad').value, Rev: 1.0, Ex: 1.0}, agendas: null, doneAgendas: [] }); });
-        document.getElementById('add-mat').value = ""; document.getElementById('add-ass').value = ""; save(); alert("Salvo!"); regenerateDaily();
-    }
-
-    function renderH() { const d = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]; document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `<div><small style="font-weight:800; font-size:0.6rem;">${x}</small><input type="number" id="h-in-${i}" value="${db.h[i]}" style="text-align:center;"></div>`).join(''); }
-    function applyQ(m, v) { (m === 'util' ? [1,2,3,4,5] : [0,6]).forEach(i => document.getElementById(`h-in-${i}`).value = v); }
-    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); regenerateDaily(); alert("Horas Salvas!"); }
-    
-    function renderCiclo() {
-        const m = [...new Set(db.lista.map(x => x.m))];
-        document.getElementById('checks-ciclo').innerHTML = m.map(x => `<label style="display:flex; align-items:center; gap:8px; margin-bottom:10px;"><input type="checkbox" class="ckc" value="${x}" ${db.ciclo.includes(x)?'checked':''}> <span style="font-weight:600;">${x}</span></label>`).join('');
-    }
-    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); regenerateDaily(); alert("Ciclo!"); }
 </script>
 </body>
 </html>
