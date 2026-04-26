@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI COMMAND v.47 - PRF MATHEUS</title>
+    <title>OMNI COMMAND v.48 - FULL ELITE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -15,29 +15,44 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); display: flex; height: 100vh; overflow: hidden; }
 
+        /* SIDEBAR */
         .sidebar { width: 280px; background: var(--primary); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; overflow-y: auto; }
         .logo-box { padding: 30px; color: white; display: flex; align-items: center; gap: 10px; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .nav-item { padding: 15px 30px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 15px; font-weight: 600; transition: 0.2s; }
         .nav-item:hover, .nav-item.active { background: #1e293b; color: white; }
-        
         .submenu { background: rgba(0,0,0,0.2); display: none; flex-direction: column; }
         .submenu.show { display: flex; }
         .sub-link { padding: 12px 30px 12px 70px; color: #64748b; font-size: 0.85rem; cursor: pointer; font-weight: 500; }
         .sub-link:hover { color: white; }
 
+        /* MAIN SCROLL */
         .main { flex: 1; height: 100vh; overflow-y: auto; padding: 45px; -webkit-overflow-scrolling: touch; }
-        .container { max-width: 1100px; margin: 0 auto; }
+        .container { max-width: 1000px; margin: 0 auto; }
 
-        /* TABELA DE FLUXO */
-        .flow-card { background: white; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 15px; padding: 20px; }
-        .flow-header-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 10px; margin-top: 15px; align-items: center; }
-        .flow-input-group { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .flow-input-group input[type="number"] { width: 60px; padding: 5px; text-align: center; border-radius: 5px; border: 1px solid var(--border); }
-        
+        /* CARDS E PASTAS */
+        .folder { background: white; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; }
+        .folder-header { padding: 20px 25px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .folder-content { display: none; padding-bottom: 10px; border-top: 1px solid #f8fafc; background: #fcfcfc; }
+        .folder-content.open { display: block; }
+        .subject-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 25px 14px 55px; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
+        .subject-row.done { color: var(--accent); font-weight: 700; background: #eff6ff; }
+        .subject-row i.fa-check { display: none; color: var(--accent); }
+        .subject-row.done i.fa-check { display: inline-block; }
+
+        /* FLUXO GRID */
+        .flow-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 10px; margin-top: 15px; align-items: center; background: #f8fafc; padding: 15px; border-radius: 10px; }
+        .flow-col { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.75rem; }
+        .flow-col input[type="number"] { width: 55px; padding: 4px; text-align: center; border: 1px solid var(--border); border-radius: 6px; }
+
+        /* PAINEL E GRADES */
         .task-card { background: white; border-radius: 18px; padding: 25px; margin-bottom: 15px; border: 1px solid var(--border); border-left: 12px solid #ccc; display: flex; justify-content: space-between; align-items: center; }
-        .tag { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 5px 10px; border-radius: 6px; color: white; }
-        
+        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px; }
+        .day-box { background: white; border-radius: 12px; border: 1px solid var(--border); min-height: 200px; overflow: hidden; }
+        .day-label { background: #f1f5f9; padding: 10px; text-align: center; font-weight: 800; font-size: 0.75rem; border-bottom: 1px solid var(--border); }
+
         .btn { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 15px; }
+        input, textarea { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; margin-top: 8px; font-family: inherit; }
+
         #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 10000; display: flex; align-items: center; justify-content: center; }
         .login-card { background: white; padding: 50px; border-radius: 35px; width: 420px; text-align: center; }
         .page { display: none; }
@@ -49,7 +64,8 @@
     <div id="login-screen">
         <div class="login-card">
             <h1>🚓</h1>
-            <input type="password" id="pass-input" placeholder="Senha" style="width:100%; padding:14px; margin-top:20px; text-align:center;">
+            <h2 style="margin: 20px 0;">SGE PRF OMNI</h2>
+            <input type="password" id="pass-input" placeholder="Senha" style="text-align:center;">
             <button class="btn" onclick="checkAccess()">ENTRAR</button>
         </div>
     </div>
@@ -57,45 +73,66 @@
     <aside class="sidebar">
         <div class="logo-box">OMNI COMMAND</div>
         <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-house"></i><span>Painel Diário</span></div>
+        <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-days"></i><span>Grade Semanal</span></div>
         <div class="nav-item" onclick="toggleSub()"><i class="fas fa-folder-open"></i><span>Meu Plano</span><i class="fas fa-chevron-down" style="margin-left:auto; font-size:0.7rem;"></i></div>
         <div id="sub-plano" class="submenu">
             <div class="sub-link" onclick="showTab('edital')">Edital Verticalizado</div>
             <div class="sub-link" onclick="showTab('sinalizar')">Sinalizar Estudados</div>
+            <div class="sub-link" onclick="showTab('rever')">Rever Finalizados</div>
             <div class="sub-link" onclick="showTab('fluxo')">Controle de Fluxo</div>
             <div class="sub-link" onclick="showTab('ciclo')">Ciclo Ativo</div>
+            <div class="sub-link" onclick="showTab('config-h')">Configurar Horas</div>
         </div>
     </aside>
 
     <main class="main">
         <div class="container">
-            <div id="diaria" class="page active"><h1>Meta Diária 🚓</h1><div id="lista-diaria" style="margin-top:20px;"></div></div>
+            <div id="diaria" class="page active"><h1>Meta de Hoje 🚓</h1><div id="lista-diaria" style="margin-top:20px;"></div></div>
+            
+            <div id="semanal" class="page"><h1>Relatório Semanal</h1><div id="grid-semanal" class="grid-7"></div></div>
 
             <div id="fluxo" class="page">
-                <h1>Controle de Fluxo Inteligente</h1>
-                <p style="color:var(--text-sec); margin: 10px 0 25px 0;">Ative as etapas e defina as horas para cada assunto.</p>
-                <div id="corpo-fluxo"></div>
+                <h1>Controle de Fluxo</h1>
+                <p style="color:var(--text-sec); margin-top:10px;">Ative as etapas e defina as horas de cada assunto.</p>
+                <div id="corpo-fluxo" style="margin-top:20px;"></div>
             </div>
+
+            <div id="sinalizar" class="page"><h1>Sinalizar Veterano</h1><div id="tree-container" style="margin-top:20px;"></div></div>
+
+            <div id="rever" class="page"><h1>Rever Finalizados</h1><div id="rever-container" style="margin-top:20px;"></div></div>
 
             <div id="edital" class="page">
                 <h1>Cadastrar Edital</h1>
-                <div class="flow-card" style="padding:30px;">
-                    <input type="text" id="add-mat" placeholder="Matéria" style="width:100%; padding:15px; margin-bottom:15px; border-radius:10px; border:1px solid var(--border);">
-                    <textarea id="add-ass" placeholder="Assuntos (um por linha)" style="width:100%; height:120px; padding:15px; border-radius:10px; border:1px solid var(--border);"></textarea>
+                <div class="folder" style="padding:30px; margin-top:20px;">
+                    <input type="text" id="add-mat" placeholder="Matéria">
+                    <textarea id="add-ass" placeholder="Assuntos (um por linha)" style="height:150px;"></textarea>
                     <button class="btn" onclick="saveEdital()">SALVAR NO BANCO</button>
                 </div>
             </div>
 
-            <div id="sinalizar" class="page"><h1>Sinalizar Bagagem</h1><div id="tree-container" style="margin-top:20px;"></div></div>
-            <div id="ciclo" class="page"><h1>Ciclo Ativo</h1><div id="checks-ciclo" class="flow-card" style="columns:2;"></div><button class="btn" onclick="saveC()">ATUALIZAR CICLO</button></div>
+            <div id="config-h" class="page">
+                <h1>Configurar Horas</h1>
+                <div class="folder" style="padding:25px; margin-top:20px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+                        <div><label>Seg a Sex</label><input type="number" id="q-util" onchange="applyQ('util', this.value)"></div>
+                        <div><label>Sáb e Dom</label><input type="number" id="q-fds" onchange="applyQ('fds', this.value)"></div>
+                    </div>
+                    <div id="grid-horas-manual" class="grid-7"></div>
+                    <button class="btn" onclick="saveH()">SALVAR</button>
+                </div>
+            </div>
+
+            <div id="ciclo" class="page"><h1>Ciclo Ativo</h1><div id="checks-ciclo" class="folder" style="padding:30px; columns:2;"></div><button class="btn" onclick="saveC()">SALVAR CICLO</button></div>
         </div>
     </main>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('prf_v47')) || { 
-        lista: [], ciclo: [], pass: "123" 
+    let db = JSON.parse(localStorage.getItem('prf_v48')) || { 
+        lista: [], ciclo: [], h: {0:3,1:3,2:3,3:3,4:3,5:3,6:3}, pass: "123" 
     };
+    let openedFolders = new Set();
 
-    function save() { localStorage.setItem('prf_v47', JSON.stringify(db)); }
+    function save() { localStorage.setItem('prf_v48', JSON.stringify(db)); }
 
     function checkAccess() {
         if(document.getElementById('pass-input').value === db.pass || document.getElementById('pass-input').value === "123") {
@@ -103,7 +140,7 @@
         } else alert("Senha Incorreta!");
     }
 
-    function init() { renderDiario(); renderFluxo(); }
+    function init() { renderH(); renderDiario(); renderTree(); }
     function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
 
     function showTab(id, el) {
@@ -111,113 +148,108 @@
         document.querySelectorAll('.nav-item').forEach(m => m.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         if(el && el.classList.contains('nav-item')) el.classList.add('active');
+        if(id === 'semanal') renderSemanal();
         if(id === 'fluxo') renderFluxo();
-        if(id === 'diaria') renderDiario();
         if(id === 'sinalizar') renderTree();
+        if(id === 'rever') renderRever();
         if(id === 'ciclo') renderCiclo();
     }
 
-    // --- CONTROLE DE FLUXO (O QUE VOCÊ PEDIU) ---
+    // --- CONTROLE DE FLUXO (ESTRUTURA DE DNA) ---
     function renderFluxo() {
         document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `
-            <div class="flow-card">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <b style="font-size:1.1rem; color:var(--primary)">${it.m}</b>
-                    <span style="color:var(--text-sec); font-size:0.9rem;">${it.a}</span>
+            <div class="folder" style="padding:20px; margin-bottom:10px;">
+                <b>${it.m}</b>: ${it.a}
+                <div class="flow-grid">
+                    <div class="flow-col"><small>ESTUDO</small><input type="checkbox" onchange="db.lista[${i}].act.E=this.checked;save()" ${it.act.E?'checked':''}> <input type="number" value="${it.hrs.E}" onchange="db.lista[${i}].hrs.E=this.value;save()"></div>
+                    <div class="flow-col"><small>RESUMO</small><input type="checkbox" onchange="db.lista[${i}].act.Res=this.checked;save()" ${it.act.Res?'checked':''}> <input type="number" value="${it.hrs.Res}" onchange="db.lista[${i}].hrs.Res=this.value;save()"></div>
+                    <div class="flow-col"><small>REVISÃO</small><input type="checkbox" onchange="db.lista[${i}].act.Rev=this.checked;save()" ${it.act.Rev?'checked':''}> <input type="number" value="${it.hrs.Rev}" onchange="db.lista[${i}].hrs.Rev=this.value;save()"></div>
+                    <div class="flow-col"><small>EXERC.</small><input type="checkbox" onchange="db.lista[${i}].act.Ex=this.checked;save()" ${it.act.Ex?'checked':''}> <input type="number" value="${it.hrs.Ex}" onchange="db.lista[${i}].hrs.Ex=this.value;save()"></div>
                 </div>
-                <div class="flow-header-row">
-                    <div style="font-size:0.8rem; font-weight:700; color:var(--text-sec)">ETAPAS:</div>
-                    <div class="flow-input-group">
-                        <small>Estudo</small>
-                        <input type="checkbox" onchange="db.lista[${i}].act.E=this.checked;save()" ${it.act.E?'checked':''}>
-                        <input type="number" step="0.5" value="${it.h.E}" onchange="db.lista[${i}].h.E=this.value;save()">
-                    </div>
-                    <div class="flow-input-group">
-                        <small>Resumo</small>
-                        <input type="checkbox" onchange="db.lista[${i}].act.Res=this.checked;save()" ${it.act.Res?'checked':''}>
-                        <input type="number" step="0.5" value="${it.h.Res}" onchange="db.lista[${i}].h.Res=this.value;save()">
-                    </div>
-                    <div class="flow-input-group">
-                        <small>Revisão</small>
-                        <input type="checkbox" onchange="db.lista[${i}].act.Rev=this.checked;save()" ${it.act.Rev?'checked':''}>
-                        <input type="number" step="0.5" value="${it.h.Rev}" onchange="db.lista[${i}].h.Rev=this.value;save()">
-                    </div>
-                    <div class="flow-input-group">
-                        <small>Exercícios</small>
-                        <input type="checkbox" onchange="db.lista[${i}].act.Ex=this.checked;save()" ${it.act.Ex?'checked':''}>
-                        <input type="number" step="0.5" value="${it.h.Ex}" onchange="db.lista[${i}].h.Ex=this.value;save()">
-                    </div>
-                </div>
-            </div>
-        `).join('') || "<p>Cadastre matérias no edital.</p>";
+            </div>`).join('');
     }
 
+    // --- PASTAS E REVER ---
+    function renderTree() {
+        const mats = [...new Set(db.lista.map(x => x.m))];
+        document.getElementById('tree-container').innerHTML = mats.map(m => {
+            const ass = db.lista.filter(x => x.m === m);
+            const isOpen = openedFolders.has(m) ? 'open' : '';
+            return `<div class="folder"><div class="folder-header" onclick="toggleFolder('${m}')"><div style="display:flex; gap:15px;"><input type="checkbox" onclick="event.stopPropagation(); toggleMat('${m}', this.checked)" ${ass.every(a=>a.done.E)?'checked':''}> <span style="font-weight:700;">${m}</span></div><i class="fas fa-chevron-down ${isOpen?'fa-rotate-180':''}"></i></div><div class="folder-content ${isOpen}">${ass.map(a => `<div class="subject-row ${a.done.E?'done':''}" onclick="toggleVeterano('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-check"></i></div>`).join('')}</div></div>`;
+        }).join('');
+    }
+
+    function renderRever() {
+        const finalizados = db.lista.filter(x => x.f || x.done.Ex);
+        const mats = [...new Set(finalizados.map(x => x.m))];
+        document.getElementById('rever-container').innerHTML = mats.map(m => {
+            const ass = finalizados.filter(x => x.m === m);
+            return `<div class="folder"><div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b><i class="fas fa-chevron-down"></i></div><div class="folder-content">${ass.map(a => `<div class="subject-row done" onclick="resetAssunto('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-undo"></i></div>`).join('')}</div></div>`;
+        }).join('') || "Nada concluído.";
+    }
+
+    function toggleFolder(m) { if(openedFolders.has(m)) openedFolders.delete(m); else openedFolders.add(m); renderTree(); }
+    function toggleMat(m, v) { db.lista.filter(x => x.m === m).forEach(a => { a.done.E = v; if(v) a.done.Res = v; }); save(); renderTree(); renderDiario(); }
+    function toggleVeterano(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.done.E = !it.done.E; if(it.done.E) it.done.Res = true; save(); renderTree(); renderDiario(); }
+    function resetAssunto(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.f = false; it.done = {E:false,Res:false,Rev:false,Ex:false}; save(); renderRever(); renderDiario(); }
+
+    // --- MOTOR PRIORIDADE ESTUDO ---
     function getPool() {
-        let pool = [];
-        db.lista.filter(x => db.ciclo.includes(x.m) && !x.f).forEach(x => {
-            const rito = [
-                {k:'E', l:'Estudo', c:'var(--color-e)', h: x.h.E}, 
-                {k:'Res', l:'Resumo', c:'var(--color-res)', h: x.h.Res}, 
-                {k:'Rev', l:'Revisão', c:'var(--color-rev)', h: x.h.Rev}, 
-                {k:'Ex', l:'Exercícios', c:'var(--color-ex)', h: x.h.Ex}
-            ];
-            for(let s of rito) {
-                if(x.act[s.k] && !x.done[s.k]) {
-                    pool.push({ m: x.m, a: x.a, label: s.l, color: s.c, key: s.k, hrs: s.h });
-                    break;
+        let p = [];
+        db.ciclo.forEach(m => {
+            const assuntos = db.lista.filter(x => x.m === m && !x.f);
+            const pendenteE = assuntos.find(a => !a.done.E && a.act.E);
+            if(pendenteE) p.push({ m, a: pendenteE.a, label: 'Estudo', color: 'var(--color-e)', key: 'E', h: pendenteE.hrs.E });
+            else {
+                const pendenteO = assuntos.find(a => !a.done.Ex);
+                if(pendenteO) {
+                    const rito = [{k:'Res', l:'Resumo', c:'var(--color-res)', h: pendenteO.hrs.Res}, {k:'Rev', l:'Revisão', c:'var(--color-rev)', h: pendenteO.hrs.Rev}, {k:'Ex', l:'Exercícios', c:'var(--color-ex)', h: pendenteO.hrs.Ex}];
+                    for(let s of rito) { if(pendenteO.act[s.k] && !pendenteO.done[s.k]) { p.push({ m, a: pendenteO.a, label: s.l, color: s.c, key: s.k, h: s.h }); break; } }
                 }
             }
         });
-        return pool;
+        return p;
     }
 
     function renderDiario() {
         const p = getPool();
-        let meta = []; let mSet = new Set();
-        for(let t of p) { if(!mSet.has(t.m) && meta.length < 3) { meta.push(t); mSet.add(t.m); } }
-        document.getElementById('lista-diaria').innerHTML = meta.map(t => `
-            <div class="task-card" style="border-left-color:${t.color}">
-                <div>
-                    <span class="tag" style="background:${t.color}">${t.label} (${t.hrs}h)</span>
-                    <div style="font-weight:800; font-size:1.2rem; margin-top:8px;">${t.m}: ${t.a}</div>
-                </div>
-                <input type="checkbox" style="width:30px; height:30px;" onclick="concluirStep('${t.m}','${t.a}','${t.key}')">
-            </div>
-        `).join('');
+        document.getElementById('lista-diaria').innerHTML = p.slice(0,3).map(t => `<div class="task-card" style="border-left-color:${t.color}"><div><span class="tag" style="background:${t.color}">${t.label} (${t.h}h)</span><div style="font-weight:800; font-size:1.2rem; margin-top:8px;">${t.m}: ${t.a}</div></div><input type="checkbox" style="width:30px; height:30px;" onclick="concluirStep('${t.m}','${t.a}','${t.key}')"></div>`).join('') || "Parabéns!";
     }
 
     function concluirStep(m, a, k) {
         const it = db.lista.find(x => x.m === m && x.a === a);
-        it.done[k] = true; if(it.done.Ex || !it.act.Ex && it.done.Rev) it.f = true;
+        it.done[k] = true; if(it.done.Ex || (!it.act.Ex && it.done.Rev)) it.f = true;
         save(); setTimeout(renderDiario, 300);
     }
 
     function saveEdital() {
         const m = document.getElementById('add-mat').value;
         const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
-        ass.forEach(a => db.lista.push({ 
-            m, a: a.trim(), f: false, 
-            act: {E:true, Res:true, Rev:true, Ex:true}, 
-            done: {E:false, Res:false, Rev:false, Ex:false},
-            h: {E:2, Res:0.5, Rev:0.5, Ex:1} // Horas padrão
-        }));
+        ass.forEach(a => db.lista.push({ m, a: a.trim(), f: false, act: {E:1,Res:1,Rev:1,Ex:1}, done: {E:0,Res:0,Rev:0,Ex:0}, hrs: {E:2,Res:0.5,Rev:0.5,Ex:1} }));
         document.getElementById('add-mat').value = ""; document.getElementById('add-ass').value = "";
-        save(); alert("Matéria Salva! Vá em 'Controle de Fluxo' para ajustar as horas.");
+        save(); alert("Salvo!");
     }
 
-    function renderTree() {
-        const mats = [...new Set(db.lista.map(x => x.m))];
-        document.getElementById('tree-container').innerHTML = mats.map(m => {
-            const ass = db.lista.filter(x => x.m === m);
-            return `<div class="flow-card"><div style="font-weight:700; margin-bottom:10px;">${m}</div>${ass.map(a => `<div style="padding:8px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;"><span>${a.a}</span><input type="checkbox" onchange="toggleV('${m}','${a.a}',this.checked)" ${a.done.E?'checked':''}></div>`).join('')}</div>`;
+    function renderSemanal() {
+        const p = getPool(); let idx = 0;
+        document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(i => {
+            let h = `<div class="day-box"><div class="day-label">${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][i]}</div>`;
+            for(let j=0; j<3; j++) { if(p[idx]) { h += `<div style="padding:8px; border-left:4px solid var(--color-${p[idx].key.toLowerCase()}); font-size:0.65rem;"><b>${p[idx].m}</b><br>${p[idx].a}</div>`; idx++; } }
+            return h + "</div>";
         }).join('');
     }
-    function toggleV(m, a, v) { const it = db.lista.find(x => x.m === m && x.a === a); it.done.E = v; if(v) it.done.Res = v; save(); }
+
+    function renderH() {
+        const d = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+        document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `<div><small>${x}</small><input type="number" class="h-in" id="h-in-${i}" value="${db.h[i]}" style="text-align:center;"></div>`).join('');
+    }
+    function applyQ(m, v) { (m === 'util' ? [1,2,3,4,5] : [0,6]).forEach(i => document.getElementById(`h-in-${i}`).value = v); }
+    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); alert("Salvo!"); }
     function renderCiclo() {
         const m = [...new Set(db.lista.map(x => x.m))];
         document.getElementById('checks-ciclo').innerHTML = m.map(x => `<label style="display:block; padding:10px;"><input type="checkbox" class="ckc" value="${x}" ${db.ciclo.includes(x)?'checked':''}> ${x}</label>`).join('');
     }
-    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); renderDiario(); alert("Ciclo salvo!"); }
+    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); renderDiario(); alert("Salvo!"); }
 </script>
 </body>
 </html>
