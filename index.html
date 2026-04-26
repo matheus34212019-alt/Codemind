@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI COMMAND v.62 - PREMIUM DESIGN</title>
+    <title>OMNI COMMAND v.64 - LOGIC LOCK</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -19,229 +19,59 @@
             --color-rev: #f59e0b; 
             --color-ex: #10b981;
             --radius: 16px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg); 
-            color: var(--text-main);
-            display: flex; 
-            height: 100vh; 
-            overflow: hidden; 
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR ESTILO TUTORY */
-        .sidebar { 
-            width: 280px; 
-            background: var(--primary); 
-            display: flex; 
-            flex-direction: column; 
-            flex-shrink: 0; 
-            height: 100vh; 
-            overflow-y: auto; 
-            padding: 20px;
-        }
-        
-        .logo-box { 
-            padding: 20px 10px 40px 10px; 
-            color: white; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            font-weight: 800; 
-            font-size: 1.2rem;
-            letter-spacing: -0.5px;
-        }
-
+        .sidebar { width: 280px; background: var(--primary); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; overflow-y: auto; padding: 20px; }
+        .logo-box { padding: 20px 10px 40px 10px; color: white; display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.2rem; }
         .nav-group { margin-bottom: 30px; }
-        .nav-label { 
-            color: #475569; 
-            font-size: 0.7rem; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            margin-bottom: 10px; 
-            padding-left: 15px;
-            letter-spacing: 1px;
-        }
-
-        .nav-item { 
-            padding: 12px 15px; 
-            color: #94a3b8; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            font-weight: 600; 
-            border-radius: 12px;
-            transition: all 0.2s ease;
-            margin-bottom: 4px;
-        }
-        
-        .nav-item i { width: 20px; text-align: center; }
+        .nav-label { color: #475569; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; padding-left: 15px; letter-spacing: 1px; }
+        .nav-item { padding: 12px 15px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; border-radius: 12px; transition: 0.2s; margin-bottom: 4px; }
         .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
         .nav-item.active { background: var(--accent); color: white; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3); }
         
-        .submenu { 
-            margin-left: 10px; 
-            border-left: 1px solid rgba(255,255,255,0.1); 
-            display: none; 
-            flex-direction: column; 
-            margin-top: 5px;
-            margin-bottom: 10px;
-        }
+        .submenu { margin-left: 10px; border-left: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; margin-top: 5px; }
         .submenu.show { display: flex; }
-        .sub-link { 
-            padding: 10px 10px 10px 30px; 
-            color: #64748b; 
-            font-size: 0.85rem; 
-            cursor: pointer; 
-            font-weight: 500; 
-            transition: 0.2s;
-        }
+        .sub-link { padding: 10px 10px 10px 30px; color: #64748b; font-size: 0.85rem; cursor: pointer; font-weight: 500; transition: 0.2s; }
         .sub-link:hover { color: white; }
 
-        /* MAIN CONTENT */
         .main { flex: 1; height: 100vh; overflow-y: auto; padding: 40px; -webkit-overflow-scrolling: touch; }
         .container { max-width: 1000px; margin: 0 auto; }
 
         .page-header { margin-bottom: 32px; }
         .page-header h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
-        .page-header p { color: var(--text-sec); font-weight: 500; margin-top: 4px; }
-
-        /* CARDS */
-        .card { 
-            background: var(--card-bg); 
-            border-radius: var(--radius); 
-            padding: 24px; 
-            margin-bottom: 20px; 
-            border: 1px solid var(--border); 
-            box-shadow: var(--shadow);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
         
-        .task-card { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-left: 8px solid #ccc;
-        }
-        .task-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-
-        .tag { 
-            font-size: 0.6rem; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            padding: 6px 12px; 
-            border-radius: 20px; 
-            color: white;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
+        .task-card { display: flex; justify-content: space-between; align-items: center; border-left: 8px solid #ccc; }
+        .tag { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; padding: 6px 12px; border-radius: 20px; color: white; display: inline-block; margin-bottom: 10px; }
         
         .type-e { background: var(--color-e); } 
         .type-rev { background: var(--color-rev); } 
         .type-ex { background: var(--color-ex); }
 
-        /* GRADE SEMANAL MODERNIZADA */
         .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-top: 20px; }
-        .day-box { 
-            background: #fff; 
-            border-radius: var(--radius); 
-            border: 1px solid var(--border); 
-            min-height: 350px; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-        }
-        .day-label { 
-            background: #f8fafc; 
-            padding: 12px; 
-            text-align: center; 
-            font-weight: 800; 
-            font-size: 0.7rem; 
-            border-bottom: 1px solid var(--border); 
-            color: var(--text-sec);
-            text-transform: uppercase;
-        }
-        .week-task { 
-            margin: 6px; 
-            padding: 10px; 
-            border-radius: 10px; 
-            font-size: 0.65rem; 
-            font-weight: 700; 
-            color: white; 
-            line-height: 1.2;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        .day-box { background: #fff; border-radius: var(--radius); border: 1px solid var(--border); min-height: 350px; overflow: hidden; display: flex; flex-direction: column; }
+        .day-label { background: #f8fafc; padding: 12px; text-align: center; font-weight: 800; font-size: 0.7rem; border-bottom: 1px solid var(--border); color: var(--text-sec); }
+        .week-task { margin: 6px; padding: 10px; border-radius: 10px; font-size: 0.65rem; font-weight: 700; color: white; line-height: 1.2; }
 
-        /* PASTAS */
         .folder { background: white; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 12px; overflow: hidden; }
-        .folder-header { 
-            padding: 18px 24px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            cursor: pointer; 
-            background: #fff;
-            transition: background 0.2s;
-        }
-        .folder-header:hover { background: #f8fafc; }
+        .folder-header { padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
         .folder-content { display: none; padding-bottom: 8px; background: #fcfcfc; border-top: 1px solid var(--border); }
         .folder-content.open { display: block; }
-        .subject-row { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 12px 24px 12px 60px; 
-            cursor: pointer; 
-            border-bottom: 1px solid #f1f5f9; 
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        .subject-row:hover { background: #f1f5f9; }
+        .subject-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px 12px 60px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
         .subject-row.done { color: var(--accent); font-weight: 700; background: #eff6ff; }
 
-        /* UI ELEMENTS */
-        .btn { 
-            padding: 14px 24px; 
-            background: var(--accent); 
-            color: white; 
-            border: none; 
-            border-radius: 12px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-        
-        input, textarea { 
-            width: 100%; 
-            padding: 12px 16px; 
-            border: 1px solid var(--border); 
-            border-radius: 10px; 
-            margin-top: 8px; 
-            font-family: inherit;
-            background: #f8fafc;
-            transition: border 0.2s, background 0.2s;
-        }
-        input:focus { border-color: var(--accent); background: #fff; }
+        .btn { padding: 14px 24px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        input, textarea, select { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; margin-top: 8px; font-family: inherit; background: #f8fafc; }
 
         #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 10000; display: flex; align-items: center; justify-content: center; }
         .login-card { background: white; padding: 40px; border-radius: 24px; width: 380px; text-align: center; }
-        
         .page { display: none; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* CUSTOM CHECKBOX */
-        input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--accent); }
     </style>
 </head>
 <body>
@@ -249,29 +79,26 @@
     <div id="login-screen">
         <div class="login-card">
             <i class="fas fa-shield-halved" style="font-size: 3rem; color: var(--accent); margin-bottom: 20px;"></i>
-            <h2 style="margin-bottom: 10px;">OMNI COMMAND</h2>
-            <p style="color: var(--text-sec); margin-bottom: 25px;">Gestão Tática de Estudos</p>
+            <h2>OMNI COMMAND</h2>
             <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center;">
-            <button class="btn" style="width: 100%; margin-top: 20px;" onclick="checkAccess()">ACESSAR SISTEMA</button>
+            <button class="btn" style="width: 100%; margin-top: 20px;" onclick="checkAccess()">ACESSAR</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box"><i class="fas fa-bolt" style="color:var(--accent)"></i> OMNI v.62</div>
-        
+        <div class="logo-box"><i class="fas fa-bolt" style="color:var(--accent)"></i> OMNI v.64</div>
         <div class="nav-group">
             <div class="nav-label">Operacional</div>
             <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-calendar-day"></i><span>Painel Diário</span></div>
             <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-chart-line"></i><span>Grade Semanal</span></div>
         </div>
-
         <div class="nav-group">
             <div class="nav-label">Planejamento</div>
             <div class="nav-item" onclick="toggleSub()"><i class="fas fa-layer-group"></i><span>Meu Plano</span><i class="fas fa-chevron-down" style="margin-left:auto; font-size:0.7rem;"></i></div>
             <div id="sub-plano" class="submenu">
                 <div class="sub-link" onclick="showTab('edital')">Edital Vertical</div>
                 <div class="sub-link" onclick="showTab('sinalizar')">Sinalizar Base</div>
-                <div class="sub-link" onclick="showTab('rever')">Rever Conteúdo</div>
+                <div class="sub-link" onclick="showTab('rever')">Rever Finalizados</div>
                 <div class="sub-link" onclick="showTab('fluxo')">Controle de Fluxo</div>
                 <div class="sub-link" onclick="showTab('ciclo')">Ciclo Ativo</div>
                 <div class="sub-link" onclick="showTab('config-h')">Horas Diárias</div>
@@ -283,58 +110,44 @@
         <div class="container">
             <div id="diaria" class="page active">
                 <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
-                    <div>
-                        <h1>Foco do Plantão 🚓</h1>
-                        <p id="meta-status"></p>
-                    </div>
+                    <div><h1>Foco do Plantão 🚓</h1><p id="meta-status"></p></div>
                     <button class="btn" onclick="regenerateDaily()"><i class="fas fa-sync"></i> Resetar Dia</button>
                 </div>
                 <div id="lista-diaria"></div>
             </div>
 
             <div id="semanal" class="page">
-                <div class="page-header">
-                    <h1>Cronograma Tático</h1>
-                    <p>Visão geral da sua carga horária semanal</p>
-                </div>
+                <div class="page-header"><h1>Cronograma Tático</h1><p>Relatório de horas formatado</p></div>
                 <div id="grid-semanal" class="grid-7"></div>
             </div>
 
             <div id="edital" class="page">
-                <div class="page-header">
-                    <h1>Cadastrar Edital</h1>
-                    <p>Alimente seu banco de dados de assuntos</p>
-                </div>
+                <div class="page-header"><h1>Cadastrar Edital</h1></div>
                 <div class="card">
-                    <label style="font-weight: 700; font-size: 0.9rem;">Disciplina</label>
-                    <input type="text" id="add-mat" placeholder="Ex: Legislação de Trânsito">
-                    
+                    <label>Disciplina</label>
+                    <input type="text" id="add-mat" placeholder="Ex: Direito Penal">
                     <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px; margin: 20px 0;">
                         <div>
-                            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-sec);">ESTUDO (h)</label>
-                            <input type="number" id="h-e-pad" value="1.5" step="0.5">
+                            <label>ESTUDO</label>
+                            <select id="h-e-pad">
+                                <option value="0.5">30m</option><option value="1.0">60m</option>
+                                <option value="1.5" selected>90m</option><option value="2.0">2h</option>
+                            </select>
                         </div>
-                        <div>
-                            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-sec);">REVISÃO (h)</label>
-                            <input type="number" id="h-rev-pad" value="1.0" disabled style="background:#e2e8f0; cursor:not-allowed;">
-                        </div>
-                        <div>
-                            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-sec);">QUESTÕES (h)</label>
-                            <input type="number" id="h-ex-pad" value="1.0" disabled style="background:#e2e8f0; cursor:not-allowed;">
-                        </div>
+                        <div><label>REVISÃO</label><input type="text" value="60m" disabled style="background:#e2e8f0;"></div>
+                        <div><label>QUESTÕES</label><input type="text" value="60m" disabled style="background:#e2e8f0;"></div>
                     </div>
-                    
-                    <label style="font-weight: 700; font-size: 0.9rem;">Assuntos (Um por linha)</label>
-                    <textarea id="add-ass" placeholder="Introdução ao CTB&#10;Normas de Circulação" style="height:150px;"></textarea>
-                    <button class="btn" style="width:100%; margin-top:20px;" onclick="saveEdital()">SALVAR CONTEÚDO</button>
+                    <label>Assuntos (Um por linha)</label>
+                    <textarea id="add-ass" placeholder="Assunto 1&#10;Assunto 2" style="height:150px;"></textarea>
+                    <button class="btn" style="width:100%; margin-top:20px;" onclick="saveEdital()">SALVAR</button>
                 </div>
             </div>
 
-            <div id="fluxo" class="page"><div class="page-header"><h1>Controle de Fluxo</h1></div><div id="corpo-fluxo"></div></div>
-            <div id="config-h" class="page"><div class="page-header"><h1>Horas Disponíveis</h1></div><div class="card"><div id="grid-horas-manual" style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; text-align:center;"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveH()">SALVAR CARGA</button></div></div>
-            <div id="sinalizar" class="page"><div class="page-header"><h1>Sinalizar Bagagem</h1></div><div id="tree-container"></div></div>
-            <div id="rever" class="page"><div class="page-header"><h1>Rever Finalizados</h1></div><div id="rever-container"></div></div>
-            <div id="ciclo" class="page"><div class="page-header"><h1>Ciclo Ativo</h1></div><div id="checks-ciclo" class="card" style="columns:2;"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveC()">SALVAR CICLO</button></div>
+            <div id="fluxo" class="page"><div class="page-header"><h1>Fluxo de Matérias</h1></div><div id="corpo-fluxo"></div></div>
+            <div id="config-h" class="page"><div class="page-header"><h1>Configurar Horas</h1></div><div class="card"><div id="grid-horas-manual" style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; text-align:center;"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveH()">SALVAR</button></div></div>
+            <div id="sinalizar" class="page"><div id="tree-container"></div></div>
+            <div id="rever" class="page"><div id="rever-container"></div></div>
+            <div id="ciclo" class="page"><div id="checks-ciclo" class="card" style="columns:2;"></div><button class="btn" style="width:100%;" onclick="saveC()">SALVAR</button></div>
         </div>
     </main>
 
@@ -343,8 +156,13 @@
         lista: [], ciclo: [], h: {0:4,1:4,2:4,3:4,4:4,5:4,6:4}, pass: "123", metaFixa: {} 
     };
     let openedFolders = new Set();
-
     function save() { localStorage.setItem('prf_v55', JSON.stringify(db)); }
+
+    const formatTime = (h) => {
+        if(h == 0.5) return "30m"; if(h == 1.0) return "60m";
+        if(h == 1.5) return "90m"; if(h == 2.0) return "2h";
+        return h + "h";
+    };
 
     function checkAccess() {
         if(document.getElementById('pass-input').value === db.pass || document.getElementById('pass-input').value === "123") {
@@ -368,21 +186,27 @@
         if(id === 'ciclo') renderCiclo();
     }
 
-    // MOTOR v.61 BLINDADO
     function getPool() {
         let pool = [];
         let rito = [{k:'E', l:'Estudo', c:'type-e'}, {k:'Rev', l:'Revisão', c:'type-rev'}, {k:'Ex', l:'Exercícios', c:'type-ex'}];
+        
         db.ciclo.forEach(m => {
-            const assuntos = db.lista.filter(x => x.m === m && !x.f);
-            const assAtual = assuntos.find(a => !a.done.Ex);
-            if(assAtual) {
+            const assuntosDaMateria = db.lista.filter(x => x.m === m && !x.f);
+            
+            // BUSCA O ASSUNTO QUE TEM PENDÊNCIA (E TRAVA NELE)
+            // Um assunto só libera o próximo se 'done.Ex' for true (considerando se as fases estão ativas no fluxo)
+            for(let ass of assuntosDaMateria) {
+                let pendenciaEncontrada = false;
                 for(let s of rito) {
-                    if(assAtual.act[s.k] && !assAtual.done[s.k]) {
-                        let hrFinal = (s.k === 'Rev' || s.k === 'Ex') ? 1.0 : parseFloat(assAtual.h[s.k]);
-                        pool.push({ m: assAtual.m, a: assAtual.a, label: s.l, type: s.c, key: s.k, hrs: hrFinal });
-                        break; 
+                    // Verifica se a fase está ativa e não foi concluída
+                    if(ass.act[s.k] && !ass.done[s.k]) {
+                        let hrFinal = (s.k === 'Rev' || s.k === 'Ex') ? 1.0 : parseFloat(ass.h[s.k]);
+                        pool.push({ m: ass.m, a: ass.a, label: s.l, type: s.c, key: s.k, hrs: hrFinal });
+                        pendenciaEncontrada = true;
+                        break; // Pega apenas a primeira fase pendente deste assunto
                     }
                 }
+                if(pendenciaEncontrada) break; // TRAVA AQUI: Não pula para o próximo assunto da mesma matéria
             }
         });
         return pool;
@@ -405,12 +229,12 @@
         }
         const meta = db.metaFixa[hj];
         const somaAt = meta.reduce((acc, t) => acc + t.hrs, 0);
-        document.getElementById('meta-status').innerText = `Horas alocadas: ${somaAt.toFixed(1)}h / Meta: ${hMeta}h`;
+        document.getElementById('meta-status').innerText = `${somaAt.toFixed(1)}h alocadas de ${hMeta}h meta`;
         document.getElementById('lista-diaria').innerHTML = meta.map((t, i) => `
             <div class="card task-card" style="border-left-color:var(--color-${t.key.toLowerCase()})">
-                <div><span class="tag ${t.type}">${t.label} (${t.hrs.toFixed(1)}h)</span><div style="font-weight:800; font-size:1.1rem;">${t.m}: ${t.a}</div></div>
+                <div><span class="tag ${t.type}">${t.label} (${formatTime(t.hrs)})</span><div style="font-weight:800; font-size:1.1rem;">${t.m}: ${t.a}</div></div>
                 <input type="checkbox" ${t.completed?'checked':''} onclick="concluir(${i},'${t.m}','${t.a}','${t.key}')">
-            </div>`).join('') || "<p style='padding:20px;'>Sem tarefas disponíveis.</p>";
+            </div>`).join('') || "<p>Nenhuma tarefa no ciclo.</p>";
     }
 
     function concluir(idx, m, a, k) {
@@ -418,7 +242,11 @@
         db.metaFixa[hj][idx].completed = !db.metaFixa[hj][idx].completed;
         const it = db.lista.find(x => x.m === m && x.a === a);
         it.done[k] = db.metaFixa[hj][idx].completed;
-        if(it.done.Ex) it.f = true;
+        
+        // Verifica se todas as fases ATIVAS do assunto foram concluídas para marcar como finalizado (f)
+        const totalConcluido = (!it.act.E || it.done.E) && (!it.act.Rev || it.done.Rev) && (!it.act.Ex || it.done.Ex);
+        if(totalConcluido) it.f = true; else it.f = false;
+        
         save(); renderDiario();
     }
 
@@ -432,7 +260,7 @@
             let hoursSum = 0;
             while(currentIdx < p.length && hoursSum < hoursForDay) {
                 const task = p[currentIdx];
-                html += `<div class="week-task ${task.type}">${task.m}<br>${task.a}<br>${task.label}</div>`;
+                html += `<div class="week-task ${task.type}">${task.m}<br>${task.a}<br>${task.label} (${formatTime(task.hrs)})</div>`;
                 hoursSum += task.hrs; currentIdx++;
             }
             return html + "</div>";
@@ -450,19 +278,19 @@
     function toggleF(m) { if(openedFolders.has(m)) openedFolders.delete(m); else openedFolders.add(m); renderTree(); }
     function toggleVet(m, a) { 
         const it = db.lista.find(x => x.m === m && x.a === a); it.done.E = !it.done.E; 
-        if(it.done.E) { it.done.Rev = false; it.done.Ex = false; }
+        if(it.done.E) { it.done.Rev = false; it.done.Ex = false; it.f = false; }
         save(); renderTree(); regenerateDaily(); 
     }
 
     function renderRever() {
-        const fin = db.lista.filter(x => x.f || x.done.Ex);
+        const fin = db.lista.filter(x => x.f);
         const mats = [...new Set(fin.map(x => x.m))];
         document.getElementById('rever-container').innerHTML = mats.map(m => {
             const ass = fin.filter(x => x.m === m);
             return `<div class="folder"><div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b><i class="fas fa-chevron-down"></i></div><div class="folder-content">${ass.map(a => `<div class="subject-row done" onclick="resetA('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-undo"></i></div>`).join('')}</div></div>`;
         }).join('');
     }
-    function resetA(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.f=false; it.done={E:false,Rev:false,Ex:false}; save(); renderRever(); regenerateDaily(); alert("Resetado!"); }
+    function resetA(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.f=false; it.done={E:false,Rev:false,Ex:false}; save(); renderRever(); regenerateDaily(); }
 
     function renderFluxo() {
         document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `<div class="card"><b>${it.m}: ${it.a}</b><div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:10px; text-align:center;">${['E','Rev','Ex'].map(k => `<div><small>${k}</small><br><input type="checkbox" onchange="db.lista[${i}].act.${k}=this.checked;save()" ${it.act[k]?'checked':''}> <input type="number" step="0.5" value="${k==='E'?it.h[k]:1.0}" ${k!=='E'?'disabled':''} onchange="db.lista[${i}].h.${k}=this.value;save()" style="width:100%"></div>`).join('')}</div></div>`).join('');
@@ -472,7 +300,7 @@
         const m = document.getElementById('add-mat').value;
         const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
         const h = { E: document.getElementById('h-e-pad').value, Rev: 1.0, Ex: 1.0 };
-        if(!m || ass.length === 0) return alert("Preencha os campos!");
+        if(!m || ass.length === 0) return alert("Erro!");
         ass.forEach(a => db.lista.push({ m, a: a.trim(), f: false, act: {E:true, Rev:true, Ex:true}, done: {E:false, Rev:false, Ex:false}, h: {...h} }));
         document.getElementById('add-mat').value = ""; document.getElementById('add-ass').value = "";
         save(); alert("Salvo!"); regenerateDaily();
@@ -480,16 +308,15 @@
 
     function renderH() {
         const d = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-        document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `<div><small style="font-weight:800; font-size:0.6rem;">${x}</small><input type="number" id="h-in-${i}" value="${db.h[i]}" style="text-align:center; padding:8px 0;"></div>`).join('');
+        document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `<div><small style="font-weight:800; font-size:0.6rem;">${x}</small><input type="number" id="h-in-${i}" value="${db.h[i]}" style="text-align:center;"></div>`).join('');
     }
-    function applyQ(m, v) { (m === 'util' ? [1,2,3,4,5] : [0,6]).forEach(i => document.getElementById(`h-in-${i}`).value = v); }
-    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); alert("Carga Horária Atualizada!"); regenerateDaily(); }
+    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); alert("Carga Atualizada!"); regenerateDaily(); }
     
     function renderCiclo() {
         const m = [...new Set(db.lista.map(x => x.m))];
         document.getElementById('checks-ciclo').innerHTML = m.map(x => `<label style="display:flex; align-items:center; gap:8px; margin-bottom:10px;"><input type="checkbox" class="ckc" value="${x}" ${db.ciclo.includes(x)?'checked':''}> <span style="font-weight:600; font-size:0.9rem;">${x}</span></label>`).join('');
     }
-    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); regenerateDaily(); alert("Ciclo Atualizado!"); }
+    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); regenerateDaily(); }
 </script>
 </body>
 </html>
