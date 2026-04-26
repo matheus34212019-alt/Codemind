@@ -21,7 +21,7 @@
         
         /* LOGIN */
         #login-screen { position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: white; padding: 40px; border-radius: 24px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .login-card { background: white; padding: 40px; border-radius: 24px; width: 90%; max-width: 400px; text-align: center; }
         .login-input { width: 100%; padding: 14px; border: 2px solid #f3f4f6; border-radius: 12px; font-size: 1.25rem; text-align: center; margin-bottom: 20px; outline: none; }
 
         /* SIDEBAR */
@@ -41,12 +41,10 @@
 
         .card { background: var(--card-bg); border-radius: 16px; padding: 25px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .btn { background: var(--primary); color: white; border: none; padding: 14px 20px; border-radius: 12px; cursor: pointer; font-weight: 700; transition: 0.2s; }
-        .btn:hover { filter: brightness(1.1); }
         
         /* TASK CARDS */
         .daily-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
         .task-card { cursor: pointer; padding: 22px; border-radius: 18px; border: 1px solid var(--border); border-left: 7px solid transparent; transition: 0.2s; position: relative; }
-        .task-card:hover { transform: translateX(5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
         .badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; display: inline-block; margin-bottom: 12px; }
         
         .type-e { background: var(--bg-e); color: var(--color-e); border-left-color: var(--color-e) !important; }
@@ -54,13 +52,12 @@
         .type-rev { background: var(--bg-rev); color: var(--color-rev); border-left-color: var(--color-rev) !important; }
         .type-ex { background: var(--bg-ex); color: var(--color-ex); border-left-color: var(--color-ex) !important; }
 
+        .sub-tab-container { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .sub-tab { cursor: pointer; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; color: var(--text-muted); }
+        .sub-tab.active { background: var(--primary); color: white; }
+
         input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: inherit; }
         
-        /* SEMANAL */
-        .week-grid { display: flex; min-width: 1000px; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-        .day-column { flex: 1; background: var(--card-bg); border-right: 1px solid var(--border); min-height: 400px; }
-        .day-header { background: #f8f9fa; padding: 12px; text-align: center; font-size: 0.75rem; font-weight: 800; border-bottom: 1px solid var(--border); }
-
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; padding:20px; backdrop-filter: blur(4px); }
         .modal-content { background:var(--card-bg); padding:35px; border-radius:24px; width:100%; max-width:400px; text-align:center; }
     </style>
@@ -69,158 +66,159 @@
 
     <div id="login-screen">
         <div class="login-card">
-            <i class="fas fa-shield-halved" style="font-size: 3.5rem; color: var(--primary); margin-bottom: 20px;"></i>
-            <h1 id="l-title">Portal PRF</h1>
-            <p id="l-msg">Acesse sua estrutura de estudos.</p>
-            <input type="password" id="pass-input" class="login-input" placeholder="••••">
+            <h1 id="l-title">Acesso Restrito</h1>
+            <input type="password" id="pass-input" class="login-input" placeholder="Senha">
             <button class="btn" style="width:100%" onclick="checkAccess()">Entrar</button>
         </div>
     </div>
 
     <aside class="sidebar">
         <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-bolt"></i><span>Hoje</span></div>
-        <div class="menu-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-alt"></i><span>Semana</span></div>
-        <div class="menu-item" onclick="showTab('importar', this)"><i class="fas fa-file-lines"></i><span>Edital</span></div>
+        <div class="menu-item" onclick="showTab('meu-plano', this)"><i class="fas fa-folder-open"></i><span>Meu Plano</span></div>
         <div class="menu-item" onclick="showTab('config', this)"><i class="fas fa-sliders"></i><span>Ajustes</span></div>
-        <div class="menu-item" onclick="toggleDarkMode()" style="margin-top: auto;"><i class="fas fa-moon"></i><span>Tema</span></div>
-        <div class="menu-item" onclick="logout()" style="margin-bottom: 20px; color: #f87171;"><i class="fas fa-right-from-bracket"></i><span>Sair</span></div>
+        <div class="menu-item" onclick="logout()" style="margin-top: auto; margin-bottom: 20px; color: #f87171;"><i class="fas fa-power-off"></i><span>Sair</span></div>
     </aside>
 
     <main class="main">
         <div id="diaria" class="page active">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px;">
-                <div><h1>Painel Diário</h1><p style="color:var(--text-muted)">Sua jornada de hoje.</p></div>
-                <button class="btn" style="background: #10b981;" onclick="abrirExtra()">+ Matéria Extra</button>
-            </div>
+            <h1>Painel Diário</h1>
             <div id="lista-hoje" class="daily-grid"></div>
         </div>
 
-        <div id="semanal" class="page">
-            <h1>Grade Semanal</h1>
-            <div class="card" style="padding:0; overflow-x: auto;"><div id="grid-semanal" class="week-grid"></div></div>
-        </div>
+        <div id="meu-plano" class="page">
+            <h1>Meu Plano de Estudos</h1>
+            <div class="sub-tab-container">
+                <div class="sub-tab active" onclick="showSubTab('edital-vert', this)">Edital Verticalizado</div>
+                <div class="sub-tab" onclick="showSubTab('assuntos-sinal', this)">Assuntos Sinalizados</div>
+            </div>
 
-        <div id="importar" class="page">
-            <h1>Edital Verticalizado</h1>
-            <div class="card">
-                <label>Disciplina</label>
-                <input type="text" id="mat-nome" placeholder="Ex: Legislação de Trânsito">
-                <label style="display:block; margin-top:15px;">Assuntos (Cada linha será um card)</label>
-                <textarea id="texto-bruto" placeholder="Assunto 1&#10;Assunto 2&#10;Assunto 3" style="height: 200px;"></textarea>
-                <button class="btn" style="margin-top: 15px; width:100%" onclick="processar()">Salvar no Edital</button>
+            <div id="edital-vert" class="sub-page">
+                <div class="card">
+                    <h3>Cadastrar Novo Edital</h3>
+                    <input type="text" id="mat-nome" placeholder="Matéria (ex: Penal)">
+                    <textarea id="texto-bruto" placeholder="Assuntos (um por linha)" style="height: 150px;"></textarea>
+                    <button class="btn" style="margin-top:15px;" onclick="processar()">Salvar no Edital</button>
+                </div>
+            </div>
+
+            <div id="assuntos-sinal" class="sub-page" style="display:none;">
+                <div class="card">
+                    <h3>Gerenciar Progresso</h3>
+                    <p style="font-size:0.85rem; color:var(--text-muted);">Sinalize assuntos já estudados. Itens sinalizados aparecerão no ciclo apenas como Revisão e Exercícios.</p>
+                    <div id="lista-sinalizacao" style="margin-top:20px;"></div>
+                </div>
             </div>
         </div>
 
         <div id="config" class="page">
             <h1>Configurações</h1>
             <div class="card">
-                <button class="btn" style="background:#4b5563; width:auto" onclick="exportar()">Baixar Backup .JSON</button>
-                <button class="btn" style="background:#4b5563; width:auto" onclick="document.getElementById('importFile').click()">Subir Backup</button>
-                <input type="file" id="importFile" style="display:none" onchange="importar(this)">
+                <h3>Ciclo Ativo</h3>
+                <div id="checks-ciclo" style="columns: 2; gap: 20px;"></div>
+                <button class="btn" style="margin-top: 25px;" onclick="replanejar()">Gerar Grade Semanal</button>
             </div>
             <div class="card">
-                <h3>Ciclo Ativo</h3>
-                <p style="font-size:0.9rem; color:var(--text-muted)">Marque as matérias para aparecerem na grade.</p>
-                <div id="checks-ciclo" style="columns: 2; gap: 20px; margin-top:15px;"></div>
-                <button class="btn" style="margin-top: 25px;" onclick="replanejar()">Salvar e Gerar Grade</button>
+                <button class="btn" style="background:#4b5563" onclick="exportar()">Backup .JSON</button>
             </div>
         </div>
     </main>
 
     <div id="modal-feedback" class="modal">
         <div class="modal-content">
-            <h2 id="m-titulo">Meta Concluída?</h2>
-            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 25px;">
+            <h2 id="m-titulo">Concluir?</h2>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 25px;">
                 <button class="btn" onclick="finalizar('ok')">Sim, Concluído</button>
-                <button class="btn" style="background: transparent; color: var(--primary); border: 1px solid var(--primary);" onclick="abrirAjuste()">Não, Replanejar Tempo</button>
-                <div id="opt-extra" style="display:none; padding-top:15px; border-top:1px solid var(--border)">
-                    <input type="number" id="t-extra" value="1" step="0.5"> Horas extras necessárias
-                    <button class="btn" style="background:#f59e0b; margin-top:10px; width:100%" onclick="finalizar('replan')">Confirmar Replanejamento</button>
-                </div>
-                <button style="border:none; background:none; color:var(--text-muted); cursor:pointer;" onclick="fecharModal()">Cancelar</button>
+                <button class="btn" style="background:none; color:red;" onclick="fecharModal()">Cancelar</button>
             </div>
         </div>
     </div>
 
 <script>
-    let dados = JSON.parse(localStorage.getItem('prf_v15_master')) || { db: [], ciclo: [], extras: [], pass: "", dark: false };
+    let dados = JSON.parse(localStorage.getItem('prf_v16_final')) || { db: [], ciclo: [], pass: "" };
     let tAtiva = null;
 
-    function save() { localStorage.setItem('prf_v15_master', JSON.stringify(dados)); }
-    function load() { if(!dados.pass) { document.getElementById('l-title').innerText = "Criar Senha"; } }
-    function logout() { location.reload(); }
+    function save() { localStorage.setItem('prf_v16_final', JSON.stringify(dados)); }
 
     function checkAccess() {
         const input = document.getElementById('pass-input').value;
-        if(!dados.pass) { if(input.length < 4) return alert("Mínimo 4 dígitos"); dados.pass = input; save(); }
-        if(input === dados.pass) {
-            document.getElementById('login-screen').style.display = 'none';
-            if(dados.dark) document.body.setAttribute('data-theme', 'dark');
-            replanejar();
-        } else { alert("Chave incorreta"); }
+        if(!dados.pass) { dados.pass = input; save(); }
+        if(input === dados.pass) { document.getElementById('login-screen').style.display = 'none'; replanejar(); }
+        else alert("Incorreto");
     }
 
-    function toggleDarkMode() { dados.dark = !dados.dark; document.body.setAttribute('data-theme', dados.dark ? 'dark' : ''); save(); }
     function showTab(id, el) { 
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
         document.getElementById(id).classList.add('active'); el.classList.add('active');
     }
 
+    function showSubTab(id, el) {
+        document.querySelectorAll('.sub-page').forEach(p => p.style.display = 'none');
+        document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(id).style.display = 'block'; el.classList.add('active');
+        if(id === 'assuntos-sinal') renderSinalizacao();
+    }
+
     function processar() {
         const n = document.getElementById('mat-nome').value;
         const t = document.getElementById('texto-bruto').value;
-        if(!n || !t) return alert("Preencha o nome e os assuntos.");
+        if(!n || !t) return;
         t.split('\n').filter(l => l.trim()).forEach(a => {
-            dados.db.push({d: n, a: a.trim(), e:1, r:0.5, rev:0.5, ex:1, f:false});
+            dados.db.push({d: n, a: a.trim(), f: false, estudado: false});
         });
-        save(); renderConfig(); alert("Edital atualizado!");
+        save(); alert("Edital salvo!");
     }
+
+    function renderSinalizacao() {
+        const div = document.getElementById('lista-sinalizacao');
+        div.innerHTML = dados.db.map((it, idx) => `
+            <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--border);">
+                <span><b>${it.d}</b>: ${it.a}</span>
+                <input type="checkbox" onchange="toggleEstudado(${idx})" ${it.estudado?'checked':''} style="width:20px;">
+            </div>
+        `).join('');
+    }
+
+    function toggleEstudado(idx) { dados.db[idx].estudado = !dados.db[idx].estudado; save(); }
 
     function replanejar() {
         dados.ciclo = Array.from(document.querySelectorAll('.ck:checked')).map(c => c.value);
         const diaria = document.getElementById('lista-hoje'); diaria.innerHTML = '';
-        const grid = document.getElementById('grid-semanal'); grid.innerHTML = '';
-        const dias = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
         const hoje = new Date().getDay();
+        let p = 0;
 
-        let p = 0; let fila = [];
-        dados.db.filter(it => dados.ciclo.includes(it.d) && !it.f).forEach(it => {
-            fila.push({...it, t: 'Estudo', cls: 'type-e'});
-            fila.push({...it, t: 'Revisão', cls: 'type-rev'});
-            fila.push({...it, t: 'Exercícios', cls: 'type-ex'});
-        });
-
-        dias.forEach((dia, idx) => {
-            let meta = 4; let blocos = [];
-            while(meta > 0 && p < fila.length) {
-                let it = fila[p];
-                blocos.push(`<div class="badge ${it.cls}" style="display:block; margin:6px; padding:10px; border-radius:8px;">${it.t}: ${it.d}</div>`);
-                if(idx === hoje) {
-                    diaria.innerHTML += `<div class="task-card ${it.cls}" onclick="preparar('${it.d}', '${it.a}', '${it.t}')">
-                        <div class="badge ${it.cls}">${it.t}</div>
-                        <div style="font-weight:700; font-size:1.1rem;">${it.d}</div>
-                        <div style="font-size:0.9rem; opacity:0.8; margin-top:5px;">${it.a}</div>
-                    </div>`;
-                }
-                meta -= 1; p++;
-            }
-            grid.innerHTML += `<div class="day-column"><div class="day-header">${dia}</div>${blocos.join('')}</div>`;
+        dados.db.filter(it => dados.ciclo.includes(it.d) && !it.f).forEach((it, i) => {
+            let tipo = it.estudado ? (i%2==0?'Revisão':'Exercícios') : 'Estudo';
+            let cls = tipo === 'Estudo' ? 'type-e' : tipo === 'Revisão' ? 'type-rev' : 'type-ex';
+            
+            diaria.innerHTML += `<div class="task-card ${cls}" onclick="preparar('${it.d}', '${it.a}', '${tipo}')">
+                <div class="badge ${cls}">${tipo}</div>
+                <div style="font-weight:700;">${it.d}</div>
+                <div style="font-size:0.9rem; opacity:0.8;">${it.a}</div>
+            </div>`;
         });
         save(); renderConfig();
     }
 
     function preparar(d, a, t) { tAtiva = { d, a, t }; document.getElementById('m-titulo').innerText = `${t}: ${d}`; document.getElementById('modal-feedback').style.display = 'flex'; }
     function finalizar(modo) {
-        if(modo === 'ok') { const it = dados.db.find(x => x.d === tAtiva.d && x.a === tAtiva.a); if(it) it.f = true; }
+        if(modo === 'ok') { 
+            const it = dados.db.find(x => x.d === tAtiva.d && x.a === tAtiva.a); 
+            if(it) {
+                if(tAtiva.t === 'Estudo') it.estudado = true; // Se terminou de estudar, sinaliza automaticamente
+                else it.f = true; // Se era revisão/exercício, conclui
+            }
+        }
         fecharModal(); save(); replanejar();
     }
-    function abrirAjuste() { document.getElementById('opt-extra').style.display='block'; }
+
     function fecharModal() { document.getElementById('modal-feedback').style.display = 'none'; }
-    function renderConfig() { document.getElementById('checks-ciclo').innerHTML = [...new Set(dados.db.map(i => i.d))].map(d => `<label style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><input type="checkbox" class="ck" value="${d}" ${dados.ciclo.includes(d)?'checked':''}> ${d}</label>`).join(''); }
-    function exportar() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(dados)], {type:'application/json'})); a.download = 'backup_prf.json'; a.click(); }
-    function importar(i) { const r = new FileReader(); r.onload = () => { const p = JSON.parse(r.result); dados = p; save(); location.reload(); }; r.readAsText(i.files[0]); }
-    load();
+    function renderConfig() { 
+        const nomes = [...new Set(dados.db.map(i => i.d))];
+        document.getElementById('checks-ciclo').innerHTML = nomes.map(d => `<label style="display:block; margin-bottom:10px;"><input type="checkbox" class="ck" value="${d}" ${dados.ciclo.includes(d)?'checked':''}> ${d}</label>`).join(''); 
+    }
+    function logout() { location.reload(); }
+    function exportar() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(dados)], {type:'application/json'})); a.download = 'backup.json'; a.click(); }
 </script>
 </body>
 </html>
