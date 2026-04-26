@@ -3,148 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGE PRF v.26 - Memória Total</title>
+    <title>SGE PRF v.28 - Omni Protocol</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --sidebar-w: 85px; --sidebar-hover: 260px;
-            --sidebar-bg: #0f172a; --primary: #3b82f6; --bg-app: #f8fafc;
+            --sb-w: 85px; --sb-h: 280px; --sb-bg: #0f172a; --primary: #3b82f6;
+            --bg-app: #f1f5f9; --card-bg: #ffffff; --border: #e2e8f0;
             --color-e: #3b82f6; --color-res: #8b5cf6; --color-rev: #f59e0b; --color-ex: #10b981;
         }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: var(--bg-app); height: 100vh; overflow: hidden; display: flex; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: var(--bg-app); height: 100vh; display: flex; overflow: hidden; }
         
-        /* SIDEBAR FIXA - ISOLAMENTO */
-        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: var(--sidebar-w); background: var(--sidebar-bg); display: flex; flex-direction: column; transition: 0.3s; z-index: 9999; }
-        .sidebar:hover { width: var(--sidebar-hover); }
-        .menu-item { color: #94a3b8; cursor: pointer; display: flex; align-items: center; padding: 18px 25px; transition: 0.2s; white-space: nowrap; overflow: hidden; }
-        .menu-item i { font-size: 1.3rem; min-width: 35px; }
-        .menu-item span { opacity: 0; margin-left: 15px; font-weight: 600; transition: 0.2s; }
+        /* SIDEBAR BLINDADA - SOLUÇÃO FINAL DO BUG */
+        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: var(--sb-w); background: var(--sb-bg); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 9999; display: flex; flex-direction: column; }
+        .sidebar:hover { width: var(--sb-h); }
+        .menu-item { color: #94a3b8; cursor: pointer; display: flex; align-items: center; padding: 20px 25px; transition: 0.2s; white-space: nowrap; text-decoration: none; overflow: hidden; }
+        .menu-item i { font-size: 1.4rem; min-width: 35px; text-align: center; }
+        .menu-item span { opacity: 0; margin-left: 20px; font-weight: 600; transition: 0.2s; }
         .sidebar:hover .menu-item span { opacity: 1; }
         .menu-item.active { color: white; background: rgba(255,255,255,0.1); border-left: 4px solid var(--primary); }
 
         .submenu { display: none; background: rgba(0,0,0,0.2); flex-direction: column; }
         .submenu.show { display: flex; }
-        .sub-item { padding: 12px 25px 12px 70px; color: #94a3b8; font-size: 0.85rem; cursor: pointer; }
+        .sub-item { padding: 12px 25px 12px 80px; color: #94a3b8; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
+        .sub-item:hover { color: white; background: rgba(255,255,255,0.1); }
 
-        /* CONTEÚDO */
-        .main { margin-left: var(--sidebar-w); flex: 1; height: 100vh; overflow-y: auto; padding: 40px; box-sizing: border-box; }
-        .page { display: none; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.3s; }
+        /* MAIN CONTENT COM MARGEM FIXA */
+        .main { margin-left: var(--sb-w); flex: 1; height: 100vh; overflow-y: auto; padding: 40px; box-sizing: border-box; }
+        .page { display: none; max-width: 1200px; margin: 0 auto; animation: slideUp 0.3s ease-out; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* CARDS VERTICAIS - META DIÁRIA */
-        .task-card-v { display: flex; align-items: center; padding: 22px; background: white; border-radius: 18px; border: 1px solid #e2e8f0; border-left: 8px solid #ccc; cursor: pointer; transition: 0.2s; margin-bottom: 15px; }
-        .task-card-v:hover { transform: translateX(8px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .tag { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; margin-bottom: 10px; display: inline-block; color: white; }
+        /* CARDS E LISTAS */
+        .task-card-v { display: flex; align-items: center; padding: 25px; background: white; border-radius: 20px; border: 1px solid var(--border); border-left: 10px solid #ccc; margin-bottom: 15px; cursor: pointer; transition: 0.2s; position: relative; }
+        .task-card-v.done { opacity: 0.6; border-left-color: #94a3b8 !important; pointer-events: none; }
+        .task-card-v.done::after { content: '\f058'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 25px; color: #10b981; font-size: 1.8rem; }
         
+        .tag { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 5px 10px; border-radius: 6px; color: white; display: inline-block; margin-bottom: 10px; }
         .type-e { border-left-color: var(--color-e); } .bg-e { background: var(--color-e); }
         .type-res { border-left-color: var(--color-res); } .bg-res { background: var(--color-res); }
         .type-rev { border-left-color: var(--color-rev); } .bg-rev { background: var(--color-rev); }
         .type-ex { border-left-color: var(--color-ex); } .bg-ex { background: var(--color-ex); }
 
-        /* GRADE SEMANAL DETALHADA */
-        .week-container { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-top: 20px; }
-        .day-box { background: white; border-radius: 14px; border: 1px solid #e2e8f0; min-height: 250px; overflow: hidden; }
-        .day-head { background: #f8fafc; padding: 10px; text-align: center; font-weight: 800; font-size: 0.7rem; border-bottom: 1px solid #e2e8f0; }
-        .week-task { font-size: 0.55rem; padding: 6px; margin: 5px; border-radius: 6px; font-weight: 600; line-height: 1.2; border-left: 3px solid; }
+        /* TABELAS */
+        .table-container { background: white; border-radius: 18px; border: 1px solid var(--border); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { background: #f8fafc; padding: 15px; font-size: 0.75rem; text-transform: uppercase; color: #64748b; border-bottom: 2px solid var(--border); }
+        td { padding: 15px; border-bottom: 1px solid var(--border); text-align: center; }
 
-        .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; width: 100%; }
-        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 5px; box-sizing: border-box; }
-        #login-screen { position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .btn { background: var(--primary); color: white; border: none; padding: 15px 25px; border-radius: 12px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); }
+        input, textarea, select { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; margin-top: 8px; font-family: inherit; }
+
+        /* GRADE SEMANAL ESPELHO */
+        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-top: 25px; }
+        .day-box { background: white; border-radius: 16px; border: 1px solid var(--border); min-height: 280px; }
+        .day-label { background: #f8fafc; padding: 12px; text-align: center; font-weight: 800; font-size: 0.75rem; border-bottom: 1px solid var(--border); border-radius: 16px 16px 0 0; }
+        .week-task { padding: 8px; margin: 6px; border-radius: 8px; font-size: 0.6rem; font-weight: 700; border-left: 4px solid; line-height: 1.3; }
+
+        #login-screen { position: fixed; inset: 0; background: var(--sb-bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <div style="background:white; padding:40px; border-radius:24px; width:340px; text-align:center;">
-            <h2 style="margin-bottom:20px;">Acesso SGE PRF</h2>
-            <input type="password" id="pass-input" placeholder="Senha" style="text-align:center">
-            <button class="btn" style="margin-top:20px" onclick="checkAccess()">Entrar</button>
+        <div style="background:white; padding:50px; border-radius:30px; width:350px; text-align:center;">
+            <i class="fas fa-shield-halved" style="font-size: 3rem; color:var(--primary); margin-bottom:20px;"></i>
+            <h2>SGE PRF v.28</h2>
+            <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; font-size:1.2rem;">
+            <button class="btn" style="margin-top:25px; width:100%" onclick="checkAccess()">Acessar Planejamento</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-bullseye"></i><span>Meta Diária</span></div>
-        <div class="menu-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-week"></i><span>Grade Semanal</span></div>
-        <div class="menu-item" onclick="toggleSubmenu()"><i class="fas fa-folder-open"></i><span>Meu Plano</span></div>
+        <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-house-chimney"></i><span>Painel Diário</span></div>
+        <div class="menu-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-days"></i><span>Grade Semanal</span></div>
+        <div class="menu-item" onclick="toggleSubmenu()"><i class="fas fa-toolbox"></i><span>Meu Plano</span></div>
         <div id="sub-meu-plano" class="submenu">
-            <div class="sub-item" onclick="showTab('config-horas')">Horas/Dia</div>
-            <div class="sub-item" onclick="showTab('edital-vert')">Edital Verticalizado</div>
-            <div class="sub-item" onclick="showTab('fluxo')">Controle de Fluxo</div>
-            <div class="sub-item" onclick="showTab('gerenciar-mat')">Remover Matérias</div>
-            <div class="sub-item" onclick="showTab('ciclo-mat')">Ciclo Ativo</div>
+            <div class="sub-item" onclick="showTab('edital')">Edital Verticalizado</div>
+            <div class="sub-item" onclick="showTab('estudados')">Sinalizar Estudados</div>
+            <div class="sub-item" onclick="showTab('rever')">Rever Finalizados</div>
+            <div class="sub-item" onclick="showTab('fluxo')">Controle & Horas</div>
+            <div class="sub-item" onclick="showTab('ciclo')">Ciclo Ativo</div>
+            <div class="sub-item" onclick="showTab('config-h')">Configurar Horas/Dia</div>
+            <div class="sub-item" onclick="showTab('remove')">Remover Matéria</div>
         </div>
-        <div class="menu-item" style="margin-top:auto; color:#ef4444;" onclick="location.reload()"><i class="fas fa-power-off"></i><span>Sair</span></div>
+        <div class="menu-item" style="margin-top:auto; color:#ef4444;" onclick="location.reload()"><i class="fas fa-power-off"></i><span>Sair do Sistema</span></div>
     </aside>
 
     <main class="main">
         <div id="diaria" class="page active">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-                <h1 id="dia-txt">Carregando...</h1>
-                <div id="status-h" style="font-weight:800; color:var(--primary)"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:35px;">
+                <div>
+                    <h1 id="txt-hj" style="margin:0">Meta de Hoje</h1>
+                    <p style="color:var(--text-muted); margin-top:5px;">Cronograma fixo de 3 blocos equilibrados.</p>
+                </div>
+                <button class="btn" style="background:#10b981;" onclick="adiantarProx()">+ Adiantar Ciclo</button>
             </div>
-            <div id="lista-vertical"></div>
+            <div id="lista-diaria"></div>
         </div>
 
         <div id="semanal" class="page">
-            <h1>Planejamento da Semana (Assuntos)</h1>
-            <div id="grid-semanal" class="week-container"></div>
+            <h1>Sincronia Semanal (Assuntos)</h1>
+            <div id="grid-semanal" class="week-grid"></div>
         </div>
 
-        <div id="edital-vert" class="page">
-            <h1>Cadastrar Disciplina</h1>
+        <div id="estudados" class="page">
+            <h1>Sinalizar Bagagem</h1>
+            <p>Marque o que você já estudou para o sistema liberar apenas Revisão e Exercícios.</p>
+            <div id="lista-sinalizacao" class="card"></div>
+        </div>
+
+        <div id="rever" class="page">
+            <h1>Assuntos Vencidos</h1>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th style="text-align:left">Matéria: Assunto</th><th>Desempenho</th><th>Ação</th></tr></thead>
+                    <tbody id="corpo-rever"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="edital" class="page">
+            <h1>Cadastrar Edital</h1>
             <div class="card">
-                <input type="text" id="mat-nome" placeholder="Matéria">
-                <textarea id="texto-bruto" placeholder="Assunto 1&#10;Assunto 2" style="height:120px; margin-top:10px"></textarea>
-                <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:15px">
-                    <div><small>Estudo</small><input type="number" id="h-est" value="2"></div>
-                    <div><small>Resumo</small><input type="number" id="h-res" value="0.5"></div>
-                    <div><small>Revisão</small><input type="number" id="h-rev" value="1"></div>
-                    <div><small>Exerc.</small><input type="number" id="h-ex" value="1"></div>
+                <input type="text" id="add-mat" placeholder="Matéria (Ex: Direito Administrativo)">
+                <textarea id="add-ass" placeholder="Assunto 1&#10;Assunto 2&#10;Assunto 3" style="height:120px; margin-top:15px;"></textarea>
+                <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:15px;">
+                    <div><small>Estudo</small><input type="number" id="v-est" value="2"></div>
+                    <div><small>Resumo</small><input type="number" id="v-res" value="0.5"></div>
+                    <div><small>Revisão</small><input type="number" id="v-rev" value="0.5"></div>
+                    <div><small>Exerc.</small><input type="number" id="v-ex" value="1"></div>
                 </div>
-                <button class="btn" style="margin-top:20px" onclick="salvarEdital()">Salvar e Limpar Campos</button>
+                <button class="btn" style="margin-top:25px; width:100%" onclick="salvarEdital()">Adicionar Matéria ao Banco</button>
             </div>
         </div>
 
         <div id="fluxo" class="page">
-            <h1>Controle de Fluxo</h1>
-            <div style="overflow-x:auto; border-radius:12px; border:1px solid #e2e8f0;">
-                <table style="width:100%; border-collapse:collapse; background:white; min-width:900px;">
-                    <thead style="background:#f8fafc;">
-                        <tr><th style="padding:15px; text-align:left;">Assunto</th><th>Estudo</th><th>Resumo</th><th>Revisão</th><th>Exercícios</th></tr>
+            <h1>Fluxo Rígido por Assunto</h1>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th style="text-align:left">Assunto</th><th>Estudo</th><th>Resumo</th><th>Revisão</th><th>Exercícios</th></tr>
                     </thead>
                     <tbody id="corpo-fluxo"></tbody>
                 </table>
             </div>
         </div>
 
-        <div id="config-horas" class="page">
-            <h1>Horas Diárias</h1>
-            <div class="card">
-                <div id="in-horas" style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px;"></div>
-                <button class="btn" style="margin-top:25px" onclick="salvarH()">Salvar Meta Horária</button>
-            </div>
-        </div>
-
-        <div id="ciclo-mat" class="page"><h1>Ciclo</h1><div id="checks-ciclo" class="card" style="columns:2"></div><button class="btn" onclick="salvarC()">Atualizar</button></div>
-        <div id="gerenciar-mat" class="page"><h1>Remover</h1><div id="lista-rem" class="card"></div></div>
+        <div id="config-h" class="page"><h1>Horas Semanais</h1><div id="in-h" class="card" style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px;"></div><button class="btn" onclick="saveH()" style="width:100%">Salvar Configuração</button></div>
+        <div id="ciclo" class="page"><h1>Ciclo Ativo</h1><div id="checks-c" class="card" style="columns:2"></div><button class="btn" onclick="saveC()" style="width:100%">Atualizar Ciclo</button></div>
+        <div id="remove" class="page"><h1>Lixeira</h1><div id="lista-rem" class="card"></div></div>
     </main>
 
 <script>
     const dias = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-    let db = JSON.parse(localStorage.getItem('prf_v26')) || { db: [], ciclo: [], pass: "", h: {0:3,1:3,2:3,3:3,4:3,5:3,6:3} };
+    let storage = JSON.parse(localStorage.getItem('prf_v28_omni')) || { 
+        db: [], ciclo: [], pass: "", 
+        h: {0:3,1:3,2:3,3:3,4:3,5:3,6:3},
+        metaFixa: {} // Bloqueio diário
+    };
 
-    function save() { localStorage.setItem('prf_v26', JSON.stringify(db)); }
+    function save() { localStorage.setItem('prf_v28_omni', JSON.stringify(storage)); }
 
     function checkAccess() {
         const pin = document.getElementById('pass-input').value;
-        if(!db.pass) { db.pass = pin; save(); }
-        if(pin === db.pass) { document.getElementById('login-screen').style.display='none'; init(); }
-        else alert("Erro");
+        if(!storage.pass) { storage.pass = pin; save(); }
+        if(pin === storage.pass) { document.getElementById('login-screen').style.display='none'; init(); }
+        else alert("Senha Incorreta");
     }
 
-    function init() { renderHInputs(); renderDiario(); }
+    function init() { renderHInputs(); checkDailyLock(); renderDiario(); }
     function toggleSubmenu() { document.getElementById('sub-meu-plano').classList.toggle('show'); }
 
     function showTab(id, el) {
@@ -152,123 +181,162 @@
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         if(el && el.classList.contains('menu-item')) el.classList.add('active');
+        
         if(id === 'diaria') renderDiario();
         if(id === 'fluxo') renderFluxo();
         if(id === 'semanal') renderSemanal();
-        if(id === 'ciclo-mat') renderC();
-        if(id === 'gerenciar-mat') renderR();
+        if(id === 'estudados') renderSinalizacao();
+        if(id === 'rever') renderRever();
+        if(id === 'ciclo') renderC();
+        if(id === 'remove') renderRem();
     }
 
-    function renderHInputs() { document.getElementById('in-horas').innerHTML = dias.map((d,i) => `<div><small>${d}</small><input type="number" class="h-in" data-d="${i}" value="${db.h[i]}"></div>`).join(''); }
-    function salvarH() { document.querySelectorAll('.h-in').forEach(inpt => db.h[inpt.dataset.d] = parseFloat(inpt.value || 0)); save(); alert("Horas salvas!"); }
+    function renderHInputs() { document.getElementById('in-h').innerHTML = dias.map((d,i) => `<div><small>${d}</small><input type="number" class="h-in" data-d="${i}" value="${storage.h[i]}"></div>`).join(''); }
+    function saveH() { document.querySelectorAll('.h-in').forEach(inpt => storage.h[inpt.dataset.d] = parseFloat(inpt.value || 0)); save(); alert("Carga horária salva!"); }
 
-    function getTasks() {
-        let tasks = [];
-        db.db.filter(x => db.ciclo.includes(x.d) && !x.f).forEach(x => {
-            const rules = [
-                {k:'E', label:'Estudo Inédito', type:'e'},
-                {k:'Res', label:'Resumo', type:'res'},
-                {k:'Rev', label:'Revisão Rito', type:'rev'},
-                {k:'Ex', label:'Exercícios', type:'ex'}
-            ];
-            for(let r of rules) {
-                // TRAVA: Só mostra o próximo se o anterior estiver 'done' OU se a atividade anterior não estiver ativa 'act'
-                if(x.act[r.k] && !x.done[r.k]) {
-                    // Verificação de Dependência: Se for Revisão, o Estudo PRECISA estar done
-                    if(r.k !== 'E' && x.act.E && !x.done.E) break; 
-                    tasks.push({ mat: x.d, ass: x.a, type: r.type, label: r.label, h: x.h[r.k], k: r.k });
-                    break; // Pega apenas a primeira atividade pendente do assunto
+    function getLogicalPool() {
+        let pool = [];
+        storage.db.filter(x => storage.ciclo.includes(x.d) && !x.f).forEach(x => {
+            const rito = [{k:'E', l:'Estudo', t:'e'}, {k:'Res', l:'Resumo', t:'res'}, {k:'Rev', l:'Revisão', t:'rev'}, {k:'Ex', l:'Exercícios', t:'ex'}];
+            for(let step of rito) {
+                // Se a etapa está ativa E não está pronta...
+                if(x.act[step.k] && !x.done[step.k]) {
+                    // TRAVA RÍGIDA: Se for etapa pós-estudo, o Estudo PRECISA estar done
+                    if(step.k !== 'E' && x.act.E && !x.done.E) break;
+                    pool.push({ mat: x.d, ass: x.a, type: step.t, label: step.l, k: step.k });
+                    break; // Pega apenas a primeira ação pendente do assunto
                 }
             }
         });
-        return tasks;
+        return pool;
+    }
+
+    function checkDailyLock() {
+        const hj = new Date().toLocaleDateString();
+        if(!storage.metaFixa[hj]) {
+            const raw = getLogicalPool();
+            let hjMeta = [];
+            let mats = new Set();
+            for(let t of raw) {
+                if(!mats.has(t.mat) && hjMeta.length < 3) {
+                    hjMeta.push({...t, completed: false});
+                    mats.add(t.mat);
+                }
+            }
+            storage.metaFixa[hj] = hjMeta;
+            save();
+        }
     }
 
     function renderDiario() {
-        const hj = new Date().getDay();
-        document.getElementById('dia-txt').innerText = dias[hj];
-        const limite = db.h[hj];
-        const raw = getTasks();
+        const hj = new Date().toLocaleDateString();
+        document.getElementById('txt-hj').innerText = "Meta de " + dias[new Date().getDay()];
+        const meta = storage.metaFixa[hj] || [];
         
-        let final = [];
-        let mats = new Set();
-        let soma = 0;
-        const tamB = limite / 3;
-
-        for(let t of raw) {
-            if(!mats.has(t.mat) && final.length < 3 && (soma + tamB <= limite)) {
-                final.push(t); mats.add(t.mat); soma += tamB;
-            }
-        }
-
-        document.getElementById('status-h').innerText = `${soma.toFixed(1)}h / ${limite}h`;
-        document.getElementById('lista-vertical').innerHTML = final.map(t => `
-            <div class="task-card-v type-${t.type}" onclick="concluir('${t.mat}', '${t.ass}', '${t.k}')">
+        document.getElementById('lista-diaria').innerHTML = meta.map((t, i) => `
+            <div class="task-card-v ${t.completed ? 'done' : ''} type-${t.type}" onclick="concluir(${i}, '${t.mat}', '${t.ass}', '${t.k}')">
                 <div style="flex:1">
                     <span class="tag bg-${t.type}">${t.label}</span>
-                    <div style="font-weight:800; font-size:1.1rem; color:#1e293b">${t.mat}: ${t.ass}</div>
+                    <div style="font-weight:800; font-size:1.2rem; color:#1e293b">${t.mat}: ${t.ass}</div>
                 </div>
-                <div style="font-weight:800; color:#94a3b8">${tamB.toFixed(1)}h</div>
-            </div>`).join('') || "Sem metas para hoje.";
+            </div>`).join('') || "<p>Ciclo em dia. Adicione matérias ou adiantar o ciclo.</p>";
+    }
+
+    function concluir(idx, m, a, k) {
+        if(!confirm(`Concluir ${k} de ${a}?`)) return;
+        const hj = new Date().toLocaleDateString();
+        storage.metaFixa[hj][idx].completed = true;
+        
+        const it = storage.db.find(x => x.d === m && x.a === a);
+        it.done[k] = true;
+        if(k === 'Ex') { it.totalQ += parseInt(prompt("Questões:") || 0); it.acertos += parseInt(prompt("Acertos:") || 0); }
+        if(Object.values(it.done).every((v,i) => v || !Object.values(it.act)[i])) it.f = true;
+        save(); renderDiario();
+    }
+
+    function adiantarProx() {
+        const hj = new Date().toLocaleDateString();
+        const pool = getLogicalPool();
+        const matsHj = new Set(storage.metaFixa[hj].map(t => t.mat));
+        const prox = pool.find(t => !matsHj.has(t.mat));
+        if(prox) { storage.metaFixa[hj].push({...prox, completed: false}); save(); renderDiario(); }
+        else alert("Ciclo rodado. Sem novas matérias disponíveis.");
     }
 
     function renderSemanal() {
-        const raw = getTasks();
+        const pool = getLogicalPool();
         let p = 0;
         document.getElementById('grid-semanal').innerHTML = dias.map((d, i) => {
             let col = `<div class="day-box"><div class="day-head">${d}</div>`;
-            const lim = db.h[i];
-            let soma = 0;
             for(let b=0; b<3; b++) {
-                if(raw[p] && soma + (lim/3) <= lim) {
-                    col += `<div class="week-task type-${raw[p].type}" style="border-left-color:var(--color-${raw[p].type})">
-                        <b>${raw[p].mat}</b><br>${raw[p].ass}
-                    </div>`;
-                    soma += (lim/3); p++;
+                if(pool[p]) {
+                    col += `<div class="week-task" style="border-left-color:var(--color-${pool[p].type}); background:rgba(255,255,255,0.8);">
+                        <small style="color:var(--color-${pool[p].type})">${pool[p].label}</small><br>
+                        <b>${pool[p].mat}</b>: ${pool[p].ass}</div>`;
+                    p++;
                 }
             }
             return col + "</div>";
         }).join('');
     }
 
-    function concluir(m, a, k) {
-        if(!confirm(`Concluir ${k} de ${a}?`)) return;
-        const it = db.db.find(x => x.d === m && x.a === a);
-        it.done[k] = true;
-        if(Object.values(it.done).every((v,i) => v || !Object.values(it.act)[i])) it.f = true;
-        save(); renderDiario();
+    function salvarEdital() {
+        const m = document.getElementById('add-mat').value;
+        const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
+        ass.forEach(a => storage.db.push({ d: m, a: a.trim(), f: false, 
+            act: { E:true, Res:true, Rev:true, Ex:true }, 
+            done: { E:false, Res:false, Rev:false, Ex:false }, 
+            h: { E:2, Res:0.5, Rev:0.5, Ex:1 }, totalQ: 0, acertos: 0 }));
+        document.getElementById('add-mat').value = ""; document.getElementById('add-ass').value = "";
+        save(); alert("Matéria Importada!");
+    }
+
+    function renderSinalizacao() {
+        const mats = [...new Set(storage.db.map(x => x.d))];
+        document.getElementById('lista-sinalizacao').innerHTML = mats.map(m => `
+            <div style="margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid #eee;">
+                <h3 style="margin-bottom:10px;">${m}</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    ${storage.db.filter(x => x.d === m).map(it => `
+                        <label style="font-size:0.8rem; display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" onchange="sinalizar('${it.d}', '${it.a}', this.checked)" ${it.done.E?'checked':''}> ${it.a}
+                        </label>`).join('')}
+                </div>
+            </div>`).join('');
+    }
+
+    function sinalizar(m, a, v) {
+        const it = storage.db.find(x => x.d === m && x.a === a);
+        it.done.E = v; if(v) it.done.Res = true; save();
     }
 
     function renderFluxo() {
-        document.getElementById('corpo-fluxo').innerHTML = db.db.map((it, i) => `
-            <tr>
-                <td style="text-align:left; padding:15px;"><b>${it.d}</b><br><small>${it.a}</small></td>
-                <td><input type="checkbox" onchange="upA(${i},'E',this.checked)" ${it.act.E?'checked':''}></td>
-                <td><input type="checkbox" onchange="upA(${i},'Res',this.checked)" ${it.act.Res?'checked':''}></td>
-                <td><input type="checkbox" onchange="upA(${i},'Rev',this.checked)" ${it.act.Rev?'checked':''}></td>
-                <td><input type="checkbox" onchange="upA(${i},'Ex',this.checked)" ${it.act.Ex?'checked':''}></td>
-            </tr>`).join('');
-    }
-    function upA(i, k, v) { db.db[i].act[k] = v; save(); }
-
-    function salvarEdital() {
-        const m = document.getElementById('mat-nome').value;
-        const ass = document.getElementById('texto-bruto').value.split('\n').filter(l => l.trim());
-        ass.forEach(a => db.db.push({ d: m, a: a.trim(), f: false, h: { E:2, Res:0.5, Rev:0.5, Ex:1 }, act: { E:true, Res:true, Rev:true, Ex:true }, done: { E:false, Res:false, Rev:false, Ex:false } }));
-        document.getElementById('mat-nome').value = ""; document.getElementById('texto-bruto').value = "";
-        save(); alert("Salvo!");
+        document.getElementById('corpo-fluxo').innerHTML = storage.db.map((it, i) => `
+            <tr><td style="text-align:left; padding:15px;"><b>${it.d}</b>: ${it.a}</td>
+            <td><input type="checkbox" onchange="storage.db[${i}].act.E=this.checked; save()" ${it.act.E?'checked':''}></td>
+            <td><input type="checkbox" onchange="storage.db[${i}].act.Res=this.checked; save()" ${it.act.Res?'checked':''}></td>
+            <td><input type="checkbox" onchange="storage.db[${i}].act.Rev=this.checked; save()" ${it.act.Rev?'checked':''}></td>
+            <td><input type="checkbox" onchange="storage.db[${i}].act.Ex=this.checked; save()" ${it.act.Ex?'checked':''}></td></tr>`).join('');
     }
 
     function renderC() {
-        const n = [...new Set(db.db.map(x => x.d))];
-        document.getElementById('checks-ciclo').innerHTML = n.map(x => `<label style="display:block; margin:5px;"><input type="checkbox" class="ck" value="${x}" ${db.ciclo.includes(x)?'checked':''}> ${x}</label>`).join('');
+        const n = [...new Set(storage.db.map(x => x.d))];
+        document.getElementById('checks-c').innerHTML = n.map(x => `<label style="display:block; margin:8px;"><input type="checkbox" class="ck" value="${x}" ${storage.ciclo.includes(x)?'checked':''}> ${x}</label>`).join('');
     }
-    function salvarC() { db.ciclo = Array.from(document.querySelectorAll('.ck:checked')).map(c => c.value); save(); renderDiario(); }
-    function renderR() {
-        const n = [...new Set(db.db.map(x => x.d))];
-        document.getElementById('lista-rem').innerHTML = n.map(x => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee"><b>${x}</b><button onclick="rem('${x}')" style="background:red; color:white; border:none; padding:5px 10px; border-radius:5px">X</button></div>`).join('');
+    function saveC() { storage.ciclo = Array.from(document.querySelectorAll('.ck:checked')).map(c => c.value); save(); alert("Ciclo Ativo!"); }
+    
+    function renderRem() {
+        const n = [...new Set(storage.db.map(x => x.d))];
+        document.getElementById('lista-rem').innerHTML = n.map(x => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee"><b>${x}</b><button onclick="remM('${x}')" style="background:red; color:white; border:none; padding:8px 15px; border-radius:8px">Excluir</button></div>`).join('');
     }
-    function rem(x) { if(confirm("Remover?")) { db.db = db.db.filter(i => i.d !== x); save(); renderR(); } }
+    function remM(x) { if(confirm("Apagar tudo desta matéria?")) { storage.db = storage.db.filter(i => i.d !== x); save(); renderRem(); } }
+
+    function renderRever() {
+        document.getElementById('corpo-rever').innerHTML = storage.db.filter(x => x.f).map(it => `
+            <tr><td style="text-align:left;"><b>${it.d}</b>: ${it.a}</td><td>${it.totalQ ? ((it.acertos/it.totalQ)*100).toFixed(1) : 0}% acertos</td>
+            <td><button class="btn" style="padding:5px 10px; font-size:0.7rem;" onclick="resetA('${it.d}', '${it.a}')">Resetar para Ciclo</button></td></tr>`).join('');
+    }
+    function resetA(m, a) { const it = storage.db.find(x => x.d === m && x.a === a); it.f = false; it.done = {E:false,Res:false,Rev:false,Ex:false}; save(); showTab('rever'); }
 </script>
 </body>
 </html>
