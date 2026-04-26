@@ -8,123 +8,245 @@
     <style>
         :root {
             --sidebar-bg: #1e1e2d; --primary: #3699ff; --bg-app: #f4f6f8; --text-main: #3f4254;
-            --color-estudo: #e0e0e0; --color-resumo: #b39ddb; --color-revisao: #fff176; --color-exercicio: #81c784;
-            --card-bg: #ffffff; --border: #eff2f5;
+            --color-estudo: #98c379; --color-revisao: #e5c07b; --color-resumo: #61afef; --color-exercicio: #c678dd;
+            --card-bg: #ffffff; --border: #eff2f5; --danger: #f64e60;
         }
-        [data-theme="dark"] {
-            --bg-app: #151521; --text-main: #a2a5b9; --card-bg: #1e1e2d; --border: #2b2b40;
-            --color-estudo: #2c2c3d; --color-resumo: #453663; --color-revisao: #5c522b; --color-exercicio: #24422e;
-        }
+        [data-theme="dark"] { --bg-app: #151521; --text-main: #a2a5b9; --card-bg: #1e1e2d; --border: #2b2b40; }
+        
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background: var(--bg-app); height: 100vh; overflow: hidden; color: var(--text-main); transition: 0.3s; }
-        .sidebar { width: 80px; background: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding-top: 20px; transition: 0.3s; z-index: 100; }
-        .sidebar:hover { width: 180px; }
-        .menu-item { color: #a2a5b9; cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 100%; padding: 20px 0; transition: 0.2s; border-left: 4px solid transparent; }
-        .menu-item i { font-size: 1.4rem; }
-        .menu-item span { font-size: 0.65rem; margin-top: 8px; opacity: 0; white-space: nowrap; font-weight: bold; }
+        
+        /* SIDEBAR PROFISSIONAL */
+        .sidebar { width: 70px; background: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding-top: 20px; transition: 0.3s; z-index: 100; }
+        .sidebar:hover { width: 200px; }
+        .menu-item { color: #a2a5b9; cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 100%; padding: 18px 0; transition: 0.2s; border-left: 4px solid transparent; }
+        .menu-item i { font-size: 1.3rem; }
+        .menu-item span { font-size: 0.75rem; margin-top: 5px; opacity: 0; white-space: nowrap; font-weight: 600; }
         .sidebar:hover .menu-item span { opacity: 1; }
         .menu-item.active { color: white; background: rgba(255,255,255,0.05); border-left-color: var(--primary); }
+
         .main { flex: 1; overflow-y: auto; padding: 25px; }
         .page { display: none; }
         .page.active { display: block; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid var(--border); }
-        .timer-display { font-size: 2rem; font-weight: bold; color: var(--primary); font-family: monospace; }
-        .semanal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); min-width: 900px; }
+
+        /* HEADER E PROGRESSO */
+        .header-section { margin-bottom: 25px; }
+        .progresso-container { background: #ebedf3; height: 10px; border-radius: 5px; margin: 10px 0; overflow: hidden; }
+        .progresso-bar { background: var(--primary); height: 100%; width: 0%; transition: 0.5s; }
+
+        /* CARDS DE METAS DIÁRIAS (ESTILO TUTOR) */
+        .goal-card { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; position: relative; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+        .goal-indicator { height: 4px; width: 100%; position: absolute; top: 0; left: 0; }
+        .goal-content { padding: 20px; }
+        .goal-tag { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
+        .goal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; }
+        .atraso { color: var(--danger); font-size: 0.75rem; font-weight: bold; margin-left: 10px; }
+        .goal-footer { display: flex; gap: 10px; border-top: 1px solid var(--border); padding: 12px 20px; background: rgba(0,0,0,0.01); }
+        .btn-action { border: none; padding: 8px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .btn-check { background: #e1f0ff; color: var(--primary); }
+
+        /* QUADRO SEMANAL */
+        .semanal-grid { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--border); gap: 1px; min-width: 1000px; }
         .dia-col { background: var(--card-bg); min-height: 500px; }
-        .dia-header { background: #333; color: white; padding: 10px; text-align: center; font-size: 0.75rem; font-weight: bold; }
-        .block { margin: 5px; padding: 8px; border-radius: 4px; font-size: 0.7rem; border-left: 4px solid rgba(0,0,0,0.1); }
-        .btn-blue { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
-        .daily-task { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 10px; margin-bottom: 12px; border-left: 8px solid var(--primary); }
+        .dia-header { background: #333; color: white; padding: 12px; text-align: center; font-size: 0.8rem; font-weight: bold; }
+        .week-card { margin: 5px; padding: 8px; border-radius: 4px; font-size: 0.7rem; border-left: 4px solid rgba(0,0,0,0.2); }
+
+        /* FORMULÁRIOS */
+        .card { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .btn-blue { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
+        input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); box-sizing: border-box; }
+        
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer; }
+        .pendente { background: #eee; color: #666; }
+        .concluido { background: #c9f7f5; color: #1bc5bd; }
     </style>
 </head>
 <body>
+
     <aside class="sidebar">
-        <div class="menu-item" onclick="showTab('importar', this)"><i class="fas fa-file-import"></i><span>IMPORTAR</span></div>
-        <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-play-circle"></i><span>HOJE</span></div>
-        <div class="menu-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-alt"></i><span>SEMANA</span></div>
-        <div class="menu-item" onclick="showTab('desempenho', this)"><i class="fas fa-chart-line"></i><span>DESEMPENHO</span></div>
+        <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-th-list"></i><span>METAS DIÁRIAS</span></div>
+        <div class="menu-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-week"></i><span>SEMANA</span></div>
+        <div class="menu-item" onclick="showTab('meuplano', this)"><i class="fas fa-tasks"></i><span>MEU PLANO</span></div>
+        <div class="menu-item" onclick="showTab('importar', this)"><i class="fas fa-cloud-download-alt"></i><span>IMPORTAR</span></div>
         <div class="menu-item" onclick="showTab('config', this)"><i class="fas fa-cog"></i><span>BACKUP</span></div>
-        <div class="menu-item" onclick="toggleDarkMode()"><i class="fas fa-moon"></i><span>MODO</span></div>
     </aside>
+
     <main class="main">
-        <div id="importar" class="page card">
-            <h2>Importar Edital</h2>
-            <input type="text" id="mat-nome" style="width:96%; padding:10px; margin-bottom:10px;" placeholder="Nome da Matéria">
-            <textarea id="texto-bruto" style="width:100%; height:150px;" placeholder="Cole o texto aqui..."></textarea>
-            <button class="btn-blue" onclick="processarLote()">Cadastrar</button>
+        <div id="diaria" class="page active">
+            <div class="header-section">
+                <h2>🎯 Metas Diárias</h2>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                    <span>Progresso: <b id="prog-txt">0%</b></span>
+                    <span>Meta de hoje: <b id="meta-txt">4,0h</b></span>
+                </div>
+                <div class="progresso-container"><div class="progresso-bar" id="prog-bar"></div></div>
+            </div>
+            <div id="lista-metas-hoje"></div>
         </div>
-        <div id="diaria" class="page active"><h2>Hoje</h2><div id="lista-hoje"></div></div>
-        <div id="semanal" class="page"><div class="semanal-grid" id="grid-semanal"></div></div>
-        <div id="desempenho" class="page card"><h2>Desempenho</h2><table style="width:100%"><thead><tr><th>Assunto</th><th>Questões</th><th>Acertos</th><th>%</th></tr></thead><tbody id="corpo-perf"></tbody></table></div>
+
+        <div id="semanal" class="page">
+            <h2>📅 Programação Semanal</h2>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; font-size: 0.75rem;">
+                <span><i class="fas fa-square" style="color:var(--color-estudo)"></i> Estudo</span>
+                <span><i class="fas fa-square" style="color:var(--color-revisao)"></i> Revisão</span>
+                <span><i class="fas fa-square" style="color:var(--color-resumo)"></i> Resumo</span>
+                <span><i class="fas fa-square" style="color:var(--color-exercicio)"></i> Exercício</span>
+            </div>
+            <div class="card" style="padding:0; overflow-x: auto;">
+                <div class="semanal-grid" id="grid-corpo"></div>
+            </div>
+        </div>
+
+        <div id="meuplano" class="page">
+            <div class="card">
+                <h3>⚙️ Configurar Ciclo Ativo</h3>
+                <div id="checks-ciclo" style="columns:2; margin-bottom:15px;"></div>
+                <button class="btn-blue" onclick="replanejar()">Salvar e Replanejar Ciclo</button>
+            </div>
+            <div class="card">
+                <h3>📚 Gestão de Assuntos</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead><tr style="text-align: left; font-size: 0.8rem; border-bottom: 1px solid var(--border)"><th>Matéria / Aula</th><th>Status</th></tr></thead>
+                    <tbody id="lista-assuntos-geral"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="importar" class="page">
+            <div class="card">
+                <h3>📥 Importar Edital (Estratégia)</h3>
+                <p style="font-size: 0.8rem; color: #666;">Copie o texto que contém "Aula X" e os tempos de "Estudo", "Resumo", etc.</p>
+                <input type="text" id="mat-nome" placeholder="Ex: DIREITO PENAL - PRF">
+                <textarea id="texto-bruto" placeholder="Cole aqui..." style="height: 200px;"></textarea>
+                <button class="btn-blue" onclick="processarLote()">Cadastrar Matéria</button>
+            </div>
+        </div>
+
         <div id="config" class="page">
             <div class="card">
-                <button class="btn-blue" onclick="exportarDados()">Exportar Backup</button>
+                <h3>💾 Sincronização</h3>
+                <button class="btn-blue" onclick="exportarDados()">Exportar Backup (.json)</button>
+                <div style="margin: 10px 0;"></div>
                 <input type="file" id="importFile" style="display:none" onchange="importarDados(this)">
-                <button class="btn-blue" style="margin-top:10px; background:#34495e" onclick="document.getElementById('importFile').click()">Importar Backup</button>
+                <button class="btn-blue" style="background:#34495e" onclick="document.getElementById('importFile').click()">Importar Backup</button>
             </div>
-            <div class="card"><div id="checks-ciclo" style="columns:2;"></div><button class="btn-blue" onclick="replanejar()">Gerar Ciclo</button></div>
         </div>
     </main>
+
 <script>
-    let db = []; let config = { metas: {Dom:2, Seg:4, Ter:4, Qua:4, Qui:4, Sex:4, Sab:6}, ciclo: [], darkMode: false };
-    function save() { localStorage.setItem('prf_mat_final', JSON.stringify({db, config})); }
-    function load() { 
-        const s = localStorage.getItem('prf_mat_final'); 
-        if(s) { const p = JSON.parse(s); db = p.db; config = p.config; if(config.darkMode) document.body.setAttribute('data-theme', 'dark'); } 
+    let db = [];
+    let config = { metas: {Dom:4, Seg:4, Ter:4, Qua:4, Qui:4, Sex:4, Sab:4}, ciclo: [] };
+
+    function save() { localStorage.setItem('prf_mat_v10', JSON.stringify({db, config})); }
+    function load() {
+        const s = localStorage.getItem('prf_mat_v10');
+        if(s) { const p = JSON.parse(s); db = p.db; config = p.config; }
     }
-    function toggleDarkMode() { config.darkMode = !config.darkMode; document.body.setAttribute('data-theme', config.darkMode ? 'dark' : ''); save(); }
-    function showTab(id, el) { 
+
+    function showTab(id, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.getElementById(id).classList.add('active'); el.classList.add('active');
+        document.getElementById(id).classList.add('active');
+        el.classList.add('active');
+        if(id === 'meuplano') renderAssuntos();
+        if(id === 'diaria') renderMetas();
+        if(id === 'semanal') renderSemana();
     }
+
     function processarLote() {
-        const mat = document.getElementById('mat-nome').value; const texto = document.getElementById('texto-bruto').value;
+        const mat = document.getElementById('mat-nome').value;
+        const texto = document.getElementById('texto-bruto').value;
+        if(!mat || !texto) return alert("Preencha os campos!");
         const linhas = texto.split('\n').map(l => l.trim()).filter(l => l !== "");
         let aula = "";
-        for (let i = 0; i < linhas.length; i++) {
-            if (linhas[i].toLowerCase().includes("aula")) { aula = linhas[i]; continue; }
-            let t = linhas[i].toLowerCase().includes("estudo") ? "e" : linhas[i].toLowerCase().includes("resumo") ? "r" : linhas[i].toLowerCase().includes("revisão") ? "rev" : linhas[i].toLowerCase().includes("exercícios") ? "ex" : null;
-            if (t && aula && linhas[i+1]) {
+        linhas.forEach((linha, i) => {
+            if(linha.toLowerCase().includes("aula")) aula = linha;
+            let t = linha.toLowerCase().includes("estudo") ? "e" : linha.toLowerCase().includes("revisão") ? "rev" : linha.toLowerCase().includes("resumo") ? "r" : linha.includes("exercícios") ? "ex" : null;
+            if(t && aula && linhas[i+1]) {
                 let v = parseFloat(linhas[i+1].replace(",", "."));
                 let it = db.find(x => x.d === mat && x.a === aula);
-                if (!it) { it = { d: mat, a: aula, e:0, r:0, rev:0, ex:0, f:false, q:0, ac:0 }; db.push(it); }
+                if(!it) { it = { d: mat, a: aula, e:0, r:0, rev:0, ex:0, f:false }; db.push(it); }
                 it[t] = v;
             }
-        }
-        save(); alert("Importado!"); renderConfig();
+        });
+        save(); alert("Matéria cadastrada!"); renderConfig();
     }
+
+    function toggleStatus(index) { db[index].f = !db[index].f; save(); renderAssuntos(); replanejar(); }
+
+    function renderAssuntos() {
+        document.getElementById('lista-assuntos-geral').innerHTML = db.map((it, idx) => `
+            <tr style="border-bottom: 1px solid var(--border)">
+                <td style="padding: 10px 0;"><b>${it.d}</b><br><small>${it.a}</small></td>
+                <td><span class="status-badge ${it.f?'concluido':'pendente'}" onclick="toggleStatus(${idx})">${it.f?'CONCLUÍDO':'PENDENTE'}</span></td>
+            </tr>`).join('');
+    }
+
+    function renderConfig() {
+        const mats = [...new Set(db.map(i => i.d))];
+        document.getElementById('checks-ciclo').innerHTML = mats.map(d => `
+            <div><label><input type="checkbox" class="c-check" value="${d}" ${config.ciclo.includes(d)?'checked':''}> ${d}</label></div>`).join('');
+    }
+
     function replanejar() {
-        config.ciclo = Array.from(document.querySelectorAll('.c-check:checked')).map(c => c.value); save();
+        config.ciclo = Array.from(document.querySelectorAll('.c-check:checked')).map(c => c.value);
+        save(); renderSemana(); renderMetas();
+    }
+
+    function renderSemana() {
+        const grid = document.getElementById('grid-corpo'); grid.innerHTML = "";
+        const dias = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
         let fila = [];
         db.filter(it => config.ciclo.includes(it.d)).forEach(it => {
-            ['e','r','rev','ex'].forEach(tp => {
-                if(it[tp] > 0) {
-                    let n = tp==='e'?'Estudo':tp==='r'?'Resumo':tp==='rev'?'Revisão':'Exercícios';
-                    let c = tp==='e'?'--color-estudo':tp==='r'?'--color-resumo':tp==='rev'?'--color-revisao':'--color-exercicio';
-                    fila.push({...it, t: n, h: it[tp], color: `var(${c})`});
+            ['e','rev','r','ex'].forEach(tp => {
+                if(it[tp] > 0 && !(it.f && (tp==='e'||tp==='r'))) {
+                    let c = tp==='e'?'--color-estudo':tp==='rev'?'--color-revisao':tp==='r'?'--color-resumo':'--color-exercicio';
+                    fila.push({...it, tp: tp, cor: `var(${c})`, label: tp==='e'?'Estudo':tp==='rev'?'Revisão':tp==='r'?'Resumo':'Exercício'});
                 }
             });
         });
-        const grid = document.getElementById('grid-semanal'); const diaria = document.getElementById('lista-hoje');
-        grid.innerHTML = ''; diaria.innerHTML = '';
-        const dias = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"]; const hoje = new Date().getDay();
         let p = 0;
         dias.forEach((dia, idx) => {
-            let m = config.metas[dia];
-            while(m > 0 && p < fila.length) {
-                let it = fila[p]; let h = Math.min(it.h, m);
-                grid.innerHTML += `<div class="block" style="background:${it.color}"><b>${it.t}</b><br>${it.d}</div>`;
-                if(idx === hoje) diaria.innerHTML += `<div class="daily-task" style="border-left-color:${it.color}"><b>${it.t}</b>: ${it.d} (${h}h)</div>`;
-                it.h -= h; m -= h; if(it.h <= 0) p++;
+            let meta = config.metas[Object.keys(config.metas)[idx]];
+            let html = "";
+            while(meta > 0 && p < fila.length) {
+                let it = fila[p]; let h = Math.min(it[it.tp], meta);
+                html += `<div class="week-card" style="background:${it.cor}"><b>${it.d}</b>${it.a}<br><i>${h*60} mins</i></div>`;
+                meta -= h; p++;
             }
+            grid.innerHTML += `<div class="dia-col"><div class="dia-header">${dia}</div>${html}</div>`;
         });
-        renderPerf();
     }
-    function renderPerf() { document.getElementById('corpo-perf').innerHTML = db.map(it => `<tr><td>${it.d}</td><td>${it.q}</td><td>${it.ac}</td><td>${it.q>0?Math.round(it.ac/it.q*100):0}%</td></tr>`).join(''); }
-    function renderConfig() { document.getElementById('checks-ciclo').innerHTML = [...new Set(db.map(i => i.d))].map(d => `<div><input type="checkbox" class="c-check" value="${d}" ${config.ciclo.includes(d)?'checked':''}> ${d}</div>`).join(''); }
-    function exportarDados() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({db, config})], {type:'application/json'})); a.download = 'backup.json'; a.click(); }
-    function importarDados(i) { const r = new FileReader(); r.onload = () => { const p = JSON.parse(r.result); db = p.db; config = p.config; save(); location.reload(); }; r.readAsText(i.files[0]); }
-    load(); renderConfig(); replanejar();
+
+    function renderMetas() {
+        const container = document.getElementById('lista-metas-hoje'); container.innerHTML = "";
+        const hojeIdx = new Date().getDay();
+        // Lógica simplificada de hoje para o exemplo
+        db.filter(it => config.ciclo.includes(it.d)).slice(0, 3).forEach(it => {
+            container.innerHTML += `
+                <div class="goal-card">
+                    <div class="goal-indicator" style="background: var(--color-revisao)"></div>
+                    <div class="goal-content">
+                        <span class="goal-tag" style="background: #fff4de; color: var(--color-revisao)">Manutenção</span>
+                        <span class="atraso"><i class="fas fa-exclamation-triangle"></i> meta atrasada</span>
+                        <div class="goal-title">${it.d}</div>
+                        <div style="font-size: 0.9rem; color: #7e8299;">${it.a}</div>
+                    </div>
+                    <div class="goal-footer">
+                        <button class="btn-action btn-check"><i class="fas fa-check"></i> já terminei</button>
+                        <button class="btn-action" style="background:#f3f6f9; color:#7e8299"><i class="fas fa-stopwatch"></i> Cronômetro</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function exportarDados() {
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({db, config})], {type:'application/json'})); a.download = 'backup_matheus.json'; a.click();
+    }
+    function importarDados(i) {
+        const r = new FileReader(); r.onload = () => { const p = JSON.parse(r.result); db = p.db; config = p.config; save(); location.reload(); }; r.readAsText(i.files[0]);
+    }
+
+    load(); renderConfig(); renderSemana(); renderMetas();
 </script>
 </body>
 </html>
