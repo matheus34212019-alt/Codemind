@@ -1,40 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>PRF Dashboard Pro</title>
+    <title>PRF Dashboard Pro - Matheus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-bg: #1e1e2d; --primary: #3699ff; --bg-app: #f4f6f8; --text-main: #3f4254;
+            --color-estudo: #e0e0e0; --color-resumo: #b39ddb; --color-revisao: #fff176; --color-exercicio: #81c784;
+            --card-bg: #ffffff; --border: #eff2f5;
+        }
+        [data-theme="dark"] {
+            --bg-app: #151521; --text-main: #a2a5b9; --card-bg: #1e1e2d; --border: #2b2b40;
+            --color-estudo: #2c2c3d; --color-resumo: #453663; --color-revisao: #5c522b; --color-exercicio: #24422e;
+        }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background: var(--bg-app); height: 100vh; overflow: hidden; color: var(--text-main); transition: 0.3s; }
+        .sidebar { width: 80px; background: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding-top: 20px; transition: 0.3s; z-index: 100; }
+        .sidebar:hover { width: 180px; }
+        .menu-item { color: #a2a5b9; cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 100%; padding: 20px 0; transition: 0.2s; border-left: 4px solid transparent; }
+        .menu-item i { font-size: 1.4rem; }
+        .menu-item span { font-size: 0.65rem; margin-top: 8px; opacity: 0; white-space: nowrap; font-weight: bold; }
+        .sidebar:hover .menu-item span { opacity: 1; }
+        .menu-item.active { color: white; background: rgba(255,255,255,0.05); border-left-color: var(--primary); }
+        .main { flex: 1; overflow-y: auto; padding: 25px; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid var(--border); }
+        .timer-display { font-size: 2rem; font-weight: bold; color: var(--primary); font-family: monospace; }
+        .semanal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); min-width: 900px; }
+        .dia-col { background: var(--card-bg); min-height: 500px; }
+        .dia-header { background: #333; color: white; padding: 10px; text-align: center; font-size: 0.75rem; font-weight: bold; }
+        .block { margin: 5px; padding: 8px; border-radius: 4px; font-size: 0.7rem; border-left: 4px solid rgba(0,0,0,0.1); }
+        .btn-blue { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+        .daily-task { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 10px; margin-bottom: 12px; border-left: 8px solid var(--primary); }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>PRF Dashboard Pro</h1>
-    </header>
-    <main>
-        <section id="import-materials">
-            <h2>Import Materials</h2>
-            <input type="file" id="materialFile" />
-            <button onclick="importMaterials()">Import</button>
-        </section>
-        <section id="daily-tasks">
-            <h2>Daily Tasks</h2>
-            <ul id="tasksList"></ul>
-            <input type="text" id="newTask" placeholder="New Task" />
-            <button onclick="addTask()">Add Task</button>
-        </section>
-        <section id="weekly-scheduler">
-            <h2>Weekly Scheduler</h2>
-            <div id="scheduler"></div>
-        </section>
-        <section id="performance-tracking">
-            <h2>Performance Tracking</h2>
-            <div id="performanceData"></div>
-        </section>
-        <section id="backup-functionality">
-            <h2>Backup Functionality</h2>
-            <button onclick="backupData()">Backup</button>
-        </section>
+    <aside class="sidebar">
+        <div class="menu-item" onclick="showTab('importar', this)"><i class="fas fa-file-import"></i><span>IMPORTAR</span></div>
+        <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-play-circle"></i><span>HOJE</span></div>
+        <div class="menu-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-alt"></i><span>SEMANA</span></div>
+        <div class="menu-item" onclick="showTab('desempenho', this)"><i class="fas fa-chart-line"></i><span>DESEMPENHO</span></div>
+        <div class="menu-item" onclick="showTab('config', this)"><i class="fas fa-cog"></i><span>BACKUP</span></div>
+        <div class="menu-item" onclick="toggleDarkMode()"><i class="fas fa-moon"></i><span>MODO</span></div>
+    </aside>
+    <main class="main">
+        <div id="importar" class="page card">
+            <h2>Importar Edital</h2>
+            <input type="text" id="mat-nome" style="width:96%; padding:10px; margin-bottom:10px;" placeholder="Nome da Matéria">
+            <textarea id="texto-bruto" style="width:100%; height:150px;" placeholder="Cole o texto aqui..."></textarea>
+            <button class="btn-blue" onclick="processarLote()">Cadastrar</button>
+        </div>
+        <div id="diaria" class="page active"><h2>Hoje</h2><div id="lista-hoje"></div></div>
+        <div id="semanal" class="page"><div class="semanal-grid" id="grid-semanal"></div></div>
+        <div id="desempenho" class="page card"><h2>Desempenho</h2><table style="width:100%"><thead><tr><th>Assunto</th><th>Questões</th><th>Acertos</th><th>%</th></tr></thead><tbody id="corpo-perf"></tbody></table></div>
+        <div id="config" class="page">
+            <div class="card">
+                <button class="btn-blue" onclick="exportarDados()">Exportar Backup</button>
+                <input type="file" id="importFile" style="display:none" onchange="importarDados(this)">
+                <button class="btn-blue" style="margin-top:10px; background:#34495e" onclick="document.getElementById('importFile').click()">Importar Backup</button>
+            </div>
+            <div class="card"><div id="checks-ciclo" style="columns:2;"></div><button class="btn-blue" onclick="replanejar()">Gerar Ciclo</button></div>
+        </div>
     </main>
-    <script src="script.js"></script>
+<script>
+    let db = []; let config = { metas: {Dom:2, Seg:4, Ter:4, Qua:4, Qui:4, Sex:4, Sab:6}, ciclo: [], darkMode: false };
+    function save() { localStorage.setItem('prf_mat_final', JSON.stringify({db, config})); }
+    function load() { 
+        const s = localStorage.getItem('prf_mat_final'); 
+        if(s) { const p = JSON.parse(s); db = p.db; config = p.config; if(config.darkMode) document.body.setAttribute('data-theme', 'dark'); } 
+    }
+    function toggleDarkMode() { config.darkMode = !config.darkMode; document.body.setAttribute('data-theme', config.darkMode ? 'dark' : ''); save(); }
+    function showTab(id, el) { 
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.getElementById(id).classList.add('active'); el.classList.add('active');
+    }
+    function processarLote() {
+        const mat = document.getElementById('mat-nome').value; const texto = document.getElementById('texto-bruto').value;
+        const linhas = texto.split('\n').map(l => l.trim()).filter(l => l !== "");
+        let aula = "";
+        for (let i = 0; i < linhas.length; i++) {
+            if (linhas[i].toLowerCase().includes("aula")) { aula = linhas[i]; continue; }
+            let t = linhas[i].toLowerCase().includes("estudo") ? "e" : linhas[i].toLowerCase().includes("resumo") ? "r" : linhas[i].toLowerCase().includes("revisão") ? "rev" : linhas[i].toLowerCase().includes("exercícios") ? "ex" : null;
+            if (t && aula && linhas[i+1]) {
+                let v = parseFloat(linhas[i+1].replace(",", "."));
+                let it = db.find(x => x.d === mat && x.a === aula);
+                if (!it) { it = { d: mat, a: aula, e:0, r:0, rev:0, ex:0, f:false, q:0, ac:0 }; db.push(it); }
+                it[t] = v;
+            }
+        }
+        save(); alert("Importado!"); renderConfig();
+    }
+    function replanejar() {
+        config.ciclo = Array.from(document.querySelectorAll('.c-check:checked')).map(c => c.value); save();
+        let fila = [];
+        db.filter(it => config.ciclo.includes(it.d)).forEach(it => {
+            ['e','r','rev','ex'].forEach(tp => {
+                if(it[tp] > 0) {
+                    let n = tp==='e'?'Estudo':tp==='r'?'Resumo':tp==='rev'?'Revisão':'Exercícios';
+                    let c = tp==='e'?'--color-estudo':tp==='r'?'--color-resumo':tp==='rev'?'--color-revisao':'--color-exercicio';
+                    fila.push({...it, t: n, h: it[tp], color: `var(${c})`});
+                }
+            });
+        });
+        const grid = document.getElementById('grid-semanal'); const diaria = document.getElementById('lista-hoje');
+        grid.innerHTML = ''; diaria.innerHTML = '';
+        const dias = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"]; const hoje = new Date().getDay();
+        let p = 0;
+        dias.forEach((dia, idx) => {
+            let m = config.metas[dia];
+            while(m > 0 && p < fila.length) {
+                let it = fila[p]; let h = Math.min(it.h, m);
+                grid.innerHTML += `<div class="block" style="background:${it.color}"><b>${it.t}</b><br>${it.d}</div>`;
+                if(idx === hoje) diaria.innerHTML += `<div class="daily-task" style="border-left-color:${it.color}"><b>${it.t}</b>: ${it.d} (${h}h)</div>`;
+                it.h -= h; m -= h; if(it.h <= 0) p++;
+            }
+        });
+        renderPerf();
+    }
+    function renderPerf() { document.getElementById('corpo-perf').innerHTML = db.map(it => `<tr><td>${it.d}</td><td>${it.q}</td><td>${it.ac}</td><td>${it.q>0?Math.round(it.ac/it.q*100):0}%</td></tr>`).join(''); }
+    function renderConfig() { document.getElementById('checks-ciclo').innerHTML = [...new Set(db.map(i => i.d))].map(d => `<div><input type="checkbox" class="c-check" value="${d}" ${config.ciclo.includes(d)?'checked':''}> ${d}</div>`).join(''); }
+    function exportarDados() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({db, config})], {type:'application/json'})); a.download = 'backup.json'; a.click(); }
+    function importarDados(i) { const r = new FileReader(); r.onload = () => { const p = JSON.parse(r.result); db = p.db; config = p.config; save(); location.reload(); }; r.readAsText(i.files[0]); }
+    load(); renderConfig(); replanejar();
+</script>
 </body>
 </html>
