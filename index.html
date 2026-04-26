@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI COMMAND v.59 - HIERARCHY FIX</title>
+    <title>OMNI COMMAND v.60 - UNIFIED CORE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -25,7 +25,7 @@
         .sub-link:hover { color: white; }
 
         .main { flex: 1; height: 100vh; overflow-y: auto; padding: 45px; -webkit-overflow-scrolling: touch; }
-        .container { max-width: 1100px; margin: 0 auto; }
+        .container { max-width: 1000px; margin: 0 auto; }
 
         .card { background: white; border-radius: 18px; padding: 25px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .task-card { border-left: 12px solid #ccc; display: flex; justify-content: space-between; align-items: center; }
@@ -87,32 +87,33 @@
             <div id="diaria" class="page active">
                 <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
                     <div><h1>Meta de Hoje 🚓</h1><p id="meta-status" style="color:var(--text-sec); font-weight:700;"></p></div>
-                    <button class="btn" style="width:auto; margin:0;" onclick="regenerateDaily()">🔄 Resetar Meta</button>
+                    <button class="btn" style="width:auto; margin:0;" onclick="regenerateDaily()">🔄 Forçar Atualização</button>
                 </div>
                 <div id="lista-diaria"></div>
             </div>
 
-            <div id="semanal" class="page"><h1>Relatório Semanal</h1><div id="grid-semanal" class="grid-7"></div></div>
+            <div id="semanal" class="page"><h1>Relatório Semanal Colorido</h1><div id="grid-semanal" class="grid-7"></div></div>
 
             <div id="edital" class="page">
-                <h1>Cadastrar Edital</h1>
+                <h1>Cadastrar Edital com Horas</h1>
                 <div class="card" style="margin-top:20px;">
                     <label>Matéria:</label>
-                    <input type="text" id="add-mat" placeholder="Ex: Trânsito">
+                    <input type="text" id="add-mat" placeholder="Ex: Legislação de Trânsito">
                     <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin: 15px 0; text-align:center;">
-                        <div><small>Estudo</small><input type="number" id="h-e-pad" value="1.5" step="0.5"></div>
-                        <div><small>Resumo</small><input type="number" id="h-res-pad" value="1.0" step="0.5"></div>
-                        <div><small>Revisão</small><input type="number" id="h-rev-pad" value="0.5" step="0.5"></div>
-                        <div><small>Exerc.</small><input type="number" id="h-ex-pad" value="1.0" step="0.5"></div>
+                        <div><small>Hrs Estudo</small><input type="number" id="h-e-pad" value="1.5" step="0.5"></div>
+                        <div><small>Hrs Resumo</small><input type="number" id="h-res-pad" value="1.0" step="0.5"></div>
+                        <div><small>Hrs Revisão</small><input type="number" id="h-rev-pad" value="0.5" step="0.5"></div>
+                        <div><small>Hrs Exerc.</small><input type="number" id="h-ex-pad" value="1.0" step="0.5"></div>
                     </div>
-                    <textarea id="add-ass" placeholder="Assuntos (um por linha)" style="height:120px;"></textarea>
-                    <button class="btn" onclick="saveEdital()">SALVAR</button>
+                    <label>Assuntos (um por linha):</label>
+                    <textarea id="add-ass" placeholder="Assunto 1&#10;Assunto 2" style="height:120px;"></textarea>
+                    <button class="btn" onclick="saveEdital()">SALVAR TUDO E LIMPAR</button>
                 </div>
             </div>
 
             <div id="fluxo" class="page"><h1>Controle de Fluxo</h1><div id="corpo-fluxo" style="margin-top:20px;"></div></div>
             <div id="config-h" class="page">
-                <h1>Horas Diárias</h1>
+                <h1>Configurar Horas</h1>
                 <div class="card" style="margin-top:20px;">
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
                         <div><label>Seg a Sex</label><input type="number" id="q-util" onchange="applyQ('util', this.value)"></div>
@@ -122,8 +123,8 @@
                     <button class="btn" onclick="saveH()">SALVAR</button>
                 </div>
             </div>
-            <div id="sinalizar" class="page"><h1>Bagagem</h1><div id="tree-container" style="margin-top:20px;"></div></div>
-            <div id="rever" class="page"><h1>Finalizados</h1><div id="rever-container" style="margin-top:20px;"></div></div>
+            <div id="sinalizar" class="page"><h1>Sinalizar Bagagem</h1><div id="tree-container" style="margin-top:20px;"></div></div>
+            <div id="rever" class="page"><h1>Rever Finalizados</h1><div id="rever-container" style="margin-top:20px;"></div></div>
             <div id="ciclo" class="page"><h1>Ciclo Ativo</h1><div id="checks-ciclo" class="card" style="columns:2;"></div><button class="btn" onclick="saveC()">SALVAR CICLO</button></div>
         </div>
     </main>
@@ -157,7 +158,7 @@
         if(id === 'ciclo') renderCiclo();
     }
 
-    // MOTOR V.59 - ESTUDO PRIMEIRO SEMPRE + PREENCHIMENTO DE CARGA
+    // MOTOR UNIFICADO - ESTUDO PRIMEIRO E SEQUÊNCIA INTERNA
     function getPool() {
         let pool = [];
         let rito = [
@@ -167,26 +168,26 @@
             {k:'Ex', l:'Exercícios', c:'type-ex'}
         ];
 
-        // Passo 1: Prioriza o Estudo (Teoria) de TODAS as matérias do ciclo antes de qualquer outra coisa
+        // 1. PRIORIDADE ABSOLUTA: Varre TODAS as matérias do ciclo buscando ESTUDO (Teoria)
         db.ciclo.forEach(m => {
             const assuntos = db.lista.filter(x => x.m === m && !x.f);
             const estPendente = assuntos.find(a => a.act.E && !a.done.E);
             if(estPendente) {
-                pool.push({ m: estPendente.m, a: estPendente.a, label: 'Estudo', type: 'type-e', key: 'E', hrs: parseFloat(estPendente.h.E) });
+                pool.push({ m, a: estPendente.a, label: 'Estudo', type: 'type-e', key: 'E', hrs: parseFloat(estPendente.h.E) });
             }
         });
 
-        // Passo 2: Se a teoria está em dia, busca o próximo passo do rito do assunto que está aberto
+        // 2. SEGUNDA PRIORIDADE: Preencher as horas com o restante do rito dos assuntos em andamento
         db.ciclo.forEach(m => {
             const assuntos = db.lista.filter(x => x.m === m && !x.f);
-            assuntos.forEach(assunto => {
-                // Se já colocamos o estudo deste assunto no Passo 1, pula
-                if(pool.some(p => p.a === assunto.a && p.key === 'E')) return;
+            assuntos.forEach(ass => {
+                // Se já pegamos o estudo desse assunto no passo 1, pula para não duplicar no mesmo pool
+                if(pool.some(p => p.a === ass.a && p.m === ass.m && p.key === 'E')) return;
 
                 for(let s of rito) {
-                    if(assunto.act[s.k] && !assunto.done[s.k]) {
-                        pool.push({ m: assunto.m, a: assunto.a, label: s.l, type: s.c, key: s.k, hrs: parseFloat(assunto.h[s.k]) });
-                        break; // Garante a sequência interna do assunto
+                    if(ass.act[s.k] && !ass.done[s.k]) {
+                        pool.push({ m: ass.m, a: ass.a, label: s.l, type: s.c, key: s.k, hrs: parseFloat(ass.h[s.k]) });
+                        break; // Garante a ordem interna do assunto (Resumo antes de Revisão, etc)
                     }
                 }
             });
@@ -258,7 +259,16 @@
         }).join('');
     }
     function toggleF(m) { if(openedFolders.has(m)) openedFolders.delete(m); else openedFolders.add(m); renderTree(); }
-    function toggleVet(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.done.E = !it.done.E; if(it.done.E) it.done.Res = true; save(); renderTree(); regenerateDaily(); }
+    function toggleVet(m, a) { 
+        const it = db.lista.find(x => x.m === m && x.a === a); 
+        it.done.E = !it.done.E; 
+        if(it.done.E) {
+            it.done.Res = true; // Se é veterano, o resumo é automático
+            it.done.Rev = false; // Garante que a revisão e exercício apareçam
+            it.done.Ex = false;
+        }
+        save(); renderTree(); regenerateDaily(); 
+    }
 
     function renderRever() {
         const fin = db.lista.filter(x => x.f || x.done.Ex);
