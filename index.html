@@ -3,250 +3,314 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRF Dashboard Pro - Matheus</title>
+    <title>SGE - Gestão de Alta Performance</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --sidebar-bg: #1e1e2d; --primary: #3699ff; --bg-app: #f4f6f8; --text-main: #3f4254;
-            --color-estudo: #98c379; --color-revisao: #e5c07b; --color-resumo: #61afef; --color-exercicio: #c678dd;
-            --card-bg: #ffffff; --border: #eff2f5; --danger: #f64e60;
+            --sidebar-bg: #111827; --primary: #3b82f6; --bg-app: #f9fafb; --text-main: #111827;
+            --text-muted: #6b7280; --card-bg: #ffffff; --border: #e5e7eb;
+            --color-estudo: #3b82f6; --color-resumo: #8b5cf6; --color-revisao: #f59e0b; --color-exercicio: #10b981;
+            --bg-estudo: #eff6ff; --bg-resumo: #f5f3ff; --bg-revisao: #fffbeb; --bg-exercicio: #ecfdf5;
         }
-        [data-theme="dark"] { --bg-app: #151521; --text-main: #a2a5b9; --card-bg: #1e1e2d; --border: #2b2b40; }
+        [data-theme="dark"] {
+            --bg-app: #0f172a; --text-main: #f1f5f9; --card-bg: #1e293b; --border: #334155;
+            --bg-estudo: #1e3a8a; --bg-resumo: #4c1d95; --bg-revisao: #78350f; --bg-exercicio: #064e3b;
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: var(--bg-app); height: 100vh; overflow: hidden; color: var(--text-main); }
         
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background: var(--bg-app); height: 100vh; overflow: hidden; color: var(--text-main); transition: 0.3s; }
-        
-        /* SIDEBAR PROFISSIONAL */
-        .sidebar { width: 70px; background: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding-top: 20px; transition: 0.3s; z-index: 100; }
-        .sidebar:hover { width: 200px; }
-        .menu-item { color: #a2a5b9; cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 100%; padding: 18px 0; transition: 0.2s; border-left: 4px solid transparent; }
-        .menu-item i { font-size: 1.3rem; }
-        .menu-item span { font-size: 0.75rem; margin-top: 5px; opacity: 0; white-space: nowrap; font-weight: 600; }
+        /* TELA DE LOGIN REFINADA */
+        #login-screen { position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; padding: 48px; border-radius: 24px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .login-card h1 { color: #111827; margin: 16px 0 8px; font-size: 1.75rem; font-weight: 700; }
+        .login-card p { color: #6b7280; font-size: 0.95rem; margin-bottom: 32px; }
+        .login-input { width: 100%; padding: 14px; border: 2px solid #f3f4f6; border-radius: 12px; font-size: 1.25rem; text-align: center; margin-bottom: 20px; transition: 0.2s; }
+        .login-input:focus { border-color: var(--primary); outline: none; background: #eff6ff; }
+
+        /* ESTRUTURA DASHBOARD */
+        #app-shell { display: none; height: 100vh; width: 100%; }
+        .sidebar { width: 80px; background: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding-top: 32px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar:hover { width: 240px; }
+        .menu-item { color: #9ca3af; cursor: pointer; display: flex; align-items: center; width: 100%; padding: 18px 28px; transition: 0.2s; border-left: 4px solid transparent; overflow: hidden; box-sizing: border-box; }
+        .menu-item i { font-size: 1.3rem; min-width: 32px; }
+        .menu-item span { font-size: 0.95rem; margin-left: 16px; opacity: 0; white-space: nowrap; font-weight: 500; }
         .sidebar:hover .menu-item span { opacity: 1; }
-        .menu-item.active { color: white; background: rgba(255,255,255,0.05); border-left-color: var(--primary); }
+        .menu-item.active { color: white; background: rgba(255,255,255,0.08); border-left-color: var(--primary); }
 
-        .main { flex: 1; overflow-y: auto; padding: 25px; }
-        .page { display: none; }
-        .page.active { display: block; }
+        .main { flex: 1; overflow-y: auto; padding: 40px; }
+        .page { display: none; max-width: 1200px; margin: 0 auto; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* HEADER E PROGRESSO */
-        .header-section { margin-bottom: 25px; }
-        .progresso-container { background: #ebedf3; height: 10px; border-radius: 5px; margin: 10px 0; overflow: hidden; }
-        .progresso-bar { background: var(--primary); height: 100%; width: 0%; transition: 0.5s; }
+        h1 { font-size: 1.85rem; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 8px; }
+        .header-section { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .header-section p { color: var(--text-muted); margin: 0; }
 
-        /* CARDS DE METAS DIÁRIAS (ESTILO TUTOR) */
-        .goal-card { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; position: relative; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
-        .goal-indicator { height: 4px; width: 100%; position: absolute; top: 0; left: 0; }
-        .goal-content { padding: 20px; }
-        .goal-tag { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
-        .goal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; }
-        .atraso { color: var(--danger); font-size: 0.75rem; font-weight: bold; margin-left: 10px; }
-        .goal-footer { display: flex; gap: 10px; border-top: 1px solid var(--border); padding: 12px 20px; background: rgba(0,0,0,0.01); }
-        .btn-action { border: none; padding: 8px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .btn-check { background: #e1f0ff; color: var(--primary); }
-
-        /* QUADRO SEMANAL */
-        .semanal-grid { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--border); gap: 1px; min-width: 1000px; }
-        .dia-col { background: var(--card-bg); min-height: 500px; }
-        .dia-header { background: #333; color: white; padding: 12px; text-align: center; font-size: 0.8rem; font-weight: bold; }
-        .week-card { margin: 5px; padding: 8px; border-radius: 4px; font-size: 0.7rem; border-left: 4px solid rgba(0,0,0,0.2); }
-
-        /* FORMULÁRIOS */
-        .card { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .btn-blue { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
-        input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); box-sizing: border-box; }
+        /* CARDS PROFISSIONAIS */
+        .card { background: var(--card-bg); border-radius: 16px; padding: 32px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; }
+        .btn-blue { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: 0.2s; width: 100%; }
+        .btn-blue:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3); }
         
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer; }
-        .pendente { background: #eee; color: #666; }
-        .concluido { background: #c9f7f5; color: #1bc5bd; }
+        /* TASK CARDS */
+        .daily-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .task-card { cursor: pointer; padding: 24px; border-radius: 20px; border: 1px solid var(--border); transition: 0.3s; border-left: 8px solid transparent; }
+        .task-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); }
+        .badge { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; padding: 4px 12px; border-radius: 8px; display: inline-block; margin-bottom: 12px; letter-spacing: 0.05em; }
+        
+        .type-e { background: var(--bg-estudo); color: var(--color-estudo); border-left-color: var(--color-estudo); }
+        .type-r { background: var(--bg-resumo); color: var(--color-resumo); border-left-color: var(--color-resumo); }
+        .type-rev { background: var(--bg-revisao); color: var(--color-revisao); border-left-color: var(--color-revisao); }
+        .type-ex { background: var(--bg-exercicio); color: var(--color-exercicio); border-left-color: var(--color-exercicio); }
+
+        input, select, textarea { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-app); color: var(--text-main); font-size: 0.95rem; margin-top: 8px; box-sizing: border-box; }
+        
+        /* MODAL */
+        .modal { display:none; position:fixed; inset:0; background:rgba(17, 24, 39, 0.8); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(4px); }
+        .modal-content { background:var(--card-bg); padding:40px; border-radius:24px; width:90%; max-width:440px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-th-list"></i><span>METAS DIÁRIAS</span></div>
-        <div class="menu-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-week"></i><span>SEMANA</span></div>
-        <div class="menu-item" onclick="showTab('meuplano', this)"><i class="fas fa-tasks"></i><span>MEU PLANO</span></div>
-        <div class="menu-item" onclick="showTab('importar', this)"><i class="fas fa-cloud-download-alt"></i><span>IMPORTAR</span></div>
-        <div class="menu-item" onclick="showTab('config', this)"><i class="fas fa-cog"></i><span>BACKUP</span></div>
-    </aside>
+    <div id="login-screen">
+        <div class="login-card">
+            <div style="width: 64px; height: 64px; background: #eff6ff; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                <i class="fas fa-shield-alt" style="font-size: 2rem; color: var(--primary);"></i>
+            </div>
+            <h1 id="login-title">Bem-vindo de volta</h1>
+            <p id="login-msg">Acesse sua plataforma personalizada da PRF.</p>
+            <input type="password" id="pass-input" class="login-input" placeholder="••••">
+            <button class="btn-blue" onclick="checkAccess()">Entrar no Sistema</button>
+        </div>
+    </div>
 
-    <main class="main">
-        <div id="diaria" class="page active">
-            <div class="header-section">
-                <h2>🎯 Metas Diárias</h2>
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-                    <span>Progresso: <b id="prog-txt">0%</b></span>
-                    <span>Meta de hoje: <b id="meta-txt">4,0h</b></span>
+    <div id="app-shell" style="display: flex;">
+        <aside class="sidebar">
+            <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-layer-group"></i><span>Painel Diário</span></div>
+            <div class="menu-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-day"></i><span>Grade Semanal</span></div>
+            <div class="menu-item" onclick="showTab('importar', this)"><i class="fas fa-cloud-upload-alt"></i><span>Importação</span></div>
+            <div class="menu-item" onclick="showTab('config', this)"><i class="fas fa-cog"></i><span>Ajustes</span></div>
+            <div class="menu-item" onclick="toggleDarkMode()" style="margin-top: auto; margin-bottom: 8px;"><i class="fas fa-moon"></i><span>Tema Escuro</span></div>
+            <div class="menu-item" onclick="logout()" style="margin-bottom: 24px; color: #ef4444;"><i class="fas fa-power-off"></i><span>Encerrar</span></div>
+        </aside>
+
+        <main class="main">
+            <div id="diaria" class="page active">
+                <div class="header-section">
+                    <div><h1>Painel Diário</h1><p>Metas priorizadas para sua sessão de hoje.</p></div>
+                    <button class="btn-blue" style="width: auto; padding: 12px 20px; background: #10b981;" onclick="abrirModalExtra()">+ Adicionar Extra</button>
                 </div>
-                <div class="progresso-container"><div class="progresso-bar" id="prog-bar"></div></div>
+                <div id="lista-hoje" class="daily-grid"></div>
             </div>
-            <div id="lista-metas-hoje"></div>
-        </div>
 
-        <div id="semanal" class="page">
-            <h2>📅 Programação Semanal</h2>
-            <div style="display: flex; gap: 10px; margin-bottom: 15px; font-size: 0.75rem;">
-                <span><i class="fas fa-square" style="color:var(--color-estudo)"></i> Estudo</span>
-                <span><i class="fas fa-square" style="color:var(--color-revisao)"></i> Revisão</span>
-                <span><i class="fas fa-square" style="color:var(--color-resumo)"></i> Resumo</span>
-                <span><i class="fas fa-square" style="color:var(--color-exercicio)"></i> Exercício</span>
+            <div id="semanal" class="page">
+                <div class="header-section"><h1>Grade Semanal</h1><p>Planejamento de carga horária e disciplinas.</p></div>
+                <div class="card" style="padding:0; overflow-x: auto; border-radius: 20px;">
+                    <div id="grid-semanal" style="display: flex; min-width: 1000px;"></div>
+                </div>
             </div>
-            <div class="card" style="padding:0; overflow-x: auto;">
-                <div class="semanal-grid" id="grid-corpo"></div>
-            </div>
-        </div>
 
-        <div id="meuplano" class="page">
-            <div class="card">
-                <h3>⚙️ Configurar Ciclo Ativo</h3>
-                <div id="checks-ciclo" style="columns:2; margin-bottom:15px;"></div>
-                <button class="btn-blue" onclick="replanejar()">Salvar e Replanejar Ciclo</button>
+            <div id="importar" class="page">
+                <div class="header-section"><h1>Importação</h1><p>Alimente seu banco de dados com novos editais.</p></div>
+                <div class="card">
+                    <label style="font-weight: 600;">Nome da Disciplina</label>
+                    <input type="text" id="mat-nome" placeholder="Direito Penal, Informática...">
+                    <label style="font-weight: 600; display: block; margin-top: 20px;">Conteúdo Programático</label>
+                    <textarea id="texto-bruto" placeholder="Cole os assuntos aqui (um por linha)..." style="height: 180px;"></textarea>
+                    <button class="btn-blue" style="margin-top: 24px;" onclick="processarLote()">Confirmar Cadastro</button>
+                </div>
             </div>
-            <div class="card">
-                <h3>📚 Gestão de Assuntos</h3>
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead><tr style="text-align: left; font-size: 0.8rem; border-bottom: 1px solid var(--border)"><th>Matéria / Aula</th><th>Status</th></tr></thead>
-                    <tbody id="lista-assuntos-geral"></tbody>
-                </table>
-            </div>
-        </div>
 
-        <div id="importar" class="page">
-            <div class="card">
-                <h3>📥 Importar Edital (Estratégia)</h3>
-                <p style="font-size: 0.8rem; color: #666;">Copie o texto que contém "Aula X" e os tempos de "Estudo", "Resumo", etc.</p>
-                <input type="text" id="mat-nome" placeholder="Ex: DIREITO PENAL - PRF">
-                <textarea id="texto-bruto" placeholder="Cole aqui..." style="height: 200px;"></textarea>
-                <button class="btn-blue" onclick="processarLote()">Cadastrar Matéria</button>
+            <div id="config" class="page">
+                <div class="header-section"><h1>Ajustes e Segurança</h1><p>Gerencie seu ciclo e persistência de dados.</p></div>
+                <div class="card">
+                    <h3 style="margin-top: 0;">Backup do Sistema</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">Exporte seus dados regularmente para evitar perdas.</p>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn-blue" style="background: #374151;" onclick="exportarDados()">Baixar Arquivo .JSON</button>
+                        <button class="btn-blue" style="background: #374151;" onclick="document.getElementById('importFile').click()">Restaurar Backup</button>
+                        <input type="file" id="importFile" style="display:none" onchange="importarDados(this)">
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Disciplinas no Ciclo</h3>
+                    <div id="checks-ciclo" style="columns: 3; gap: 32px;"></div>
+                    <button class="btn-blue" style="margin-top: 32px;" onclick="replanejar()">Salvar e Atualizar Grade</button>
+                </div>
             </div>
-        </div>
+        </main>
+    </div>
 
-        <div id="config" class="page">
-            <div class="card">
-                <h3>💾 Sincronização</h3>
-                <button class="btn-blue" onclick="exportarDados()">Exportar Backup (.json)</button>
-                <div style="margin: 10px 0;"></div>
-                <input type="file" id="importFile" style="display:none" onchange="importarDados(this)">
-                <button class="btn-blue" style="background:#34495e" onclick="document.getElementById('importFile').click()">Importar Backup</button>
+    <div id="modal-feedback" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-titulo" style="margin-top: 0; font-size: 1.4rem;">Concluir Atividade?</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">O tempo alocado foi suficiente para o conteúdo?</p>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 24px;">
+                <button class="btn-blue" onclick="finalizarAtividade('ok')">Sim, Concluído</button>
+                <button class="btn-blue" style="background: transparent; border: 1px solid var(--primary); color: var(--primary);" onclick="document.getElementById('opcoes-extra').style.display='block'">Não, preciso de mais tempo</button>
+                <div id="opcoes-extra" style="display:none; border-top: 1px solid var(--border); padding-top: 20px; margin-top: 8px;">
+                    <label style="font-size: 0.85rem; font-weight: 600;">Tempo Adicional (Horas)</label>
+                    <input type="number" id="tempo-extra" value="1" step="0.5">
+                    <div style="display: flex; gap: 8px; margin-top: 16px;">
+                        <button class="btn-blue" style="background:#059669; flex: 1; font-size: 0.8rem;" onclick="finalizarAtividade('hoje')">Estudar Agora</button>
+                        <button class="btn-blue" style="background:#d97706; flex: 1; font-size: 0.8rem;" onclick="finalizarAtividade('replanejar')">Replanejar</button>
+                    </div>
+                </div>
+                <button style="background: none; border: none; color: #ef4444; font-weight: 600; cursor: pointer; margin-top: 8px;" onclick="fecharModal('modal-feedback')">Cancelar</button>
             </div>
         </div>
-    </main>
+    </div>
+
+    <div id="modal-extra" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-top: 0;">Sessão Extra</h2>
+            <div style="text-align: left; margin-top: 24px;">
+                <label style="font-weight: 600;">Disciplina</label>
+                <select id="extra-materia"></select>
+                <label style="font-weight: 600; display: block; margin-top: 16px;">Modalidade</label>
+                <select id="extra-tipo">
+                    <option value="Estudo">Estudo</option>
+                    <option value="Resumo">Resumo</option>
+                    <option value="Revisão">Revisão</option>
+                    <option value="Exercícios">Exercícios</option>
+                </select>
+                <label style="font-weight: 600; display: block; margin-top: 16px;">Tempo Estimado (h)</label>
+                <input type="number" id="extra-hora" value="1" step="0.5">
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 32px;">
+                <button class="btn-blue" onclick="confirmarExtra()">Adicionar</button>
+                <button class="btn-blue" style="background: transparent; color: var(--text-muted); border: 1px solid var(--border);" onclick="fecharModal('modal-extra')">Voltar</button>
+            </div>
+        </div>
+    </div>
 
 <script>
-    let db = [];
-    let config = { metas: {Dom:4, Seg:4, Ter:4, Qua:4, Qui:4, Sex:4, Sab:4}, ciclo: [] };
+    let db = []; 
+    let config = { metas: {Dom:2, Seg:4, Ter:4, Qua:4, Qui:4, Sex:4, Sab:6}, ciclo: [], extras: [], darkMode: false, password: "" };
+    let tarefaAtiva = null;
 
-    function save() { localStorage.setItem('prf_mat_v10', JSON.stringify({db, config})); }
-    function load() {
-        const s = localStorage.getItem('prf_mat_v10');
-        if(s) { const p = JSON.parse(s); db = p.db; config = p.config; }
+    function save() { localStorage.setItem('prf_final_v13', JSON.stringify({db, config})); }
+    
+    function load() { 
+        const s = localStorage.getItem('prf_final_v13'); 
+        if(s) { 
+            const p = JSON.parse(s); db = p.db; config = p.config; 
+            if(!config.password) {
+                document.getElementById('login-title').innerText = "Configurar Acesso";
+                document.getElementById('login-msg').innerText = "Crie uma chave de acesso para este dispositivo.";
+            }
+        } else {
+            document.getElementById('login-title').innerText = "Configurar Acesso";
+        }
     }
 
-    function showTab(id, el) {
+    function checkAccess() {
+        const input = document.getElementById('pass-input').value;
+        if(!config.password && input.length >= 4) { config.password = input; save(); alert("Acesso configurado!"); }
+        if(input === config.password) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-shell').style.display = 'flex';
+            if(config.darkMode) document.body.setAttribute('data-theme', 'dark');
+            replanejar();
+        } else { alert("Chave incorreta."); }
+    }
+
+    function logout() { location.reload(); }
+    function toggleDarkMode() { config.darkMode = !config.darkMode; document.body.setAttribute('data-theme', config.darkMode ? 'dark' : ''); save(); }
+    function showTab(id, el) { 
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        el.classList.add('active');
-        if(id === 'meuplano') renderAssuntos();
-        if(id === 'diaria') renderMetas();
-        if(id === 'semanal') renderSemana();
+        document.getElementById(id).classList.add('active'); el.classList.add('active');
     }
 
     function processarLote() {
         const mat = document.getElementById('mat-nome').value;
         const texto = document.getElementById('texto-bruto').value;
-        if(!mat || !texto) return alert("Preencha os campos!");
-        const linhas = texto.split('\n').map(l => l.trim()).filter(l => l !== "");
-        let aula = "";
-        linhas.forEach((linha, i) => {
-            if(linha.toLowerCase().includes("aula")) aula = linha;
-            let t = linha.toLowerCase().includes("estudo") ? "e" : linha.toLowerCase().includes("revisão") ? "rev" : linha.toLowerCase().includes("resumo") ? "r" : linha.includes("exercícios") ? "ex" : null;
-            if(t && aula && linhas[i+1]) {
-                let v = parseFloat(linhas[i+1].replace(",", "."));
-                let it = db.find(x => x.d === mat && x.a === aula);
-                if(!it) { it = { d: mat, a: aula, e:0, r:0, rev:0, ex:0, f:false }; db.push(it); }
-                it[t] = v;
-            }
+        if(!mat || !texto) return;
+        texto.split('\n').filter(l => l.trim()).forEach(l => {
+            db.push({d: mat, a: l.trim(), e:1, r:0.5, rev:0.5, ex:1, f:false, q:0, ac:0});
         });
-        save(); alert("Matéria cadastrada!"); renderConfig();
-    }
-
-    function toggleStatus(index) { db[index].f = !db[index].f; save(); renderAssuntos(); replanejar(); }
-
-    function renderAssuntos() {
-        document.getElementById('lista-assuntos-geral').innerHTML = db.map((it, idx) => `
-            <tr style="border-bottom: 1px solid var(--border)">
-                <td style="padding: 10px 0;"><b>${it.d}</b><br><small>${it.a}</small></td>
-                <td><span class="status-badge ${it.f?'concluido':'pendente'}" onclick="toggleStatus(${idx})">${it.f?'CONCLUÍDO':'PENDENTE'}</span></td>
-            </tr>`).join('');
-    }
-
-    function renderConfig() {
-        const mats = [...new Set(db.map(i => i.d))];
-        document.getElementById('checks-ciclo').innerHTML = mats.map(d => `
-            <div><label><input type="checkbox" class="c-check" value="${d}" ${config.ciclo.includes(d)?'checked':''}> ${d}</label></div>`).join('');
+        save(); renderConfig(); alert("Disciplinas salvas!");
     }
 
     function replanejar() {
         config.ciclo = Array.from(document.querySelectorAll('.c-check:checked')).map(c => c.value);
-        save(); renderSemana(); renderMetas();
-    }
+        const diaria = document.getElementById('lista-hoje'); diaria.innerHTML = '';
+        const grid = document.getElementById('grid-semanal'); grid.innerHTML = '';
+        const dias = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
+        const hoje = new Date().getDay();
 
-    function renderSemana() {
-        const grid = document.getElementById('grid-corpo'); grid.innerHTML = "";
-        const dias = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-        let fila = [];
-        db.filter(it => config.ciclo.includes(it.d)).forEach(it => {
-            ['e','rev','r','ex'].forEach(tp => {
-                if(it[tp] > 0 && !(it.f && (tp==='e'||tp==='r'))) {
-                    let c = tp==='e'?'--color-estudo':tp==='rev'?'--color-revisao':tp==='r'?'--color-resumo':'--color-exercicio';
-                    fila.push({...it, tp: tp, cor: `var(${c})`, label: tp==='e'?'Estudo':tp==='rev'?'Revisão':tp==='r'?'Resumo':'Exercício'});
-                }
-            });
+        config.extras.forEach(ex => { diaria.innerHTML += renderTaskCard(ex, true, ex.h); });
+
+        let p = 0; let fila = [];
+        db.filter(it => config.ciclo.includes(it.d) && !it.f).forEach(it => {
+            fila.push({...it, t: 'Estudo', h: it.e, cls: 'type-e'});
+            fila.push({...it, t: 'Resumo', h: it.r, cls: 'type-r'});
+            fila.push({...it, t: 'Revisão', h: it.rev, cls: 'type-rev'});
+            fila.push({...it, t: 'Exercícios', h: it.ex, cls: 'type-ex'});
         });
-        let p = 0;
+
         dias.forEach((dia, idx) => {
-            let meta = config.metas[Object.keys(config.metas)[idx]];
-            let html = "";
+            let meta = config.metas[dia]; let blocos = [];
             while(meta > 0 && p < fila.length) {
-                let it = fila[p]; let h = Math.min(it[it.tp], meta);
-                html += `<div class="week-card" style="background:${it.cor}"><b>${it.d}</b>${it.a}<br><i>${h*60} mins</i></div>`;
-                meta -= h; p++;
+                let it = fila[p]; let h = Math.min(it.h, meta);
+                blocos.push(`<div style="padding:10px; margin:6px; font-size:0.75rem; border-radius:10px; font-weight:600;" class="${it.cls}">${it.t}: ${it.d}</div>`);
+                if(idx === hoje) diaria.innerHTML += renderTaskCard(it, false, h);
+                meta -= h; it.h -= h; if(it.h <= 0) p++;
             }
-            grid.innerHTML += `<div class="dia-col"><div class="dia-header">${dia}</div>${html}</div>`;
+            grid.innerHTML += `<div style="flex:1; border-right:1px solid var(--border);"><div style="text-align:center; padding:15px; background:var(--bg-app); font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">${dia}</div>${blocos.join('')}</div>`;
         });
+        save(); renderConfig();
     }
 
-    function renderMetas() {
-        const container = document.getElementById('lista-metas-hoje'); container.innerHTML = "";
-        const hojeIdx = new Date().getDay();
-        // Lógica simplificada de hoje para o exemplo
-        db.filter(it => config.ciclo.includes(it.d)).slice(0, 3).forEach(it => {
-            container.innerHTML += `
-                <div class="goal-card">
-                    <div class="goal-indicator" style="background: var(--color-revisao)"></div>
-                    <div class="goal-content">
-                        <span class="goal-tag" style="background: #fff4de; color: var(--color-revisao)">Manutenção</span>
-                        <span class="atraso"><i class="fas fa-exclamation-triangle"></i> meta atrasada</span>
-                        <div class="goal-title">${it.d}</div>
-                        <div style="font-size: 0.9rem; color: #7e8299;">${it.a}</div>
-                    </div>
-                    <div class="goal-footer">
-                        <button class="btn-action btn-check"><i class="fas fa-check"></i> já terminei</button>
-                        <button class="btn-action" style="background:#f3f6f9; color:#7e8299"><i class="fas fa-stopwatch"></i> Cronômetro</button>
-                    </div>
-                </div>`;
-        });
+    function renderTaskCard(it, isExtra, h) {
+        const cls = it.cls || (it.t === 'Estudo' ? 'type-e' : it.t === 'Resumo' ? 'type-r' : it.t === 'Revisão' ? 'type-rev' : 'type-ex');
+        return `
+        <div class="task-card ${cls}" onclick="prepararConclusao('${it.d}', '${it.a}', '${it.t}', ${isExtra})">
+            <div class="badge ${cls}">${it.t} ${isExtra ? '• EXTRA' : ''}</div>
+            <div style="font-weight:700; font-size:1.1rem; letter-spacing:-0.01em;">${it.d}</div>
+            <div style="font-size:0.9rem; opacity:0.8; margin-top:4px;">${it.a || 'Sessão Adicional'}</div>
+            <div style="margin-top:20px; font-weight:700; font-size:0.8rem; display:flex; align-items:center;">
+                <i class="far fa-clock" style="margin-right:6px;"></i> ${h} horas estimadas
+            </div>
+        </div>`;
     }
 
-    function exportarDados() {
-        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({db, config})], {type:'application/json'})); a.download = 'backup_matheus.json'; a.click();
-    }
-    function importarDados(i) {
-        const r = new FileReader(); r.onload = () => { const p = JSON.parse(r.result); db = p.db; config = p.config; save(); location.reload(); }; r.readAsText(i.files[0]);
+    function abrirModalExtra() {
+        const sel = document.getElementById('extra-materia');
+        sel.innerHTML = [...new Set(db.map(i => i.d))].map(d => `<option value="${d}">${d}</option>`).join('');
+        document.getElementById('modal-extra').style.display = 'flex';
     }
 
-    load(); renderConfig(); renderSemana(); renderMetas();
+    function confirmarExtra() {
+        const m = document.getElementById('extra-materia').value;
+        const t = document.getElementById('extra-tipo').value;
+        const h = parseFloat(document.getElementById('extra-hora').value);
+        config.extras.push({d: m, t: t, h: h, a: 'Atividade Extra'});
+        fecharModal('modal-extra');
+        replanejar();
+    }
+
+    function prepararConclusao(m, a, t, ex) {
+        tarefaAtiva = { m, a, t, ex };
+        document.getElementById('modal-titulo').innerText = `${t}: ${m}`;
+        document.getElementById('modal-feedback').style.display = 'flex';
+        document.getElementById('opcoes-extra').style.display = 'none';
+    }
+
+    function finalizarAtividade(modo) {
+        if(modo === 'ok') {
+            if(tarefaAtiva.ex) config.extras = config.extras.filter(x => !(x.d === tarefaAtiva.m && x.t === tarefaAtiva.t));
+            else { const item = db.find(x => x.d === tarefaAtiva.m && x.a === tarefaAtiva.a); if(item) item.f = true; }
+        }
+        fecharModal('modal-feedback');
+        replanejar();
+    }
+
+    function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
+    function renderConfig() { document.getElementById('checks-ciclo').innerHTML = [...new Set(db.map(i => i.d))].map(d => `<label style="display:flex; align-items:center; gap:10px; margin-bottom:12px; font-weight:500;"><input type="checkbox" class="c-check" value="${d}" ${config.ciclo.includes(d)?'checked':''}> ${d}</label>`).join(''); }
+    function exportarDados() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({db, config})], {type:'application/json'})); a.download = 'backup_PRF.json'; a.click(); }
+    function importarDados(i) { const r = new FileReader(); r.onload = () => { const p = JSON.parse(r.result); db = p.db; config = p.config; save(); location.reload(); }; r.readAsText(i.files[0]); }
+
+    load();
 </script>
 </body>
 </html>
