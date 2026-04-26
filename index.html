@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI COMMAND v.57 - FULL STABLE</title>
+    <title>OMNI COMMAND v.58 - ZERO TOLERANCE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -31,7 +31,6 @@
         .task-card { border-left: 12px solid #ccc; display: flex; justify-content: space-between; align-items: center; }
         .tag { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 5px 10px; border-radius: 6px; color: white; }
         
-        /* GRADE SEMANAL COLORIDA */
         .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px; }
         .day-box { background: white; border-radius: 12px; border: 1px solid var(--border); min-height: 320px; overflow-y: auto; display: flex; flex-direction: column; }
         .day-label { background: #f1f5f9; padding: 10px; text-align: center; font-weight: 800; font-size: 0.75rem; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
@@ -159,30 +158,30 @@
         if(id === 'ciclo') renderCiclo();
     }
 
-    // MOTOR DE PRIORIDADE SEQUENCIAL RIGOROSA (Assunto atual deve ser esgotado antes de revisões de outros)
+    // MOTOR V.58 - SEQUÊNCIA ABSOLUTA E PREENCHIMENTO GULOSO
     function getPool() {
         let pool = [];
         db.ciclo.forEach(m => {
             const assuntos = db.lista.filter(x => x.m === m && !x.f);
             
-            // 1. Prioridade: Se houver Estudo Pendente em algum assunto da matéria, foca nele.
-            const estPendente = assuntos.find(a => a.act.E && !a.done.E);
-            if(estPendente) {
-                pool.push({ m, a: estPendente.a, label: 'Estudo', type: 'type-e', key: 'E', hrs: parseFloat(estPendente.h.E) });
-            } 
-            // 2. Se a teoria da matéria está em dia, busca o rito COMPLETO do assunto que está em andamento.
-            else {
-                const assAndamento = assuntos.find(a => !a.done.Ex);
-                if(assAndamento) {
-                    const rito = [{k:'Res', l:'Resumo', c:'type-res'}, {k:'Rev', l:'Revisão', c:'type-rev'}, {k:'Ex', l:'Exercícios', c:'type-ex'}];
-                    for(let s of rito) {
-                        if(assAndamento.act[s.k] && !assAndamento.done[s.k]) {
-                            pool.push({ m: assAndamento.m, a: assAndamento.a, label: s.l, type: s.c, key: s.k, hrs: parseFloat(assAndamento.h[s.k]) });
-                            break;
-                        }
+            // Loop para pegar TODAS as etapas pendentes de cada assunto da matéria no ciclo
+            // respeitando a ordem interna de cada assunto.
+            assuntos.forEach(assunto => {
+                const rito = [
+                    {k:'E', l:'Estudo', c:'type-e'}, 
+                    {k:'Res', l:'Resumo', c:'type-res'}, 
+                    {k:'Rev', l:'Revisão', c:'type-rev'}, 
+                    {k:'Ex', l:'Exercícios', c:'type-ex'}
+                ];
+                for(let s of rito) {
+                    if(assunto.act[s.k] && !assunto.done[s.k]) {
+                        pool.push({ m: assunto.m, a: assunto.a, label: s.l, type: s.c, key: s.k, hrs: parseFloat(assunto.h[s.k]) });
+                        // Se encontramos a etapa atual deste assunto, paramos e vamos para o próximo assunto da mesma matéria
+                        // para garantir que a Aula 14 siga seu rito antes da aula 15 aparecer.
+                        break; 
                     }
                 }
-            }
+            });
         });
         return pool;
     }
@@ -190,25 +189,33 @@
     function renderDiario() {
         const hj = new Date().toLocaleDateString();
         const hMeta = parseFloat(db.h[new Date().getDay()] || 4);
+        
         if(!db.metaFixa[hj]) {
-            const raw = getPool(); let metaDia = []; let soma = 0;
+            const raw = getPool(); 
+            let metaDia = []; 
+            let soma = 0;
+            
+            // Lógica "Gulosa": Pega tudo o que estiver no pool até estourar a meta
             for(let t of raw) {
-                // Tenta preencher as horas mesmo que passe um pouco, para não deixar 1h vazia
                 if(soma < hMeta) {
                     metaDia.push({...t, completed: false});
                     soma += t.hrs;
+                } else {
+                    break;
                 }
             }
             db.metaFixa[hj] = metaDia; save();
         }
+        
         const meta = db.metaFixa[hj];
         const somaAt = meta.reduce((acc, t) => acc + t.hrs, 0);
         document.getElementById('meta-status').innerText = `Total Alocado: ${somaAt.toFixed(1)}h / Meta: ${hMeta}h`;
+        
         document.getElementById('lista-diaria').innerHTML = meta.map((t, i) => `
             <div class="card task-card" style="border-left-color:var(--color-${t.key.toLowerCase()})">
                 <div><span class="tag ${t.type}">${t.label} (${t.hrs}h)</span><div style="font-weight:800; font-size:1.2rem; margin-top:8px;">${t.m}: ${t.a}</div></div>
                 <input type="checkbox" style="width:30px; height:30px;" ${t.completed?'checked':''} onclick="concluir(${i},'${t.m}','${t.a}','${t.key}')">
-            </div>`).join('') || "<p style='padding:20px; color:gray;'>Adicione edital e ative o ciclo.</p>";
+            </div>`).join('') || "<p style='padding:20px;'>Sem tarefas disponíveis. Verifique o ciclo!</p>";
     }
 
     function concluir(idx, m, a, k) {
@@ -231,6 +238,7 @@
             let html = `<div class="day-box"><div class="day-label">${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][dayIdx]}</div>`;
             const hoursForDay = parseFloat(db.h[dayIdx]);
             let hoursSum = 0;
+            
             while(currentIdx < p.length && hoursSum < hoursForDay) {
                 const task = p[currentIdx];
                 html += `<div class="week-task ${task.type}">${task.m}<br>${task.label}</div>`;
@@ -291,7 +299,7 @@
         if(!m || ass.length === 0) return alert("Preencha matéria e assuntos!");
         ass.forEach(a => db.lista.push({ m, a: a.trim(), f: false, act: {E:true, Res:true, Rev:true, Ex:true}, done: {E:false, Res:false, Rev:false, Ex:false}, h: {...h} }));
         document.getElementById('add-mat').value = ""; document.getElementById('add-ass').value = "";
-        save(); alert("Salvo e limpo!"); regenerateDaily();
+        save(); alert("Salvo!"); regenerateDaily();
     }
 
     function renderH() {
