@@ -3,208 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGE PRF v.33 - OMNI PRO FINAL</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>OMNI SYSTEM v.35 - Edição Especial PRF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --sidebar-bg: #0f172a; --sidebar-active: #1e293b; --accent: #3b82f6;
-            --bg-body: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a; --text-sec: #64748b;
+            --primary: #0f172a; --sidebar-active: #1e293b; --accent: #3b82f6;
+            --bg-app: #f8fafc; --card: #ffffff; --border: #e2e8f0;
+            --text-h: #0f172a; --text-p: #64748b;
             --color-e: #3b82f6; --color-res: #8b5cf6; --color-rev: #f59e0b; --color-ex: #10b981;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body); display: flex; height: 100vh; overflow: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-app); color: var(--text-h); display: flex; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR BLINDADA */
-        .sidebar { width: 90px; background: var(--sidebar-bg); transition: 0.3s; z-index: 1000; position: fixed; height: 100vh; display: flex; flex-direction: column; }
-        .sidebar:hover { width: 280px; }
-        .logo-area { height: 100px; display: flex; align-items: center; padding-left: 30px; color: white; overflow: hidden; }
-        .logo-icon { width: 35px; height: 35px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; }
-        .logo-text { margin-left: 15px; font-weight: 800; font-size: 1.4rem; opacity: 0; transition: 0.2s; white-space: nowrap; }
-        .sidebar:hover .logo-text { opacity: 1; }
+        /* SIDEBAR - DESIGN PREMIUM */
+        .sidebar { width: 280px; background: var(--primary); display: flex; flex-direction: column; transition: 0.3s; z-index: 1000; flex-shrink: 0; border-right: 1px solid rgba(255,255,255,0.1); }
+        .logo-box { padding: 40px 30px; display: flex; align-items: center; gap: 15px; color: white; }
+        .logo-box div { width: 40px; height: 40px; background: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(59,130,246,0.5); }
+        
+        .nav-list { flex: 1; padding: 0 15px; overflow-y: auto; }
+        .nav-item { display: flex; align-items: center; padding: 14px 20px; color: #94a3b8; text-decoration: none; border-radius: 12px; cursor: pointer; transition: 0.2s; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; gap: 15px; }
+        .nav-item i { font-size: 1.2rem; width: 24px; text-align: center; }
+        .nav-item:hover, .nav-item.active { background: var(--sidebar-active); color: white; }
+        .nav-item.active { box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 
-        .menu-item { color: #94a3b8; padding: 20px 30px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; text-decoration: none; overflow: hidden; }
-        .menu-item:hover, .menu-item.active { color: white; background: var(--sidebar-active); }
-        .menu-item.active { border-right: 4px solid var(--accent); }
-        .menu-item i { font-size: 1.3rem; min-width: 35px; text-align: center; }
-        .menu-item span { margin-left: 15px; font-weight: 600; opacity: 0; transition: 0.2s; white-space: nowrap; }
-        .sidebar:hover .menu-item span { opacity: 1; }
-
-        .submenu { display: none; background: #070d19; flex-direction: column; }
+        .submenu { padding-left: 55px; margin-bottom: 15px; display: none; flex-direction: column; gap: 10px; }
         .submenu.show { display: flex; }
-        .sub-item { padding: 12px 20px 12px 80px; color: #64748b; font-size: 0.9rem; cursor: pointer; }
+        .sub-link { color: #64748b; font-size: 0.9rem; cursor: pointer; transition: 0.2s; font-weight: 500; }
+        .sub-link:hover { color: white; }
 
-        /* MAIN */
-        .main { margin-left: 90px; flex: 1; padding: 50px; overflow-y: auto; height: 100vh; }
-        .page { display: none; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.4s ease; }
+        /* CONTEÚDO */
+        .main { flex: 1; padding: 50px; overflow-y: auto; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .page { display: none; animation: fadeIn 0.4s ease-out; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* TASK CARDS */
-        .task-card { background: white; border-radius: 20px; padding: 25px; margin-bottom: 18px; display: flex; align-items: center; border: 1px solid #e2e8f0; border-left: 12px solid #ccc; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; position: relative; transition: 0.2s; }
-        .task-card.done { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
-        .task-card.done::after { content: '\f058'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 30px; color: #10b981; font-size: 2rem; }
-        .tag { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 6px 14px; border-radius: 8px; color: white; display: inline-block; margin-bottom: 10px; }
+        /* CABEÇALHOS */
+        .header-section { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .header-section h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
+        .header-section p { color: var(--text-p); font-size: 1.1rem; margin-top: 5px; }
 
-        /* PASTAS SINALIZAR */
-        .folder { background: white; border-radius: 15px; border: 1px solid #e2e8f0; margin-bottom: 15px; overflow: hidden; }
-        .folder-header { padding: 22px 30px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-        .folder-content { display: none; padding: 0 30px 22px 30px; border-top: 1px solid #f1f5f9; background: #fafafa; }
+        /* CARDS */
+        .card { background: var(--card); border-radius: 24px; padding: 30px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .task-card { background: white; border-radius: 20px; padding: 25px; margin-bottom: 18px; display: flex; align-items: center; border: 1px solid var(--border); border-left: 12px solid #cbd5e1; cursor: pointer; transition: 0.2s; position: relative; }
+        .task-card:hover { transform: translateX(8px); border-color: var(--accent); }
+        .task-card.done { border-left-color: #10b981; background: #f0fdf4; }
+        .task-card.done .task-title { text-decoration: line-through; color: #10b981; }
+        .task-card.done::after { content: '\f058'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 30px; color: #10b981; font-size: 1.8rem; }
+
+        .tag { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 6px 12px; border-radius: 8px; color: white; display: inline-block; margin-bottom: 10px; }
+        .bg-e { background: var(--color-e); } .bg-res { background: var(--color-res); } .bg-rev { background: var(--color-rev); } .bg-ex { background: var(--color-ex); }
+
+        /* ÁRVORE (PASTAS) */
+        .folder { background: white; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; }
+        .folder-header { padding: 22px 30px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; }
+        .folder-header:hover { background: #f8fafc; }
+        .folder-content { display: none; padding: 0 30px 25px 30px; border-top: 1px solid #f1f5f9; background: #fafafa; }
         .folder-content.open { display: block; }
-        .subject-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; gap: 15px; }
+        .subject-row { display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid #f1f5f9; color: var(--text-p); font-weight: 600; }
 
-        .btn { background: var(--accent); color: white; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; }
-        input, textarea { width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 8px; font-family: inherit; }
+        /* COMPONENTES */
+        .btn { background: var(--accent); color: white; border: none; padding: 15px 30px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 12px; font-size: 1rem; }
+        .btn:hover { transform: scale(1.02); opacity: 0.9; }
+        .btn-green { background: #10b981; }
+        input, textarea { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 14px; margin-top: 8px; font-size: 1rem; background: #fcfcfc; }
 
-        /* LOGIN */
-        #login-screen { position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 10000; display: flex; align-items: center; justify-content: center; }
         .login-card { background: white; padding: 60px; border-radius: 40px; width: 420px; text-align: center; }
+
+        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+        .day-box { background: white; border-radius: 18px; border: 1px solid var(--border); min-height: 240px; overflow: hidden; }
+        .day-label { background: #f1f5f9; padding: 12px; text-align: center; font-weight: 800; font-size: 0.8rem; border-bottom: 1px solid var(--border); }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <div class="login-card" id="login-container"></div>
+        <div class="login-card" id="login-container">
+            <h1 style="font-size: 4rem; margin-bottom: 20px;">🚓</h1>
+            <h2 style="margin-bottom: 10px;">SGE PRF OMNI</h2>
+            <p style="color: var(--text-p); margin-bottom: 30px;">Acesso restrito ao operador.</p>
+            <input type="password" id="pass-input" placeholder="Senha de Acesso" style="text-align: center;">
+            <button class="btn" style="width: 100%; margin-top: 30px; justify-content: center;" onclick="checkAccess()">Entrar no Sistema</button>
+        </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-area"><div class="logo-icon">O</div><span class="logo-text">OMNI SYSTEM</span></div>
-        <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-home"></i><span>Painel Diário</span></div>
-        <div class="menu-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-alt"></i><span>Grade Semanal</span></div>
-        <div class="menu-item" onclick="toggleSub()"><i class="fas fa-briefcase"></i><span>Meu Plano</span></div>
-        <div id="sub-plano" class="submenu">
-            <div class="sub-item" onclick="showTab('edital')">Edital Verticalizado</div>
-            <div class="sub-item" onclick="showTab('sinalizar')">Sinalizar Estudados</div>
-            <div class="sub-item" onclick="showTab('rever')">Rever Finalizados</div>
-            <div class="sub-item" onclick="showTab('fluxo')">Controle de Fluxo</div>
-            <div class="sub-item" onclick="showTab('ciclo')">Ciclo Ativo</div>
-            <div class="sub-item" onclick="showTab('config-h')">Configurar Horas</div>
+        <div class="logo-box"><div>O</div><span>OMNI PRO</span></div>
+        <div class="nav-list">
+            <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-rocket"></i> <span>Painel Diário</span></div>
+            <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-check"></i> <span>Grade Semanal</span></div>
+            <div class="nav-item" onclick="toggleSub()"><i class="fas fa-folder-tree"></i> <span>Meu Plano</span> <i class="fas fa-chevron-down" style="margin-left:auto; font-size:0.7rem;"></i></div>
+            <div id="sub-plano" class="submenu">
+                <div class="sub-link" onclick="showTab('edital')"><i class="fas fa-plus-circle"></i> Cadastrar Edital</div>
+                <div class="sub-link" onclick="showTab('sinalizar')"><i class="fas fa-check-double"></i> Sinalizar Estudados</div>
+                <div class="sub-link" onclick="showTab('rever')"><i class="fas fa-clock-rotate-left"></i> Rever Finalizados</div>
+                <div class="sub-link" onclick="showTab('fluxo')"><i class="fas fa-sliders"></i> Controle de Fluxo</div>
+                <div class="sub-link" onclick="showTab('ciclo')"><i class="fas fa-rotate"></i> Ciclo Ativo</div>
+                <div class="sub-link" onclick="showTab('config-h')"><i class="fas fa-stopwatch"></i> Configurar Horas</div>
+            </div>
+            <div class="nav-item" style="margin-top: 30px; color: #ef4444;" onclick="location.reload()"><i class="fas fa-power-off"></i> <span>Deslogar</span></div>
         </div>
-        <div class="menu-item" style="margin-top:auto; color:#ef4444;" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Sair</span></div>
     </aside>
 
     <main class="main">
-        <div id="diaria" class="page active">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
-                <div><h2 id="welcome-msg">Bem-vindo, Matheus!</h2><p id="txt-data" style="color:var(--text-sec)"></p></div>
-                <div style="display:flex; gap:12px;">
-                    <button class="btn" style="background:#10b981" onclick="regenerateDaily()"><i class="fas fa-sync"></i> Atualizar Meta</button>
-                    <button class="btn" onclick="adiantar()"><i class="fas fa-plus"></i> Adiantar</button>
+        <div class="container">
+            <div id="diaria" class="page active">
+                <div class="header-section">
+                    <div>
+                        <h1>Painel Diário</h1>
+                        <p id="data-hj">Seu foco para hoje em Santo Antônio de Jesus</p>
+                    </div>
+                    <div style="display:flex; gap:12px;">
+                        <button class="btn btn-green" onclick="regenerateDaily()"><i class="fas fa-sync"></i> Atualizar Meta</button>
+                        <button class="btn" onclick="adiantar()"><i class="fas fa-forward"></i> Adiantar Ciclo</button>
+                    </div>
+                </div>
+                <div id="lista-diaria"></div>
+            </div>
+
+            <div id="sinalizar" class="page">
+                <div class="header-section">
+                    <div>
+                        <h1>Sinalizar Bagagem</h1>
+                        <p>Marque o que já estudou para o sistema ajustar seu rito.</p>
+                    </div>
+                </div>
+                <div id="tree-container"></div>
+            </div>
+
+            <div id="config-h" class="page">
+                <h1>Gestão de Carga Horária</h1>
+                <div class="card" style="margin-top:20px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-bottom:30px;">
+                        <div><label style="font-weight:700;">Segunda a Sexta (h)</label><input type="number" id="q-util" onchange="applyQ('util', this.value)"></div>
+                        <div><label style="font-weight:700;">Sábado e Domingo (h)</label><input type="number" id="q-fds" onchange="applyQ('fds', this.value)"></div>
+                    </div>
+                    <div id="grid-horas-manual" class="grid-7"></div>
+                    <button class="btn" style="width:100%; margin-top:30px; justify-content:center;" onclick="saveH()"><i class="fas fa-save"></i> Salvar Planejamento</button>
                 </div>
             </div>
-            <div id="lista-diaria"></div>
-        </div>
 
-        <div id="sinalizar" class="page">
-            <h1>Sinalizar Bagagem 🚓</h1>
-            <div id="tree-container"></div>
-        </div>
-
-        <div id="config-h" class="page">
-            <h1>Configurar Horas</h1>
-            <div class="folder" style="padding:30px;">
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
-                    <div><label>Seg a Sex (h)</label><input type="number" id="quick-util" onchange="applyQuick('util', this.value)"></div>
-                    <div><label>Sáb e Dom (h)</label><input type="number" id="quick-fds" onchange="applyQuick('fds', this.value)"></div>
+            <div id="edital" class="page">
+                <h1>Edital Verticalizado</h1>
+                <div class="card" style="margin-top:20px;">
+                    <input type="text" id="add-mat" placeholder="Nome da Disciplina (ex: Trânsito)">
+                    <textarea id="add-ass" placeholder="Assunto 1&#10;Assunto 2&#10;Assunto 3" style="height:150px; margin-top:15px;"></textarea>
+                    <button class="btn" style="width:100%; margin-top:25px; justify-content:center;" onclick="saveEdital()"><i class="fas fa-plus"></i> Adicionar ao Meu Banco</button>
                 </div>
             </div>
-            <div id="grid-horas-manual" style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; margin-top:20px;"></div>
-            <button class="btn" style="width:100%; margin-top:30px; justify-content:center;" onclick="saveH()">Salvar Horas</button>
-        </div>
 
-        <div id="edital" class="page">
-            <h1>Edital Verticalizado</h1>
-            <div class="folder" style="padding:30px;">
-                <input type="text" id="add-mat" placeholder="Nome da Matéria">
-                <textarea id="add-ass" placeholder="Assuntos (um por linha)" style="height:150px; margin-top:15px;"></textarea>
-                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; margin-top:15px;">
-                    <div><small>Horas Estudo</small><input type="number" id="h-e" value="2"></div>
-                    <div><small>Horas Resumo</small><input type="number" id="h-rs" value="0.5"></div>
-                    <div><small>Horas Revisão</small><input type="number" id="h-rv" value="1"></div>
-                    <div><small>Horas Exerc.</small><input type="number" id="h-ex" value="1"></div>
-                </div>
-                <button class="btn" style="width:100%; margin-top:20px; justify-content:center;" onclick="saveEdital()">Salvar Disciplina</button>
-            </div>
+            <div id="semanal" class="page"><h1>Grade Semanal</h1><div id="grid-semanal" class="grid-7" style="margin-top:20px;"></div></div>
+            <div id="rever" class="page"><h1>Assuntos Estudados</h1><div id="lista-rever"></div></div>
+            <div id="fluxo" class="page"><h1>Controle de Fluxo</h1><div id="corpo-fluxo"></div></div>
+            <div id="ciclo" class="page"><h1>Ciclo Ativo</h1><div id="checks-c" class="card" style="columns:2;"></div><button class="btn" onclick="saveC()" style="width:100%; margin-top:20px;">Salvar Ciclo</button></div>
         </div>
-
-        <div id="semanal" class="page"><h1>Grade Projetada</h1><div id="grid-semanal" style="display:grid; grid-template-columns:repeat(7,1fr); gap:12px;"></div></div>
-        <div id="rever" class="page"><h1>Finalizados</h1><div id="lista-rever"></div></div>
-        <div id="fluxo" class="page"><h1>Controle de Fluxo</h1><div id="corpo-fluxo"></div></div>
-        <div id="ciclo" class="page"><h1>Ciclo Ativo</h1><div id="checks-c" style="background:white; padding:30px; border-radius:20px; columns:2;"></div><button class="btn" onclick="saveC()" style="width:100%; margin-top:20px;">Atualizar Ciclo</button></div>
     </main>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('prf_v33')) || { 
-        lista: [], ciclo: [], h: {0:3,1:3,2:3,3:3,4:3,5:3,6:3}, pass: null, metaFixa: {} 
+    let db = JSON.parse(localStorage.getItem('prf_v35')) || { 
+        lista: [], ciclo: [], h: {0:3,1:3,2:3,3:3,4:3,5:3,6:3}, pass: "123", metaFixa: {} 
     };
 
-    function save() { localStorage.setItem('prf_v33', JSON.stringify(db)); }
+    function save() { localStorage.setItem('prf_v35', JSON.stringify(db)); }
 
-    // LOGIN
-    function renderLogin() {
-        const c = document.getElementById('login-container');
-        if (!db.pass) {
-            c.innerHTML = `<h1>🚓</h1><h2>Definir Senha</h2><input type="password" id="p1" placeholder="Senha"><input type="password" id="p2" placeholder="Confirme" style="margin-top:10px;"><button class="btn" style="width:100%; margin-top:20px;" onclick="setPass()">Salvar</button>`;
-        } else {
-            c.innerHTML = `<h1>🚓</h1><h2>SGE PRF</h2><input type="password" id="lp" placeholder="Senha" style="margin-top:20px;"><button class="btn" style="width:100%; margin-top:20px;" onclick="valPass()">Entrar</button>`;
-        }
+    function checkAccess() {
+        if(document.getElementById('pass-input').value === db.pass) {
+            document.getElementById('login-screen').style.display='none'; init();
+        } else alert("Senha Incorreta!");
     }
-    function setPass() { 
-        const p1 = document.getElementById('p1').value; 
-        if(p1 && p1 === document.getElementById('p2').value) { db.pass = p1; save(); location.reload(); }
-        else alert("Senhas não conferem!");
-    }
-    function valPass() { 
-        if(document.getElementById('lp').value === db.pass) { document.getElementById('login-screen').style.display='none'; init(); }
-        else alert("Errado!");
-    }
-    function logout() { location.reload(); }
 
-    function init() { renderH(); renderDiario(); }
+    function init() { 
+        document.getElementById('data-hj').innerText = new Date().toLocaleDateString('pt-br', {weekday: 'long', day: 'numeric', month: 'long'});
+        renderH(); renderDiario(); 
+    }
+
     function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
+
     function showTab(id, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(m => m.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        if(el && el.classList.contains('menu-item')) el.classList.add('active');
+        if(el && el.classList.contains('nav-item')) el.classList.add('active');
         if(id === 'sinalizar') renderTree();
         if(id === 'diaria') renderDiario();
         if(id === 'semanal') renderSemanal();
-        if(id === 'rever') renderRever();
         if(id === 'fluxo') renderFluxo();
         if(id === 'ciclo') renderCiclo();
     }
 
-    // HORAS
-    function renderH() {
-        const dNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-        document.getElementById('grid-horas-manual').innerHTML = dNames.map((d,i) => `<div><small>${d}</small><input type="number" class="h-in" id="h-in-${i}" value="${db.h[i]}" style="text-align:center"></div>`).join('');
-    }
-    function applyQuick(m, v) { (m === 'util' ? [1,2,3,4,5] : [0,6]).forEach(i => document.getElementById(`h-in-${i}`).value = v); }
-    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); alert("Horas salvas!"); }
-
-    // EDITAL
-    function saveEdital() {
-        const m = document.getElementById('add-mat').value;
-        const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
-        const he = document.getElementById('h-e').value, hrs = document.getElementById('h-rs').value, hrv = document.getElementById('h-rv').value, hex = document.getElementById('h-ex').value;
-        ass.forEach(a => db.lista.push({ m, a: a.trim(), f: false, act: {E:1,Res:1,Rev:1,Ex:1}, done: {E:0,Res:0,Rev:0,Ex:0}, hrs: {E:he, Res:hrs, Rev:hrv, Ex:hex} }));
-        document.getElementById('add-mat').value = ""; document.getElementById('add-ass').value = ""; save(); alert("Matéria salva!");
-    }
-
-    // CICLO & ARVORE
+    // ÁRVORE - MARCAR E DESMARCAR (CORRIGIDO)
     function renderTree() {
         const mats = [...new Set(db.lista.map(x => x.m))];
         document.getElementById('tree-container').innerHTML = mats.map(m => {
             const ass = db.lista.filter(x => x.m === m);
-            return `<div class="folder"><div class="folder-header"><div style="display:flex; gap:15px;"><input type="checkbox" onchange="toggleMat('${m}', this.checked)" ${ass.every(a=>a.done.E)?'checked':''}> <span onclick="toggleFolder(this)" style="font-weight:800;">${m}</span></div><i class="fas fa-chevron-down"></i></div><div class="folder-content">${ass.map(a => `<div class="subject-row"><input type="checkbox" onchange="toggleAss('${m}','${a.a}',this.checked)" ${a.done.E?'checked':''}> <span>${a.a}</span></div>`).join('')}</div></div>`;
-        }).join('');
+            const allD = ass.every(a => a.done.E);
+            return `
+            <div class="folder">
+                <div class="folder-header" onclick="toggleFolder(this)">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <input type="checkbox" onclick="event.stopPropagation(); toggleMat('${m}', this.checked)" ${allD?'checked':''}>
+                        <span style="font-weight:700; color:var(--primary)">${m} <span style="color:var(--text-p); font-weight:400; font-size:0.8rem;">(${ass.length} assuntos)</span></span>
+                    </div>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="folder-content">
+                    ${ass.map(a => `
+                        <div class="subject-row">
+                            <input type="checkbox" onchange="toggleAss('${m}','${a.a}',this.checked)" ${a.done.E?'checked':''}>
+                            <span>${a.a}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+        }).join('') || "<p style='text-align:center; padding:50px;'>Nenhuma matéria cadastrada.</p>";
     }
-    function toggleFolder(el) { el.closest('.folder').querySelector('.folder-content').classList.toggle('open'); }
+    function toggleFolder(el) { 
+        const c = el.nextElementSibling; c.classList.toggle('open');
+        el.querySelector('.fa-chevron-down').style.transform = c.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
     function toggleAss(m, a, v) { const it = db.lista.find(x => x.m === m && x.a === a); it.done.E = v; if(v) it.done.Res = true; save(); }
-    function toggleMat(m, v) { db.lista.filter(x => x.d === m).forEach(a => { a.done.E = v; if(v) a.done.Res = true; }); save(); renderTree(); }
+    function toggleMat(m, v) { db.lista.filter(x => x.m === m).forEach(a => { a.done.E = v; if(v) a.done.Res = true; }); save(); renderTree(); }
 
-    // PAINEL DIARIO
+    // PAINEL DIÁRIO - MARCAR E DESMARCAR (TOGGLE)
     function getPool() {
         let p = [];
         db.lista.filter(x => db.ciclo.includes(x.m) && !x.f).forEach(x => {
@@ -220,25 +243,24 @@
     }
     function renderDiario() {
         const hj = new Date().toLocaleDateString();
-        document.getElementById('txt-data').innerText = hj;
-        if(!db.metaFixa[hj] || db.metaFixa[hj].length === 0) {
+        if(!db.metaFixa[hj]) {
             const raw = getPool(); let meta = []; let mSet = new Set();
             for(let t of raw) { if(!mSet.has(t.m) && meta.length < 3) { meta.push({...t, d: false}); mSet.add(t.m); } }
             db.metaFixa[hj] = meta; save();
         }
         document.getElementById('lista-diaria').innerHTML = db.metaFixa[hj].map((t, i) => `
             <div class="task-card ${t.d?'done':''} type-${t.t}" onclick="doneMeta(${i},'${t.m}','${t.a}','${t.k}')">
-                <div style="flex:1"><span class="tag bg-${t.t}">${t.l}</span><div style="font-weight:800; font-size:1.3rem;">${t.m}: ${t.a}</div></div></div>`).join('') || "<p>Ciclo Vazio. Verifique o Ciclo Ativo.</p>";
+                <div style="flex:1"><span class="tag bg-${t.t}">${t.l}</span><div class="task-title" style="font-weight:800; font-size:1.3rem;">${t.m}: ${t.a}</div></div></div>`).join('') || "<p style='text-align:center; padding:50px;'>Configure o ciclo ativo para ver sua meta.</p>";
     }
     function doneMeta(idx, m, a, k) {
         const hj = new Date().toLocaleDateString();
-        db.metaFixa[hj][idx].d = true;
+        const currentStatus = db.metaFixa[hj][idx].d;
+        db.metaFixa[hj][idx].d = !currentStatus; // Inverte o status
         const it = db.lista.find(x => x.m === m && x.a === a);
-        it.done[k] = true;
-        if(Object.values(it.done).every((v,i) => v || !Object.values(it.act)[i])) it.f = true;
+        it.done[k] = !currentStatus; // Inverte no banco também
         save(); renderDiario();
     }
-    function regenerateDaily() { db.metaFixa[new Date().toLocaleDateString()] = []; save(); renderDiario(); }
+    function regenerateDaily() { delete db.metaFixa[new Date().toLocaleDateString()]; renderDiario(); }
     function adiantar() {
         const hj = new Date().toLocaleDateString();
         const raw = getPool();
@@ -247,27 +269,41 @@
         if(prox) { db.metaFixa[hj].push({...prox, d:false}); save(); renderDiario(); }
     }
 
-    // RESTO
+    // CONFIGURAÇÃO HORAS
+    function renderH() {
+        const dNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+        document.getElementById('grid-horas-manual').innerHTML = dNames.map((d,i) => `<div><small>${d}</small><input type="number" class="h-in" id="h-in-${i}" value="${db.h[i]}" style="text-align:center"></div>`).join('');
+    }
+    function applyQ(m, v) { (m === 'util' ? [1,2,3,4,5] : [0,6]).forEach(i => document.getElementById(`h-in-${i}`).value = v); }
+    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); alert("Cronograma salvo!"); }
+
+    function saveEdital() {
+        const m = document.getElementById('add-mat').value;
+        const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
+        ass.forEach(a => db.lista.push({ m, a: a.trim(), f: false, act: {E:1,Res:1,Rev:1,Ex:1}, done: {E:0,Res:0,Rev:0,Ex:0} }));
+        document.getElementById('add-mat').value = ""; document.getElementById('add-ass').value = ""; save(); alert("Adicionado!");
+    }
     function renderSemanal() {
         const p = getPool(); let idx = 0;
         document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(i => {
-            let h = `<div style="background:white; border-radius:15px; border:1px solid #e2e8f0; min-height:200px;"><div style="padding:10px; text-align:center; font-weight:800;">${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][i]}</div>`;
-            for(let j=0; j<3; j++) { if(p[idx]) { h += `<div style="padding:8px; border-left:4px solid var(--color-${p[idx].t}); margin:5px; font-size:0.7rem; background:#f8fafc"><b>${p[idx].m}</b><br>${p[idx].a}</div>`; idx++; } }
+            let h = `<div class="day-box"><div class="day-label">${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][i]}</div>`;
+            for(let j=0; j<3; j++) { if(p[idx]) { h += `<div style="padding:10px; border-left:4px solid var(--color-${p[idx].t}); margin:5px; font-size:0.7rem; background:#f8fafc; border-radius:8px;"><b>${p[idx].m}</b><br>${p[idx].a}</div>`; idx++; } }
             return h + "</div>";
         }).join('');
     }
-    function renderRever() { document.getElementById('lista-rever').innerHTML = db.lista.filter(x => x.done.E).map(it => `<div class="folder" style="padding:25px; display:flex; justify-content:space-between; align-items:center;"><span><b>${it.m}</b>: ${it.a}</span><button class="btn" onclick="resetA('${it.m}','${it.a}')">Reset</button></div>`).join(''); }
-    function resetA(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.f=false; it.done={E:0,Res:0,Rev:0,Ex:0}; save(); renderRever(); }
     function renderCiclo() {
         const m = [...new Set(db.lista.map(x => x.m))];
-        document.getElementById('checks-c').innerHTML = m.map(x => `<label style="display:flex; align-items:center; gap:12px; padding:15px;"><input type="checkbox" class="ckc" value="${x}" ${db.ciclo.includes(x)?'checked':''}> ${x}</label>`).join('');
+        document.getElementById('checks-c').innerHTML = m.map(x => `<label style="display:flex; align-items:center; gap:12px; padding:15px; border-bottom:1px solid #f1f5f9;"><input type="checkbox" class="ckc" value="${x}" ${db.ciclo.includes(x)?'checked':''}> ${x}</label>`).join('');
     }
     function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); alert("Ciclo salvo!"); }
     function renderFluxo() {
-        document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `<div class="folder" style="padding:25px; margin-bottom:12px;"><b>${it.m}</b>: ${it.a}<div style="display:flex; gap:20px; margin-top:20px;"><label><input type="checkbox" onchange="db.lista[${i}].act.E=this.checked;save()" ${it.act.E?'checked':''}> E</label><label><input type="checkbox" onchange="db.lista[${i}].act.Res=this.checked;save()" ${it.act.Res?'checked':''}> Rs</label><label><input type="checkbox" onchange="db.lista[${i}].act.Rev=this.checked;save()" ${it.act.Rev?'checked':''}> Rv</label><label><input type="checkbox" onchange="db.lista[${i}].act.Ex=this.checked;save()" ${it.act.Ex?'checked':''}> Ex</label></div></div>`).join('');
+        document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `
+            <div class="folder" style="padding:25px; margin-bottom:12px;"><b>${it.m}</b>: ${it.a}<div style="display:flex; gap:20px; margin-top:20px; font-size:0.9rem;">
+            <label><input type="checkbox" onchange="db.lista[${i}].act.E=this.checked;save()" ${it.act.E?'checked':''}> E</label>
+            <label><input type="checkbox" onchange="db.lista[${i}].act.Res=this.checked;save()" ${it.act.Res?'checked':''}> Rs</label>
+            <label><input type="checkbox" onchange="db.lista[${i}].act.Rev=this.checked;save()" ${it.act.Rev?'checked':''}> Rv</label>
+            <label><input type="checkbox" onchange="db.lista[${i}].act.Ex=this.checked;save()" ${it.act.Ex?'checked':''}> Ex</label></div></div>`).join('');
     }
-
-    renderLogin();
 </script>
 </body>
 </html>
