@@ -3,27 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGE PRF v.31 - OMNI PRO EDITION</title>
+    <title>SGE PRF v.32 - OMNI PRO SECURE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --sidebar-bg: #0f172a;
-            --sidebar-active: #1e293b;
-            --accent: #3b82f6;
-            --bg-body: #f8fafc;
-            --card-bg: #ffffff;
+            --sidebar-bg: #0f172a; --sidebar-active: #1e293b; --accent: #3b82f6;
+            --bg-body: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a; --text-sec: #64748b;
             --color-e: #3b82f6; --color-res: #8b5cf6; --color-rev: #f59e0b; --color-ex: #10b981;
-            --text-main: #0f172a; --text-sec: #64748b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body); display: flex; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR ESTILO OMNI */
+        /* SIDEBAR */
         .sidebar { width: 90px; background: var(--sidebar-bg); transition: 0.3s ease; z-index: 1000; position: fixed; height: 100vh; display: flex; flex-direction: column; }
         .sidebar:hover { width: 280px; }
-        
         .logo-area { height: 100px; display: flex; align-items: center; padding-left: 30px; color: white; overflow: hidden; }
         .logo-icon { width: 35px; height: 35px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; }
         .logo-text { margin-left: 15px; font-weight: 800; font-size: 1.4rem; opacity: 0; transition: 0.2s; white-space: nowrap; }
@@ -38,51 +33,35 @@
 
         .submenu { display: none; background: #070d19; flex-direction: column; }
         .submenu.show { display: flex; }
-        .sub-item { padding: 12px 20px 12px 80px; color: #64748b; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
-        .sub-item:hover { color: white; }
+        .sub-item { padding: 12px 20px 12px 80px; color: #64748b; font-size: 0.9rem; cursor: pointer; }
 
-        /* MAIN CONTENT */
+        /* MAIN */
         .main { margin-left: 90px; flex: 1; padding: 50px; overflow-y: auto; height: 100vh; }
         .page { display: none; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.4s ease; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* HEADER E BOAS-VINDAS */
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .user-badge { display: flex; align-items: center; gap: 15px; }
-        .user-info h2 { font-size: 1.8rem; color: var(--text-main); font-weight: 800; }
-        .user-info p { color: var(--text-sec); font-weight: 500; }
-
-        /* TASK CARDS PREMIUM */
-        .task-card { background: white; border-radius: 20px; padding: 25px; margin-bottom: 18px; display: flex; align-items: center; border: 1px solid #e2e8f0; border-left: 12px solid #ccc; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; position: relative; }
-        .task-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        /* CARDS */
+        .task-card { background: white; border-radius: 20px; padding: 25px; margin-bottom: 18px; display: flex; align-items: center; border: 1px solid #e2e8f0; border-left: 12px solid #ccc; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; position: relative; transition: 0.2s; }
         .task-card.done { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
         .task-card.done::after { content: '\f058'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 30px; color: #10b981; font-size: 2rem; }
-        
         .tag { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 6px 14px; border-radius: 8px; color: white; display: inline-block; margin-bottom: 10px; }
-        .type-e { border-left-color: var(--color-e); } .bg-e { background: var(--color-e); }
-        .type-res { border-left-color: var(--color-res); } .bg-res { background: var(--color-res); }
-        .type-rev { border-left-color: var(--color-rev); } .bg-rev { background: var(--color-rev); }
-        .type-ex { border-left-color: var(--color-ex); } .bg-ex { background: var(--color-ex); }
 
-        /* ARVORE DE PASTAS */
+        /* PASTAS SINALIZAR */
         .folder { background: white; border-radius: 15px; border: 1px solid #e2e8f0; margin-bottom: 15px; overflow: hidden; }
         .folder-header { padding: 22px 30px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-        .folder-content { display: none; padding: 10px 30px 22px 30px; border-top: 1px solid #f1f5f9; background: #fafafa; }
+        .folder-content { display: none; padding: 0 30px 22px 30px; border-top: 1px solid #f1f5f9; background: #fafafa; }
         .folder-content.open { display: block; }
-        .subject-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; gap: 15px; color: var(--text-sec); font-weight: 500; }
+        .subject-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; gap: 15px; }
 
-        /* BOTOES */
-        .btn { background: var(--accent); color: white; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 10px; }
-        .btn-update { background: #10b981; }
-        input, textarea { width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 8px; font-family: inherit; font-size: 1rem; }
+        .btn { background: var(--accent); color: white; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; }
+        input, textarea { width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 8px; font-family: inherit; }
 
-        /* LOGIN */
-        #login-screen { position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: white; padding: 60px; border-radius: 40px; width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        .login-card h1 { font-size: 4rem; margin-bottom: 20px; }
-
-        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; margin-top: 20px; }
+        /* LOGIN REDESINHADO */
+        #login-screen { position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; padding: 60px; border-radius: 40px; width: 420px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        
+        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; }
         .day-box { background: white; border-radius: 15px; border: 1px solid #e2e8f0; min-height: 250px; overflow: hidden; }
         .day-label { background: #f1f5f9; padding: 12px; text-align: center; font-weight: 800; font-size: 0.8rem; border-bottom: 1px solid #e2e8f0; }
     </style>
@@ -90,20 +69,12 @@
 <body>
 
     <div id="login-screen">
-        <div class="login-card">
-            <h1>🚓</h1>
-            <h2 style="color:var(--text-main); margin-bottom: 10px;">SGE PRF OMNI</h2>
-            <p style="color:var(--text-sec); margin-bottom: 30px;">Pronto para a Aprovação.</p>
-            <input type="password" id="pass-input" placeholder="Digite sua senha" style="text-align:center;">
-            <button class="btn" style="width:100%; margin-top:25px; justify-content:center;" onclick="checkAccess()">Entrar no Sistema</button>
-        </div>
+        <div class="login-card" id="login-container">
+            </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-area">
-            <div class="logo-icon">O</div>
-            <span class="logo-text">OMNI SYSTEM</span>
-        </div>
+        <div class="logo-area"><div class="logo-icon">O</div><span class="logo-text">OMNI SYSTEM</span></div>
         <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-home"></i><span>Painel Diário</span></div>
         <div class="menu-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-alt"></i><span>Grade Semanal</span></div>
         <div class="menu-item" onclick="toggleSub()"><i class="fas fa-briefcase"></i><span>Meu Plano</span></div>
@@ -115,21 +86,15 @@
             <div class="sub-item" onclick="showTab('ciclo')">Ciclo Ativo</div>
             <div class="sub-item" onclick="showTab('config-h')">Configurar Horas</div>
         </div>
-        <div class="menu-item" style="margin-top:auto; color:#ef4444;" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><span>Sair</span></div>
+        <div class="menu-item" style="margin-top:auto; color:#ef4444;" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Sair</span></div>
     </aside>
 
     <main class="main">
         <div id="diaria" class="page active">
-            <div class="header-top">
-                <div class="user-badge">
-                    <div style="width:60px; height:60px; background:#e2e8f0; border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🚓</div>
-                    <div class="user-info">
-                        <h2>Bem-vindo, Matheus!</h2>
-                        <p id="txt-data">Carregando cronograma...</p>
-                    </div>
-                </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
+                <div><h2 id="welcome-msg">Bem-vindo, Matheus!</h2><p id="txt-data" style="color:var(--text-sec)"></p></div>
                 <div style="display:flex; gap:12px;">
-                    <button class="btn btn-update" onclick="regenerateDaily()"><i class="fas fa-sync"></i> Atualizar</button>
+                    <button class="btn" style="background:#10b981" onclick="regenerateDaily()"><i class="fas fa-sync"></i> Atualizar</button>
                     <button class="btn" onclick="adiantar()"><i class="fas fa-plus"></i> Adiantar</button>
                 </div>
             </div>
@@ -137,5 +102,216 @@
         </div>
 
         <div id="sinalizar" class="page">
-            <h1 style="font-weight:800; margin-bottom:10px;">Sinalizar Bagagem Estudada</h1>
-            <p style="color:var(--text-sec); margin-bottom:30px;">Marque as matérias e assuntos que você já domina para ajustar
+            <h1>Sinalizar Bagagem 🚓</h1>
+            <p style="margin-bottom:30px; color:var(--text-sec)">Expanda a matéria e marque o que já estudou.</p>
+            <div id="tree-container"></div>
+        </div>
+
+        <div id="config-h" class="page">
+            <h1>Configurar Horas</h1>
+            <div class="folder" style="padding:30px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
+                    <div><label>Seg a Sex (h)</label><input type="number" id="quick-util" onchange="applyQuick('util', this.value)"></div>
+                    <div><label>Sáb e Dom (h)</label><input type="number" id="quick-fds" onchange="applyQuick('fds', this.value)"></div>
+                </div>
+            </div>
+            <div id="grid-horas-manual" style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; margin-top:20px;"></div>
+            <button class="btn" style="width:100%; margin-top:30px; justify-content:center;" onclick="saveH()">Salvar Horas</button>
+        </div>
+
+        <div id="edital" class="page">
+            <h1>Cadastrar Edital</h1>
+            <div class="folder" style="padding:30px;">
+                <input type="text" id="add-mat" placeholder="Matéria">
+                <textarea id="add-ass" placeholder="Assuntos (um por linha)" style="height:150px; margin-top:15px;"></textarea>
+                <button class="btn" style="width:100%; margin-top:20px; justify-content:center;" onclick="saveEdital()">Salvar Disciplina</button>
+            </div>
+        </div>
+
+        <div id="semanal" class="page"><h1>Grade Projetada</h1><div id="grid-semanal" class="week-grid"></div></div>
+        <div id="rever" class="page"><h1>Assuntos Finalizados</h1><div id="lista-rever"></div></div>
+        <div id="fluxo" class="page"><h1>Controle de Fluxo</h1><div id="corpo-fluxo"></div></div>
+        <div id="ciclo" class="page"><h1>Ciclo Ativo</h1><div id="checks-c" style="background:white; padding:30px; border-radius:20px; columns:2;"></div><button class="btn" onclick="saveC()" style="width:100%; margin-top:20px;">Atualizar</button></div>
+    </main>
+
+<script>
+    const diasNome = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+    let db = JSON.parse(localStorage.getItem('prf_v32')) || { 
+        lista: [], ciclo: [], h: {0:3,1:3,2:3,3:3,4:3,5:3,6:3}, pass: null, metaFixa: {} 
+    };
+
+    function save() { localStorage.setItem('prf_v32', JSON.stringify(db)); }
+
+    // --- SISTEMA DE LOGIN SEGURO ---
+    function renderLogin() {
+        const container = document.getElementById('login-container');
+        if (!db.pass) {
+            container.innerHTML = `
+                <h1>🚓</h1><h2>Definir Nova Senha</h2>
+                <p style="margin-bottom:20px; color:#64748b;">Crie sua chave de acesso ao sistema.</p>
+                <input type="password" id="setup-pass" placeholder="Crie uma senha">
+                <input type="password" id="confirm-pass" placeholder="Confirme a senha" style="margin-top:10px;">
+                <button class="btn" style="width:100%; margin-top:20px; justify-content:center;" onclick="setupPassword()">Salvar e Entrar</button>
+            `;
+        } else {
+            container.innerHTML = `
+                <h1>🚓</h1><h2>Acesso Restrito</h2>
+                <input type="password" id="login-pass" placeholder="Digite sua senha" style="margin-top:20px;">
+                <button class="btn" style="width:100%; margin-top:20px; justify-content:center;" onclick="validateLogin()">Entrar</button>
+                <p style="margin-top:15px; font-size:0.8rem; color:red; cursor:pointer;" onclick="hardReset()">Esqueci a senha (Reset Total)</p>
+            `;
+        }
+    }
+
+    function setupPassword() {
+        const p1 = document.getElementById('setup-pass').value;
+        const p2 = document.getElementById('confirm-pass').value;
+        if (p1 && p1 === p2) { db.pass = p1; save(); location.reload(); } 
+        else alert("As senhas não coincidem ou estão vazias.");
+    }
+
+    function validateLogin() {
+        if (document.getElementById('login-pass').value === db.pass) {
+            document.getElementById('login-screen').style.display = 'none'; init();
+        } else alert("Senha incorreta!");
+    }
+
+    function hardReset() { if(confirm("Isso apagará TODOS os seus dados e matérias. Tem certeza?")) { localStorage.removeItem('prf_v32'); location.reload(); } }
+    function logout() { location.reload(); }
+
+    // --- INICIALIZAÇÃO ---
+    function init() { renderH(); renderDiario(); }
+    function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
+    function showTab(id, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(el && el.classList.contains('menu-item')) el.classList.add('active');
+        if(id === 'sinalizar') renderTree();
+        if(id === 'diaria') renderDiario();
+        if(id === 'semanal') renderSemanal();
+        if(id === 'rever') renderRever();
+        if(id === 'fluxo') renderFluxo();
+        if(id === 'ciclo') renderCiclo();
+    }
+
+    // --- LOGICA DE PASTAS ---
+    function renderTree() {
+        const mats = [...new Set(db.lista.map(x => x.m))];
+        document.getElementById('tree-container').innerHTML = mats.map(m => {
+            const ass = db.lista.filter(x => x.m === m);
+            const allD = ass.every(a => a.done.E);
+            return `
+            <div class="folder">
+                <div class="folder-header">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <input type="checkbox" onchange="toggleMat('${m}', this.checked)" ${allD?'checked':''}>
+                        <span onclick="toggleFolder(this)" style="font-weight:800; color:var(--text-main)">${m}</span>
+                    </div>
+                    <i class="fas fa-chevron-down" style="color:#94a3b8"></i>
+                </div>
+                <div class="folder-content">
+                    ${ass.map(a => `<div class="subject-row">
+                        <input type="checkbox" onchange="toggleAss('${m}','${a.a}',this.checked)" ${a.done.E?'checked':''}>
+                        <span>${a.a}</span></div>`).join('')}
+                </div>
+            </div>`;
+        }).join('') || "<p>Cadastre matérias no edital.</p>";
+    }
+    function toggleFolder(el) { el.closest('.folder').querySelector('.folder-content').classList.toggle('open'); }
+    function toggleAss(m, a, v) { const it = db.lista.find(x => x.m === m && x.a === a); it.done.E = v; if(v) it.done.Res = true; save(); }
+    function toggleMat(m, v) { db.lista.filter(x => x.m === m).forEach(a => { a.done.E = v; if(v) a.done.Res = true; }); save(); renderTree(); }
+
+    // --- HORAS ---
+    function renderH() {
+        document.getElementById('grid-horas-manual').innerHTML = diasNome.map((d,i) => `
+            <div><small>${d.substring(0,3)}</small><input type="number" class="h-in" id="h-in-${i}" value="${db.h[i]}" style="text-align:center"></div>
+        `).join('');
+    }
+    function applyQuick(m, v) { (m === 'util' ? [1,2,3,4,5] : [0,6]).forEach(i => document.getElementById(`h-in-${i}`).value = v); }
+    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); alert("Horas salvas!"); }
+
+    // --- META DIÁRIA ---
+    function getPool() {
+        let p = [];
+        db.lista.filter(x => db.ciclo.includes(x.m) && !x.f).forEach(x => {
+            const rito = [{k:'E', l:'Estudo', t:'e'}, {k:'Res', l:'Resumo', t:'res'}, {k:'Rev', l:'Revisão', t:'rev'}, {k:'Ex', l:'Exercícios', t:'ex'}];
+            for(let s of rito) {
+                if(x.act[s.k] && !x.done[s.k]) {
+                    if(s.k !== 'E' && x.act.E && !x.done.E) break;
+                    p.push({ m: x.m, a: x.a, t: s.t, l: s.l, k: s.k }); break;
+                }
+            }
+        });
+        return p;
+    }
+    function renderDiario() {
+        const hj = new Date().toLocaleDateString();
+        document.getElementById('txt-data').innerText = diasNome[new Date().getDay()] + ", " + hj;
+        if(!db.metaFixa[hj]) {
+            const raw = getPool(); let meta = []; let mSet = new Set();
+            for(let t of raw) { if(!mSet.has(t.m) && meta.length < 3) { meta.push({...t, d: false}); mSet.add(t.m); } }
+            db.metaFixa[hj] = meta; save();
+        }
+        document.getElementById('lista-diaria').innerHTML = db.metaFixa[hj].map((t, i) => `
+            <div class="task-card ${t.d?'done':''} type-${t.t}" onclick="doneMeta(${i},'${t.m}','${t.a}','${t.k}')">
+                <div style="flex:1"><span class="tag bg-${t.t}">${t.l}</span>
+                <div style="font-weight:800; font-size:1.3rem;">${t.m}: ${t.a}</div></div></div>`).join('') || "<p>Ciclo vazio.</p>";
+    }
+    function doneMeta(idx, m, a, k) {
+        const hj = new Date().toLocaleDateString();
+        db.metaFixa[hj][idx].d = true;
+        const it = db.lista.find(x => x.m === m && x.a === a);
+        it.done[k] = true;
+        if(Object.values(it.done).every((v,i) => v || !Object.values(it.act)[i])) it.f = true;
+        save(); renderDiario();
+    }
+    function regenerateDaily() { delete db.metaFixa[new Date().toLocaleDateString()]; renderDiario(); }
+    function adiantar() {
+        const hj = new Date().toLocaleDateString();
+        const raw = getPool();
+        const atual = new Set(db.metaFixa[hj].map(x => x.m));
+        const prox = raw.find(x => !atual.has(x.m));
+        if(prox) { db.metaFixa[hj].push({...prox, d:false}); save(); renderDiario(); }
+    }
+
+    // --- OUTROS ---
+    function saveEdital() {
+        const m = document.getElementById('add-mat').value;
+        const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
+        ass.forEach(a => db.lista.push({ m, a: a.trim(), f: false, act: {E:1,Res:1,Rev:1,Ex:1}, done: {E:0,Res:0,Rev:0,Ex:0} }));
+        document.getElementById('add-mat').value = ""; document.getElementById('add-ass').value = ""; save(); alert("Matéria salva!");
+    }
+    function renderSemanal() {
+        const p = getPool(); let idx = 0;
+        document.getElementById('grid-semanal').innerHTML = diasNome.map(d => {
+            let h = `<div class="day-box"><div class="day-label">${d}</div>`;
+            for(let i=0; i<3; i++) { if(p[idx]) { h += `<div style="padding:12px; border-left:4px solid var(--color-${p[idx].t}); margin:8px; font-size:0.75rem; background:#f8fafc; border-radius:8px; font-weight:600;"><b>${p[idx].m}</b><br>${p[idx].a}</div>`; idx++; } }
+            return h + "</div>";
+        }).join('');
+    }
+    function renderRever() {
+        document.getElementById('lista-rever').innerHTML = db.lista.filter(x => x.done.E).map(it => `
+            <div class="folder" style="padding:25px; display:flex; justify-content:space-between; align-items:center;">
+                <span><b>${it.m}</b>: ${it.a}</span><button class="btn" style="padding:8px 20px;" onclick="resetA('${it.m}','${it.a}')">Reiniciar</button></div>`).join('') || "<p>Nada estudado.</p>";
+    }
+    function resetA(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.f=false; it.done={E:0,Res:0,Rev:0,Ex:0}; save(); renderRever(); }
+    function renderCiclo() {
+        const m = [...new Set(db.lista.map(x => x.m))];
+        document.getElementById('checks-c').innerHTML = m.map(x => `<label style="display:flex; align-items:center; gap:12px; padding:15px;"><input type="checkbox" class="ckc" value="${x}" ${db.ciclo.includes(x)?'checked':''}> ${x}</label>`).join('');
+    }
+    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); alert("Ciclo salvo!"); }
+    function renderFluxo() {
+        document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `
+            <div class="folder" style="padding:25px; margin-bottom:12px;"><b>${it.m}</b>: ${it.a}<div style="display:flex; gap:20px; margin-top:20px; font-size:0.9rem;">
+            <label><input type="checkbox" onchange="db.lista[${i}].act.E=this.checked;save()" ${it.act.E?'checked':''}> Estudo</label>
+            <label><input type="checkbox" onchange="db.lista[${i}].act.Res=this.checked;save()" ${it.act.Res?'checked':''}> Resumo</label>
+            <label><input type="checkbox" onchange="db.lista[${i}].act.Rev=this.checked;save()" ${it.act.Rev?'checked':''}> Revisão</label>
+            <label><input type="checkbox" onchange="db.lista[${i}].act.Ex=this.checked;save()" ${it.act.Ex?'checked':''}> Exercícios</label></div></div>`).join('');
+    }
+
+    // Inicializar o Login
+    renderLogin();
+</script>
+</body>
+</html>
