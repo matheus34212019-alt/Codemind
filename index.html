@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI COMMAND v.64 - LOGIC LOCK</title>
+    <title>OMNI COMMAND v.64 - SYNCHRONIZED</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -117,7 +117,7 @@
             </div>
 
             <div id="semanal" class="page">
-                <div class="page-header"><h1>Cronograma Tático</h1><p>Relatório de horas formatado</p></div>
+                <div class="page-header"><h1>Cronograma Tático</h1><p>Relatório de horas sincronizado</p></div>
                 <div id="grid-semanal" class="grid-7"></div>
             </div>
 
@@ -143,7 +143,7 @@
                 </div>
             </div>
 
-            <div id="fluxo" class="page"><div class="page-header"><h1>Fluxo de Matérias</h1></div><div id="corpo-fluxo"></div></div>
+            <div id="fluxo" class="page"><div class="page-header"><h1>Controle de Fluxo</h1></div><div id="corpo-fluxo"></div></div>
             <div id="config-h" class="page"><div class="page-header"><h1>Configurar Horas</h1></div><div class="card"><div id="grid-horas-manual" style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; text-align:center;"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveH()">SALVAR</button></div></div>
             <div id="sinalizar" class="page"><div id="tree-container"></div></div>
             <div id="rever" class="page"><div id="rever-container"></div></div>
@@ -161,7 +161,7 @@
     const formatTime = (h) => {
         if(h == 0.5) return "30m"; if(h == 1.0) return "60m";
         if(h == 1.5) return "90m"; if(h == 2.0) return "2h";
-        return h + "h";
+        return (h * 60) + "m";
     };
 
     function checkAccess() {
@@ -191,22 +191,17 @@
         let rito = [{k:'E', l:'Estudo', c:'type-e'}, {k:'Rev', l:'Revisão', c:'type-rev'}, {k:'Ex', l:'Exercícios', c:'type-ex'}];
         
         db.ciclo.forEach(m => {
-            const assuntosDaMateria = db.lista.filter(x => x.m === m && !x.f);
+            const assuntos = db.lista.filter(x => x.m === m && !x.f);
+            const assAtual = assuntos.find(a => !a.done.Ex);
             
-            // BUSCA O ASSUNTO QUE TEM PENDÊNCIA (E TRAVA NELE)
-            // Um assunto só libera o próximo se 'done.Ex' for true (considerando se as fases estão ativas no fluxo)
-            for(let ass of assuntosDaMateria) {
-                let pendenciaEncontrada = false;
+            if(assAtual) {
                 for(let s of rito) {
-                    // Verifica se a fase está ativa e não foi concluída
-                    if(ass.act[s.k] && !ass.done[s.k]) {
-                        let hrFinal = (s.k === 'Rev' || s.k === 'Ex') ? 1.0 : parseFloat(ass.h[s.k]);
-                        pool.push({ m: ass.m, a: ass.a, label: s.l, type: s.c, key: s.k, hrs: hrFinal });
-                        pendenciaEncontrada = true;
-                        break; // Pega apenas a primeira fase pendente deste assunto
+                    if(assAtual.act[s.k] && !assAtual.done[s.k]) {
+                        let hrFinal = (s.k === 'Rev' || s.k === 'Ex') ? 1.0 : parseFloat(assAtual.h[s.k]);
+                        pool.push({ m: assAtual.m, a: assAtual.a, label: s.l, type: s.c, key: s.k, hrs: hrFinal });
+                        break; 
                     }
                 }
-                if(pendenciaEncontrada) break; // TRAVA AQUI: Não pula para o próximo assunto da mesma matéria
             }
         });
         return pool;
@@ -215,18 +210,23 @@
     function renderDiario() {
         const hj = new Date().toLocaleDateString();
         const hMeta = parseFloat(db.h[new Date().getDay()] || 4);
+        
         if(!db.metaFixa[hj]) {
             const raw = getPool(); let metaDia = []; let soma = 0;
             for(let t of raw) {
                 if(soma < hMeta) {
                     let task = {...t, completed: false};
-                    if(t.key === 'E' && (soma + t.hrs > hMeta)) { task.hrs = hMeta - soma; }
-                    if(t.key !== 'E' && (soma + t.hrs > hMeta)) continue;
+                    if(t.key === 'E') {
+                        if(soma + t.hrs > hMeta) task.hrs = hMeta - soma;
+                    } else {
+                        if(soma + 1.0 > hMeta) continue;
+                    }
                     if(task.hrs > 0) { metaDia.push(task); soma += task.hrs; }
                 }
             }
             db.metaFixa[hj] = metaDia; save();
         }
+        
         const meta = db.metaFixa[hj];
         const somaAt = meta.reduce((acc, t) => acc + t.hrs, 0);
         document.getElementById('meta-status').innerText = `${somaAt.toFixed(1)}h alocadas de ${hMeta}h meta`;
@@ -234,7 +234,7 @@
             <div class="card task-card" style="border-left-color:var(--color-${t.key.toLowerCase()})">
                 <div><span class="tag ${t.type}">${t.label} (${formatTime(t.hrs)})</span><div style="font-weight:800; font-size:1.1rem;">${t.m}: ${t.a}</div></div>
                 <input type="checkbox" ${t.completed?'checked':''} onclick="concluir(${i},'${t.m}','${t.a}','${t.key}')">
-            </div>`).join('') || "<p>Nenhuma tarefa no ciclo.</p>";
+            </div>`).join('') || "<p>Nenhuma tarefa pendente no ciclo.</p>";
     }
 
     function concluir(idx, m, a, k) {
@@ -242,11 +242,7 @@
         db.metaFixa[hj][idx].completed = !db.metaFixa[hj][idx].completed;
         const it = db.lista.find(x => x.m === m && x.a === a);
         it.done[k] = db.metaFixa[hj][idx].completed;
-        
-        // Verifica se todas as fases ATIVAS do assunto foram concluídas para marcar como finalizado (f)
-        const totalConcluido = (!it.act.E || it.done.E) && (!it.act.Rev || it.done.Rev) && (!it.act.Ex || it.done.Ex);
-        if(totalConcluido) it.f = true; else it.f = false;
-        
+        if(it.done.Ex) it.f = true;
         save(); renderDiario();
     }
 
@@ -259,9 +255,15 @@
             const hoursForDay = parseFloat(db.h[dayIdx]);
             let hoursSum = 0;
             while(currentIdx < p.length && hoursSum < hoursForDay) {
-                const task = p[currentIdx];
-                html += `<div class="week-task ${task.type}">${task.m}<br>${task.a}<br>${task.label} (${formatTime(task.hrs)})</div>`;
-                hoursSum += task.hrs; currentIdx++;
+                const t = p[currentIdx];
+                let taskHr = t.hrs;
+                if(t.key === 'E') {
+                    if(hoursSum + taskHr > hoursForDay) taskHr = hoursForDay - hoursSum;
+                } else {
+                    if(hoursSum + 1.0 > hoursForDay) { currentIdx++; continue; }
+                }
+                html += `<div class="week-task ${t.type}">${t.m}<br>${t.a}<br>${t.label} (${formatTime(taskHr)})</div>`;
+                hoursSum += taskHr; currentIdx++;
             }
             return html + "</div>";
         }).join('');
@@ -278,12 +280,12 @@
     function toggleF(m) { if(openedFolders.has(m)) openedFolders.delete(m); else openedFolders.add(m); renderTree(); }
     function toggleVet(m, a) { 
         const it = db.lista.find(x => x.m === m && x.a === a); it.done.E = !it.done.E; 
-        if(it.done.E) { it.done.Rev = false; it.done.Ex = false; it.f = false; }
+        if(it.done.E) { it.done.Rev = false; it.done.Ex = false; }
         save(); renderTree(); regenerateDaily(); 
     }
 
     function renderRever() {
-        const fin = db.lista.filter(x => x.f);
+        const fin = db.lista.filter(x => x.f || x.done.Ex);
         const mats = [...new Set(fin.map(x => x.m))];
         document.getElementById('rever-container').innerHTML = mats.map(m => {
             const ass = fin.filter(x => x.m === m);
@@ -310,7 +312,8 @@
         const d = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
         document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `<div><small style="font-weight:800; font-size:0.6rem;">${x}</small><input type="number" id="h-in-${i}" value="${db.h[i]}" style="text-align:center;"></div>`).join('');
     }
-    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); alert("Carga Atualizada!"); regenerateDaily(); }
+    function applyQ(m, v) { (m === 'util' ? [1,2,3,4,5] : [0,6]).forEach(i => document.getElementById(`h-in-${i}`).value = v); }
+    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); alert("Horas Salvas!"); regenerateDaily(); }
     
     function renderCiclo() {
         const m = [...new Set(db.lista.map(x => x.m))];
