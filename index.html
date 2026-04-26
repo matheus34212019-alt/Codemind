@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI COMMAND v.58 - ZERO TOLERANCE</title>
+    <title>OMNI COMMAND v.59 - HIERARCHY FIX</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -87,33 +87,32 @@
             <div id="diaria" class="page active">
                 <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
                     <div><h1>Meta de Hoje 🚓</h1><p id="meta-status" style="color:var(--text-sec); font-weight:700;"></p></div>
-                    <button class="btn" style="width:auto; margin:0;" onclick="regenerateDaily()">🔄 Forçar Atualização</button>
+                    <button class="btn" style="width:auto; margin:0;" onclick="regenerateDaily()">🔄 Resetar Meta</button>
                 </div>
                 <div id="lista-diaria"></div>
             </div>
 
-            <div id="semanal" class="page"><h1>Relatório Semanal Colorido</h1><div id="grid-semanal" class="grid-7"></div></div>
+            <div id="semanal" class="page"><h1>Relatório Semanal</h1><div id="grid-semanal" class="grid-7"></div></div>
 
             <div id="edital" class="page">
-                <h1>Cadastrar Edital com Horas</h1>
+                <h1>Cadastrar Edital</h1>
                 <div class="card" style="margin-top:20px;">
                     <label>Matéria:</label>
-                    <input type="text" id="add-mat" placeholder="Ex: Legislação de Trânsito">
+                    <input type="text" id="add-mat" placeholder="Ex: Trânsito">
                     <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin: 15px 0; text-align:center;">
-                        <div><small>Hrs Estudo</small><input type="number" id="h-e-pad" value="1.5" step="0.5"></div>
-                        <div><small>Hrs Resumo</small><input type="number" id="h-res-pad" value="1.0" step="0.5"></div>
-                        <div><small>Hrs Revisão</small><input type="number" id="h-rev-pad" value="0.5" step="0.5"></div>
-                        <div><small>Hrs Exerc.</small><input type="number" id="h-ex-pad" value="1.0" step="0.5"></div>
+                        <div><small>Estudo</small><input type="number" id="h-e-pad" value="1.5" step="0.5"></div>
+                        <div><small>Resumo</small><input type="number" id="h-res-pad" value="1.0" step="0.5"></div>
+                        <div><small>Revisão</small><input type="number" id="h-rev-pad" value="0.5" step="0.5"></div>
+                        <div><small>Exerc.</small><input type="number" id="h-ex-pad" value="1.0" step="0.5"></div>
                     </div>
-                    <label>Assuntos (um por linha):</label>
-                    <textarea id="add-ass" placeholder="Assunto 1&#10;Assunto 2" style="height:120px;"></textarea>
-                    <button class="btn" onclick="saveEdital()">SALVAR TUDO E LIMPAR</button>
+                    <textarea id="add-ass" placeholder="Assuntos (um por linha)" style="height:120px;"></textarea>
+                    <button class="btn" onclick="saveEdital()">SALVAR</button>
                 </div>
             </div>
 
             <div id="fluxo" class="page"><h1>Controle de Fluxo</h1><div id="corpo-fluxo" style="margin-top:20px;"></div></div>
             <div id="config-h" class="page">
-                <h1>Configurar Horas</h1>
+                <h1>Horas Diárias</h1>
                 <div class="card" style="margin-top:20px;">
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
                         <div><label>Seg a Sex</label><input type="number" id="q-util" onchange="applyQ('util', this.value)"></div>
@@ -123,8 +122,8 @@
                     <button class="btn" onclick="saveH()">SALVAR</button>
                 </div>
             </div>
-            <div id="sinalizar" class="page"><h1>Sinalizar Bagagem</h1><div id="tree-container" style="margin-top:20px;"></div></div>
-            <div id="rever" class="page"><h1>Rever Finalizados</h1><div id="rever-container" style="margin-top:20px;"></div></div>
+            <div id="sinalizar" class="page"><h1>Bagagem</h1><div id="tree-container" style="margin-top:20px;"></div></div>
+            <div id="rever" class="page"><h1>Finalizados</h1><div id="rever-container" style="margin-top:20px;"></div></div>
             <div id="ciclo" class="page"><h1>Ciclo Ativo</h1><div id="checks-ciclo" class="card" style="columns:2;"></div><button class="btn" onclick="saveC()">SALVAR CICLO</button></div>
         </div>
     </main>
@@ -158,27 +157,36 @@
         if(id === 'ciclo') renderCiclo();
     }
 
-    // MOTOR V.58 - SEQUÊNCIA ABSOLUTA E PREENCHIMENTO GULOSO
+    // MOTOR V.59 - ESTUDO PRIMEIRO SEMPRE + PREENCHIMENTO DE CARGA
     function getPool() {
         let pool = [];
+        let rito = [
+            {k:'E', l:'Estudo', c:'type-e'}, 
+            {k:'Res', l:'Resumo', c:'type-res'}, 
+            {k:'Rev', l:'Revisão', c:'type-rev'}, 
+            {k:'Ex', l:'Exercícios', c:'type-ex'}
+        ];
+
+        // Passo 1: Prioriza o Estudo (Teoria) de TODAS as matérias do ciclo antes de qualquer outra coisa
         db.ciclo.forEach(m => {
             const assuntos = db.lista.filter(x => x.m === m && !x.f);
-            
-            // Loop para pegar TODAS as etapas pendentes de cada assunto da matéria no ciclo
-            // respeitando a ordem interna de cada assunto.
+            const estPendente = assuntos.find(a => a.act.E && !a.done.E);
+            if(estPendente) {
+                pool.push({ m: estPendente.m, a: estPendente.a, label: 'Estudo', type: 'type-e', key: 'E', hrs: parseFloat(estPendente.h.E) });
+            }
+        });
+
+        // Passo 2: Se a teoria está em dia, busca o próximo passo do rito do assunto que está aberto
+        db.ciclo.forEach(m => {
+            const assuntos = db.lista.filter(x => x.m === m && !x.f);
             assuntos.forEach(assunto => {
-                const rito = [
-                    {k:'E', l:'Estudo', c:'type-e'}, 
-                    {k:'Res', l:'Resumo', c:'type-res'}, 
-                    {k:'Rev', l:'Revisão', c:'type-rev'}, 
-                    {k:'Ex', l:'Exercícios', c:'type-ex'}
-                ];
+                // Se já colocamos o estudo deste assunto no Passo 1, pula
+                if(pool.some(p => p.a === assunto.a && p.key === 'E')) return;
+
                 for(let s of rito) {
                     if(assunto.act[s.k] && !assunto.done[s.k]) {
                         pool.push({ m: assunto.m, a: assunto.a, label: s.l, type: s.c, key: s.k, hrs: parseFloat(assunto.h[s.k]) });
-                        // Se encontramos a etapa atual deste assunto, paramos e vamos para o próximo assunto da mesma matéria
-                        // para garantir que a Aula 14 siga seu rito antes da aula 15 aparecer.
-                        break; 
+                        break; // Garante a sequência interna do assunto
                     }
                 }
             });
@@ -194,14 +202,10 @@
             const raw = getPool(); 
             let metaDia = []; 
             let soma = 0;
-            
-            // Lógica "Gulosa": Pega tudo o que estiver no pool até estourar a meta
             for(let t of raw) {
                 if(soma < hMeta) {
                     metaDia.push({...t, completed: false});
                     soma += t.hrs;
-                } else {
-                    break;
                 }
             }
             db.metaFixa[hj] = metaDia; save();
@@ -209,23 +213,21 @@
         
         const meta = db.metaFixa[hj];
         const somaAt = meta.reduce((acc, t) => acc + t.hrs, 0);
-        document.getElementById('meta-status').innerText = `Total Alocado: ${somaAt.toFixed(1)}h / Meta: ${hMeta}h`;
+        document.getElementById('meta-status').innerText = `Alocado: ${somaAt.toFixed(1)}h / Meta: ${hMeta}h`;
         
         document.getElementById('lista-diaria').innerHTML = meta.map((t, i) => `
             <div class="card task-card" style="border-left-color:var(--color-${t.key.toLowerCase()})">
                 <div><span class="tag ${t.type}">${t.label} (${t.hrs}h)</span><div style="font-weight:800; font-size:1.2rem; margin-top:8px;">${t.m}: ${t.a}</div></div>
                 <input type="checkbox" style="width:30px; height:30px;" ${t.completed?'checked':''} onclick="concluir(${i},'${t.m}','${t.a}','${t.key}')">
-            </div>`).join('') || "<p style='padding:20px;'>Sem tarefas disponíveis. Verifique o ciclo!</p>";
+            </div>`).join('') || "<p style='padding:20px;'>Verifique o Ciclo Ativo.</p>";
     }
 
     function concluir(idx, m, a, k) {
         const hj = new Date().toLocaleDateString();
-        const done = !db.metaFixa[hj][idx].completed;
-        db.metaFixa[hj][idx].completed = done;
+        db.metaFixa[hj][idx].completed = !db.metaFixa[hj][idx].completed;
         const it = db.lista.find(x => x.m === m && x.a === a);
-        it.done[k] = done;
-        const sAtivos = Object.keys(it.act).filter(key => it.act[key]);
-        if(sAtivos.every(key => it.done[key])) it.f = true;
+        it.done[k] = db.metaFixa[hj][idx].completed;
+        if(Object.keys(it.act).filter(key => it.act[key]).every(key => it.done[key])) it.f = true;
         save(); renderDiario();
     }
 
@@ -238,12 +240,10 @@
             let html = `<div class="day-box"><div class="day-label">${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][dayIdx]}</div>`;
             const hoursForDay = parseFloat(db.h[dayIdx]);
             let hoursSum = 0;
-            
             while(currentIdx < p.length && hoursSum < hoursForDay) {
                 const task = p[currentIdx];
-                html += `<div class="week-task ${task.type}">${task.m}<br>${task.label}</div>`;
-                hoursSum += task.hrs;
-                currentIdx++;
+                html += `<div class="week-task ${task.type}">${task.m}<br><b>${task.a}</b><br>${task.label}</div>`;
+                hoursSum += task.hrs; currentIdx++;
             }
             return html + "</div>";
         }).join('');
@@ -254,22 +254,10 @@
         document.getElementById('tree-container').innerHTML = mats.map(m => {
             const ass = db.lista.filter(x => x.m === m);
             const isOpen = openedFolders.has(m) ? 'open' : '';
-            return `<div class="folder">
-                <div class="folder-header" onclick="toggleF('${m}')">
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <input type="checkbox" onclick="event.stopPropagation(); toggleMat('${m}', this.checked)" ${ass.every(a=>a.done.E)?'checked':''}>
-                        <b>${m}</b>
-                    </div>
-                    <i class="fas fa-chevron-down ${isOpen?'fa-rotate-180':''}"></i>
-                </div>
-                <div class="folder-content ${isOpen}">
-                    ${ass.map(a => `<div class="subject-row ${a.done.E?'done':''}" onclick="toggleVet('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-check"></i></div>`).join('')}
-                </div>
-            </div>`;
+            return `<div class="folder"><div class="folder-header" onclick="toggleF('${m}')"><b>${m}</b><i class="fas fa-chevron-down ${isOpen?'fa-rotate-180':''}"></i></div><div class="folder-content ${isOpen}">${ass.map(a => `<div class="subject-row ${a.done.E?'done':''}" onclick="toggleVet('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-check"></i></div>`).join('')}</div></div>`;
         }).join('');
     }
     function toggleF(m) { if(openedFolders.has(m)) openedFolders.delete(m); else openedFolders.add(m); renderTree(); }
-    function toggleMat(m, v) { db.lista.filter(x => x.m === m).forEach(a => { a.done.E = v; if(v) a.done.Res = v; }); save(); renderTree(); regenerateDaily(); }
     function toggleVet(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.done.E = !it.done.E; if(it.done.E) it.done.Res = true; save(); renderTree(); regenerateDaily(); }
 
     function renderRever() {
@@ -278,25 +266,19 @@
         document.getElementById('rever-container').innerHTML = mats.map(m => {
             const ass = fin.filter(x => x.m === m);
             return `<div class="folder"><div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b><i class="fas fa-chevron-down"></i></div><div class="folder-content">${ass.map(a => `<div class="subject-row done" onclick="resetA('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-undo"></i></div>`).join('')}</div></div>`;
-        }).join('') || "<p style='padding:20px;'>Nenhum assunto finalizado.</p>";
+        }).join('');
     }
     function resetA(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.f=false; it.done={E:false,Res:false,Rev:false,Ex:false}; save(); renderRever(); regenerateDaily(); alert("Resetado!"); }
 
     function renderFluxo() {
-        document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `
-            <div class="card">
-                <b>${it.m}: ${it.a}</b>
-                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:10px; text-align:center;">
-                    ${['E','Res','Rev','Ex'].map(k => `<div><small>${k}</small><br><input type="checkbox" onchange="db.lista[${i}].act.${k}=this.checked;save()" ${it.act[k]?'checked':''}> <input type="number" step="0.5" value="${it.h[k]}" onchange="db.lista[${i}].h.${k}=this.value;save()" style="width:100%"></div>`).join('')}
-                </div>
-            </div>`).join('');
+        document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `<div class="card"><b>${it.m}: ${it.a}</b><div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:10px; text-align:center;">${['E','Res','Rev','Ex'].map(k => `<div><small>${k}</small><br><input type="checkbox" onchange="db.lista[${i}].act.${k}=this.checked;save()" ${it.act[k]?'checked':''}> <input type="number" step="0.5" value="${it.h[k]}" onchange="db.lista[${i}].h.${k}=this.value;save()" style="width:100%"></div>`).join('')}</div></div>`).join('');
     }
 
     function saveEdital() {
         const m = document.getElementById('add-mat').value;
         const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
         const h = { E: document.getElementById('h-e-pad').value, Res: document.getElementById('h-res-pad').value, Rev: document.getElementById('h-rev-pad').value, Ex: document.getElementById('h-ex-pad').value };
-        if(!m || ass.length === 0) return alert("Preencha matéria e assuntos!");
+        if(!m || ass.length === 0) return alert("Erro!");
         ass.forEach(a => db.lista.push({ m, a: a.trim(), f: false, act: {E:true, Res:true, Rev:true, Ex:true}, done: {E:false, Res:false, Rev:false, Ex:false}, h: {...h} }));
         document.getElementById('add-mat').value = ""; document.getElementById('add-ass').value = "";
         save(); alert("Salvo!"); regenerateDaily();
@@ -312,7 +294,7 @@
         const m = [...new Set(db.lista.map(x => x.m))];
         document.getElementById('checks-ciclo').innerHTML = m.map(x => `<label style="display:block; padding:10px;"><input type="checkbox" class="ckc" value="${x}" ${db.ciclo.includes(x)?'checked':''}> ${x}</label>`).join('');
     }
-    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); regenerateDaily(); alert("Ciclo salvo!"); }
+    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); regenerateDaily(); alert("Ciclo!"); }
 </script>
 </body>
 </html>
