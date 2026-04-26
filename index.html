@@ -3,96 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGE PRF v.30 - OMNI PRO</title>
+    <title>SGE PRF v.31 - OMNI PRO EDITION</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --sidebar-bg: #0b172a;
-            --sidebar-hover: #1e293b;
+            --sidebar-bg: #0f172a;
+            --sidebar-active: #1e293b;
             --accent: #3b82f6;
-            --bg-body: #f1f5f9;
-            --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
             --color-e: #3b82f6; --color-res: #8b5cf6; --color-rev: #f59e0b; --color-ex: #10b981;
+            --text-main: #0f172a; --text-sec: #64748b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg-body); display: flex; height: 100vh; overflow: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body); display: flex; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR PREMIUM */
-        .sidebar { width: 85px; background: var(--sidebar-bg); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; position: fixed; height: 100vh; display: flex; flex-direction: column; }
-        .sidebar:hover { width: 260px; }
-        .logo-area { height: 80px; display: flex; align-items: center; padding-left: 28px; color: white; overflow: hidden; }
-        .logo-area i { font-size: 1.5rem; color: var(--accent); min-width: 30px; }
-        .logo-area span { margin-left: 15px; font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; opacity: 0; transition: 0.2s; }
-        .sidebar:hover .logo-area span { opacity: 1; }
+        /* SIDEBAR ESTILO OMNI */
+        .sidebar { width: 90px; background: var(--sidebar-bg); transition: 0.3s ease; z-index: 1000; position: fixed; height: 100vh; display: flex; flex-direction: column; }
+        .sidebar:hover { width: 280px; }
+        
+        .logo-area { height: 100px; display: flex; align-items: center; padding-left: 30px; color: white; overflow: hidden; }
+        .logo-icon { width: 35px; height: 35px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; }
+        .logo-text { margin-left: 15px; font-weight: 800; font-size: 1.4rem; opacity: 0; transition: 0.2s; white-space: nowrap; }
+        .sidebar:hover .logo-text { opacity: 1; }
 
-        .menu-item { color: #94a3b8; padding: 18px 28px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; white-space: nowrap; text-decoration: none; }
-        .menu-item:hover { background: var(--sidebar-hover); color: white; }
-        .menu-item.active { color: white; background: var(--sidebar-hover); border-left: 4px solid var(--accent); }
-        .menu-item i { font-size: 1.2rem; min-width: 30px; text-align: center; }
-        .menu-item span { margin-left: 15px; font-weight: 500; opacity: 0; transition: 0.2s; }
+        .menu-item { color: #94a3b8; padding: 20px 30px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; text-decoration: none; overflow: hidden; }
+        .menu-item:hover, .menu-item.active { color: white; background: var(--sidebar-active); }
+        .menu-item.active { border-right: 4px solid var(--accent); }
+        .menu-item i { font-size: 1.3rem; min-width: 35px; text-align: center; }
+        .menu-item span { margin-left: 15px; font-weight: 600; opacity: 0; transition: 0.2s; white-space: nowrap; }
         .sidebar:hover .menu-item span { opacity: 1; }
 
         .submenu { display: none; background: #070d19; flex-direction: column; }
         .submenu.show { display: flex; }
-        .sub-item { padding: 12px 20px 12px 75px; color: #64748b; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
+        .sub-item { padding: 12px 20px 12px 80px; color: #64748b; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
         .sub-item:hover { color: white; }
 
         /* MAIN CONTENT */
-        .main-content { margin-left: 85px; flex: 1; padding: 40px; overflow-y: auto; height: 100vh; transition: 0.3s; }
-        .page { display: none; max-width: 1100px; margin: 0 auto; animation: slideUp 0.4s ease; }
+        .main { margin-left: 90px; flex: 1; padding: 50px; overflow-y: auto; height: 100vh; }
+        .page { display: none; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.4s ease; }
         .page.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* CARDS DA META (LAYOUT PREMIUM) */
-        .task-card { background: white; border-radius: 16px; padding: 24px; margin-bottom: 16px; display: flex; align-items: center; border: 1px solid #e2e8f0; border-left: 12px solid #cbd5e1; box-shadow: var(--card-shadow); cursor: pointer; transition: 0.2s; position: relative; }
-        .task-card:hover { transform: translateX(5px); }
-        .task-card.done { opacity: 0.5; filter: grayscale(1); }
-        .task-card.done::after { content: '\f058'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 24px; color: #10b981; font-size: 1.8rem; }
+        /* HEADER E BOAS-VINDAS */
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .user-badge { display: flex; align-items: center; gap: 15px; }
+        .user-info h2 { font-size: 1.8rem; color: var(--text-main); font-weight: 800; }
+        .user-info p { color: var(--text-sec); font-weight: 500; }
+
+        /* TASK CARDS PREMIUM */
+        .task-card { background: white; border-radius: 20px; padding: 25px; margin-bottom: 18px; display: flex; align-items: center; border: 1px solid #e2e8f0; border-left: 12px solid #ccc; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; position: relative; }
+        .task-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .task-card.done { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
+        .task-card.done::after { content: '\f058'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 30px; color: #10b981; font-size: 2rem; }
         
-        .tag { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 5px 12px; border-radius: 6px; color: white; display: inline-block; margin-bottom: 8px; }
+        .tag { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 6px 14px; border-radius: 8px; color: white; display: inline-block; margin-bottom: 10px; }
         .type-e { border-left-color: var(--color-e); } .bg-e { background: var(--color-e); }
         .type-res { border-left-color: var(--color-res); } .bg-res { background: var(--color-res); }
         .type-rev { border-left-color: var(--color-rev); } .bg-rev { background: var(--color-rev); }
         .type-ex { border-left-color: var(--color-ex); } .bg-ex { background: var(--color-ex); }
 
-        /* ARVORE DE MATERIAS (ESTILO PASTAS) */
-        .folder { background: white; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 12px; }
-        .folder-header { padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-        .folder-content { display: none; padding: 0 24px 18px 24px; border-top: 1px solid #f1f5f9; }
+        /* ARVORE DE PASTAS */
+        .folder { background: white; border-radius: 15px; border: 1px solid #e2e8f0; margin-bottom: 15px; overflow: hidden; }
+        .folder-header { padding: 22px 30px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .folder-content { display: none; padding: 10px 30px 22px 30px; border-top: 1px solid #f1f5f9; background: #fafafa; }
         .folder-content.open { display: block; }
-        .subject-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; gap: 12px; }
+        .subject-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; gap: 15px; color: var(--text-sec); font-weight: 500; }
 
-        /* BOTOES E INPUTS */
-        .btn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .btn:hover { opacity: 0.9; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 6px; font-family: inherit; }
+        /* BOTOES */
+        .btn { background: var(--accent); color: white; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 10px; }
+        .btn-update { background: #10b981; }
+        input, textarea { width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 8px; font-family: inherit; font-size: 1rem; }
 
-        /* LOGIN SCREEN COM VIATURA */
+        /* LOGIN */
         #login-screen { position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: white; padding: 50px; border-radius: 32px; width: 360px; text-align: center; }
-        .login-card h1 { font-size: 3rem; margin-bottom: 10px; }
+        .login-card { background: white; padding: 60px; border-radius: 40px; width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .login-card h1 { font-size: 4rem; margin-bottom: 20px; }
 
-        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-top: 20px; }
-        .day-box { background: white; border-radius: 12px; border: 1px solid #e2e8f0; min-height: 220px; }
-        .day-label { background: #f8fafc; padding: 10px; text-align: center; font-weight: 800; font-size: 0.7rem; border-bottom: 1px solid #e2e8f0; border-radius: 12px 12px 0 0; }
+        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; margin-top: 20px; }
+        .day-box { background: white; border-radius: 15px; border: 1px solid #e2e8f0; min-height: 250px; overflow: hidden; }
+        .day-label { background: #f1f5f9; padding: 12px; text-align: center; font-weight: 800; font-size: 0.8rem; border-bottom: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-card">
-            <h1>01 🚓</h1>
-            <h2 style="color:#1e293b; margin-bottom: 20px;">SGE PRF Pro</h2>
-            <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; font-size:1.1rem;">
-            <button class="btn" style="width:100%; margin-top:20px;" onclick="checkAccess()">Assumir Plantão</button>
+            <h1>🚓</h1>
+            <h2 style="color:var(--text-main); margin-bottom: 10px;">SGE PRF OMNI</h2>
+            <p style="color:var(--text-sec); margin-bottom: 30px;">Pronto para a Aprovação.</p>
+            <input type="password" id="pass-input" placeholder="Digite sua senha" style="text-align:center;">
+            <button class="btn" style="width:100%; margin-top:25px; justify-content:center;" onclick="checkAccess()">Entrar no Sistema</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-area"><i class="fas fa-bolt"></i><span>OMNI SYSTEM</span></div>
-        <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-crosshairs"></i><span>Painel Diário</span></div>
+        <div class="logo-area">
+            <div class="logo-icon">O</div>
+            <span class="logo-text">OMNI SYSTEM</span>
+        </div>
+        <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-home"></i><span>Painel Diário</span></div>
         <div class="menu-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-alt"></i><span>Grade Semanal</span></div>
         <div class="menu-item" onclick="toggleSub()"><i class="fas fa-briefcase"></i><span>Meu Plano</span></div>
         <div id="sub-plano" class="submenu">
@@ -106,223 +118,24 @@
         <div class="menu-item" style="margin-top:auto; color:#ef4444;" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><span>Sair</span></div>
     </aside>
 
-    <main class="main-content">
+    <main class="main">
         <div id="diaria" class="page active">
-            <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:40px;">
-                <div>
-                    <h4 style="color:var(--accent); text-transform:uppercase; letter-spacing:1px;">Bem-vindo, Matheus!</h4>
-                    <h1 id="txt-data" style="font-size:2.2rem; font-weight:800; color:#0f172a;">Meta de Hoje</h1>
+            <div class="header-top">
+                <div class="user-badge">
+                    <div style="width:60px; height:60px; background:#e2e8f0; border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🚓</div>
+                    <div class="user-info">
+                        <h2>Bem-vindo, Matheus!</h2>
+                        <p id="txt-data">Carregando cronograma...</p>
+                    </div>
                 </div>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn" style="background:#10b981" onclick="regenerateDaily()">🔄 Atualizar</button>
-                    <button class="btn" onclick="adiantar()">+ Adiantar</button>
+                <div style="display:flex; gap:12px;">
+                    <button class="btn btn-update" onclick="regenerateDaily()"><i class="fas fa-sync"></i> Atualizar</button>
+                    <button class="btn" onclick="adiantar()"><i class="fas fa-plus"></i> Adiantar</button>
                 </div>
             </div>
             <div id="lista-diaria"></div>
         </div>
 
         <div id="sinalizar" class="page">
-            <h1>Sinalizar Bagagem 🚓</h1>
-            <p style="margin: 10px 0 25px 0; color:#64748b;">Marque o que já estudou. A matéria mestre marca todos os assuntos.</p>
-            <div id="tree-container"></div>
-        </div>
-
-        <div id="config-h" class="page">
-            <h1>Configuração de Horas</h1>
-            <div class="task-card" style="display:block; border-left:none;">
-                <h3 style="margin-bottom:20px;">Ajuste em Bloco</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                    <div><label>Segunda a Sexta</label><input type="number" id="quick-seg-sex" placeholder="Horas/dia" onchange="applyH('util', this.value)"></div>
-                    <div><label>Sábado e Domingo</label><input type="number" id="quick-fds" placeholder="Horas/dia" onchange="applyH('fds', this.value)"></div>
-                </div>
-            </div>
-            <div id="grid-horas-manual" style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; margin-top:20px;"></div>
-            <button class="btn" style="width:100%; margin-top:25px;" onclick="saveH()">Salvar Cronograma</button>
-        </div>
-
-        <div id="edital" class="page">
-            <h1>Cadastrar Novo Conteúdo</h1>
-            <div class="task-card" style="display:block; border-left:none;">
-                <input type="text" id="add-mat" placeholder="Nome da Disciplina">
-                <textarea id="add-ass" placeholder="Assunto A&#10;Assunto B&#10;Assunto C" style="height:150px; margin-top:15px;"></textarea>
-                <button class="btn" style="width:100%; margin-top:20px;" onclick="saveEdital()">Adicionar Matéria ao Ciclo</button>
-            </div>
-        </div>
-
-        <div id="semanal" class="page"><h1>Grade Semanal Projetada</h1><div id="grid-semanal" class="week-grid"></div></div>
-        <div id="rever" class="page"><h1>Assuntos Concluídos</h1><div id="lista-rever"></div></div>
-        <div id="fluxo" class="page"><h1>Controle de Fluxo</h1><div id="corpo-fluxo"></div></div>
-        <div id="ciclo" class="page"><h1>Matérias no Ciclo</h1><div id="checks-c" style="columns:2; background:white; padding:25px; border-radius:15px;"></div><button class="btn" onclick="saveC()" style="width:100%; margin-top:20px;">Salvar Ciclo</button></div>
-    </main>
-
-<script>
-    const diasNome = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-    let db = JSON.parse(localStorage.getItem('prf_v30')) || { 
-        lista: [], ciclo: [], h: {0:3,1:3,2:3,3:3,4:3,5:3,6:3}, pass: "", metaFixa: {} 
-    };
-
-    function save() { localStorage.setItem('prf_v30', JSON.stringify(db)); }
-
-    function checkAccess() {
-        const p = document.getElementById('pass-input').value;
-        if(!db.pass) db.pass = p;
-        if(p === db.pass) { document.getElementById('login-screen').style.display='none'; init(); }
-        else alert("Acesso Negado!");
-    }
-
-    function init() { renderH(); renderDiario(); }
-    function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
-
-    function showTab(id, el) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(el && el.classList.contains('menu-item')) el.classList.add('active');
-
-        if(id === 'sinalizar') renderTree();
-        if(id === 'diaria') renderDiario();
-        if(id === 'semanal') renderSemanal();
-        if(id === 'rever') renderRever();
-        if(id === 'fluxo') renderFluxo();
-        if(id === 'ciclo') renderCiclo();
-    }
-
-    // --- HORAS ---
-    function renderH() {
-        document.getElementById('grid-horas-manual').innerHTML = diasNome.map((d,i) => `
-            <div><small>${d}</small><input type="number" class="h-in" id="h-in-${i}" value="${db.h[i]}"></div>
-        `).join('');
-    }
-    function applyH(m, v) {
-        const target = m === 'util' ? [1,2,3,4,5] : [0,6];
-        target.forEach(i => document.getElementById(`h-in-${i}`).value = v);
-    }
-    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); alert("Carga Horária Atualizada!"); }
-
-    // --- ARVORE (PASTAS) ---
-    function renderTree() {
-        const mats = [...new Set(db.lista.map(x => x.m))];
-        document.getElementById('tree-container').innerHTML = mats.map(m => {
-            const ass = db.lista.filter(x => x.m === m);
-            const allD = ass.every(a => a.done.E);
-            return `
-            <div class="folder">
-                <div class="folder-header">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <input type="checkbox" onchange="toggleMat('${m}', this.checked)" ${allD?'checked':''}>
-                        <span onclick="toggleFolder(this)" style="font-weight:700; font-size:1.1rem; color:#1e293b">${m}</span>
-                    </div>
-                    <i class="fas fa-chevron-down" style="color:#94a3b8"></i>
-                </div>
-                <div class="folder-content">
-                    ${ass.map(a => `
-                        <div class="subject-row">
-                            <input type="checkbox" onchange="toggleAss('${m}','${a.a}',this.checked)" ${a.done.E?'checked':''}>
-                            <span style="color:#475569">${a.a}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>`;
-        }).join('') || "Adicione matérias no Edital primeiro.";
-    }
-    function toggleFolder(el) { el.closest('.folder').querySelector('.folder-content').classList.toggle('open'); }
-    function toggleAss(m, a, v) { const it = db.lista.find(x => x.m === m && x.a === a); it.done.E = v; if(v) it.done.Res = true; save(); }
-    function toggleMat(m, v) { db.lista.filter(x => x.m === m).forEach(a => { a.done.E = v; if(v) a.done.Res = true; }); save(); renderTree(); }
-
-    // --- META DIÁRIA ---
-    function getPool() {
-        let p = [];
-        db.lista.filter(x => db.ciclo.includes(x.m) && !x.f).forEach(x => {
-            const rito = [{k:'E', l:'Estudo', t:'e'}, {k:'Res', l:'Resumo', t:'res'}, {k:'Rev', l:'Revisão', t:'rev'}, {k:'Ex', l:'Exercícios', t:'ex'}];
-            for(let s of rito) {
-                if(x.act[s.k] && !x.done[s.k]) {
-                    if(s.k !== 'E' && x.act.E && !x.done.E) break;
-                    p.push({ m: x.m, a: x.a, t: s.t, l: s.l, k: s.k });
-                    break;
-                }
-            }
-        });
-        return p;
-    }
-
-    function renderDiario() {
-        const hj = new Date().toLocaleDateString();
-        document.getElementById('txt-data').innerText = "Meta de " + diasNome[new Date().getDay()];
-        if(!db.metaFixa[hj]) {
-            const raw = getPool();
-            let meta = []; let mSet = new Set();
-            for(let t of raw) { if(!mSet.has(t.m) && meta.length < 3) { meta.push({...t, d: false}); mSet.add(t.m); } }
-            db.metaFixa[hj] = meta; save();
-        }
-        document.getElementById('lista-diaria').innerHTML = db.metaFixa[hj].map((t, i) => `
-            <div class="task-card ${t.d?'done':''} type-${t.t}" onclick="doneMeta(${i},'${t.m}','${t.a}','${t.k}')">
-                <div style="flex:1">
-                    <span class="tag bg-${t.t}">${t.l}</span>
-                    <div style="font-weight:800; font-size:1.2rem; color:#0f172a">${t.m}: ${t.a}</div>
-                </div>
-            </div>`).join('') || "Sem metas. Configure o Ciclo Ativo.";
-    }
-
-    function doneMeta(idx, m, a, k) {
-        const hj = new Date().toLocaleDateString();
-        db.metaFixa[hj][idx].d = true;
-        const it = db.lista.find(x => x.m === m && x.a === a);
-        it.done[k] = true;
-        if(Object.values(it.done).every((v,i) => v || !Object.values(it.act)[i])) it.f = true;
-        save(); renderDiario();
-    }
-
-    function regenerateDaily() { delete db.metaFixa[new Date().toLocaleDateString()]; renderDiario(); }
-    function adiantar() {
-        const hj = new Date().toLocaleDateString();
-        const raw = getPool();
-        const atual = new Set(db.metaFixa[hj].map(x => x.m));
-        const prox = raw.find(x => !atual.has(x.m));
-        if(prox) { db.metaFixa[hj].push({...prox, d:false}); save(); renderDiario(); }
-    }
-
-    // --- CADASTRO ---
-    function saveEdital() {
-        const m = document.getElementById('add-mat').value;
-        const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
-        ass.forEach(a => db.lista.push({ m, a: a.trim(), f: false, act: {E:1,Res:1,Rev:1,Ex:1}, done: {E:0,Res:0,Rev:0,Ex:0} }));
-        document.getElementById('add-mat').value = ""; document.getElementById('add-ass').value = ""; save(); alert("Dados salvos!");
-    }
-
-    function renderSemanal() {
-        const p = getPool(); let idx = 0;
-        document.getElementById('grid-semanal').innerHTML = diasNome.map(d => {
-            let h = `<div class="day-box"><div class="day-label">${d}</div>`;
-            for(let i=0; i<3; i++) { if(p[idx]) { h += `<div style="padding:10px; border-left:4px solid var(--color-${p[idx].t}); margin:5px; font-size:0.65rem; background:#f8fafc"><b>${p[idx].m}</b><br>${p[idx].a}</div>`; idx++; } }
-            return h + "</div>";
-        }).join('');
-    }
-
-    function renderRever() {
-        document.getElementById('lista-rever').innerHTML = db.lista.filter(x => x.done.E).map(it => `
-            <div class="folder" style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
-                <span><b>${it.m}</b>: ${it.a}</span>
-                <button class="btn" style="padding:5px 15px; font-size:0.7rem" onclick="resetA('${it.m}','${it.a}')">Reiniciar Tudo</button>
-            </div>`).join('') || "Nada concluído ainda.";
-    }
-    function resetA(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.f=false; it.done={E:0,Res:0,Rev:0,Ex:0}; save(); renderRever(); }
-    function renderCiclo() {
-        const m = [...new Set(db.lista.map(x => x.m))];
-        document.getElementById('checks-c').innerHTML = m.map(x => `<label style="display:block; padding:10px; border-bottom:1px solid #f1f5f9;"><input type="checkbox" class="ckc" value="${x}" ${db.ciclo.includes(x)?'checked':''}> ${x}</label>`).join('');
-    }
-    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); alert("Ciclo Ativo!"); }
-    function renderFluxo() {
-        document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `
-            <div class="folder" style="padding:20px; margin-bottom:10px;">
-                <b>${it.m}</b>: ${it.a}<br>
-                <div style="display:flex; gap:20px; margin-top:15px; font-size:0.8rem;">
-                    <label><input type="checkbox" onchange="db.lista[${i}].act.E=this.checked;save()" ${it.act.E?'checked':''}> Estudo</label>
-                    <label><input type="checkbox" onchange="db.lista[${i}].act.Res=this.checked;save()" ${it.act.Res?'checked':''}> Resumo</label>
-                    <label><input type="checkbox" onchange="db.lista[${i}].act.Rev=this.checked;save()" ${it.act.Rev?'checked':''}> Revisão</label>
-                    <label><input type="checkbox" onchange="db.lista[${i}].act.Ex=this.checked;save()" ${it.act.Ex?'checked':''}> Exercícios</label>
-                </div>
-            </div>`).join('');
-    }
-</script>
-</body>
-</html>
+            <h1 style="font-weight:800; margin-bottom:10px;">Sinalizar Bagagem Estudada</h1>
+            <p style="color:var(--text-sec); margin-bottom:30px;">Marque as matérias e assuntos que você já domina para ajustar
