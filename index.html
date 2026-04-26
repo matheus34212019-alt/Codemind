@@ -13,212 +13,251 @@
             --color-e: #3b82f6; --color-r: #8b5cf6; --color-rev: #f59e0b; --color-ex: #10b981;
             --bg-e: #eff6ff; --bg-r: #f5f3ff; --bg-rev: #fffbeb; --bg-ex: #ecfdf5;
         }
-        [data-theme="dark"] {
-            --bg-app: #0f172a; --text-main: #f1f5f9; --card-bg: #1e293b; --border: #334155;
-            --bg-e: #1e3a8a; --bg-r: #4c1d95; --bg-rev: #78350f; --bg-ex: #064e3b;
-        }
         body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: var(--bg-app); height: 100vh; overflow: hidden; color: var(--text-main); display: flex; }
         
         /* LOGIN */
         #login-screen { position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: white; padding: 40px; border-radius: 24px; width: 90%; max-width: 400px; text-align: center; }
-        .login-input { width: 100%; padding: 14px; border: 2px solid #f3f4f6; border-radius: 12px; font-size: 1.25rem; text-align: center; margin-bottom: 20px; outline: none; }
+        .login-card { background: white; padding: 40px; border-radius: 24px; width: 350px; text-align: center; }
+        .login-input { width: 100%; padding: 12px; border: 2px solid #f3f4f6; border-radius: 10px; margin-bottom: 15px; text-align: center; font-size: 1.2rem; }
 
-        /* SIDEBAR */
-        .sidebar { width: 80px; background: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding-top: 30px; transition: 0.3s; }
-        .sidebar:hover { width: 220px; }
-        .menu-item { color: #9ca3af; cursor: pointer; display: flex; align-items: center; width: 100%; padding: 18px 25px; transition: 0.2s; border-left: 4px solid transparent; overflow: hidden; box-sizing: border-box; }
-        .menu-item i { font-size: 1.25rem; min-width: 32px; }
-        .menu-item span { font-size: 0.95rem; margin-left: 15px; opacity: 0; white-space: nowrap; font-weight: 600; }
+        /* SIDEBAR & DROPDOWN */
+        .sidebar { width: 85px; background: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding-top: 20px; transition: 0.3s; z-index: 100; }
+        .sidebar:hover { width: 260px; }
+        .menu-item { color: #9ca3af; cursor: pointer; display: flex; align-items: center; width: 100%; padding: 18px 25px; box-sizing: border-box; transition: 0.2s; position: relative; }
+        .menu-item i { font-size: 1.3rem; min-width: 35px; }
+        .menu-item span { opacity: 0; margin-left: 15px; font-weight: 600; white-space: nowrap; transition: 0.2s; }
         .sidebar:hover .menu-item span { opacity: 1; }
-        .menu-item.active { color: white; background: rgba(255,255,255,0.08); border-left-color: var(--primary); }
+        .menu-item.active { color: white; background: rgba(255,255,255,0.1); border-left: 4px solid var(--primary); }
 
-        /* CONTENT */
-        .main { flex: 1; overflow-y: auto; padding: 40px; box-sizing: border-box; }
-        .page { display: none; max-width: 1200px; margin: 0 auto; animation: slideUp 0.3s; }
+        .submenu { width: 100%; display: none; background: rgba(0,0,0,0.2); flex-direction: column; }
+        .submenu.show { display: flex; }
+        .sub-item { padding: 12px 25px 12px 75px; color: #9ca3af; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
+        .sub-item:hover { color: white; background: rgba(255,255,255,0.05); }
+
+        /* MAIN CONTENT */
+        .main { flex: 1; overflow-y: auto; padding: 40px; }
+        .page { display: none; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.3s; }
         .page.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .card { background: var(--card-bg); border-radius: 16px; padding: 25px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .btn { background: var(--primary); color: white; border: none; padding: 14px 20px; border-radius: 12px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 25px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; width: 100%; }
         
-        /* TASK CARDS */
-        .daily-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
-        .task-card { cursor: pointer; padding: 22px; border-radius: 18px; border: 1px solid var(--border); border-left: 7px solid transparent; transition: 0.2s; position: relative; }
-        .badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; display: inline-block; margin-bottom: 12px; }
-        
-        .type-e { background: var(--bg-e); color: var(--color-e); border-left-color: var(--color-e) !important; }
-        .type-r { background: var(--bg-r); color: var(--color-r); border-left-color: var(--color-r) !important; }
-        .type-rev { background: var(--bg-rev); color: var(--color-rev); border-left-color: var(--color-rev) !important; }
-        .type-ex { background: var(--bg-ex); color: var(--color-ex); border-left-color: var(--color-ex) !important; }
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { text-align: left; padding: 12px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        td { padding: 15px 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 
-        .sub-tab-container { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .sub-tab { cursor: pointer; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; color: var(--text-muted); }
-        .sub-tab.active { background: var(--primary); color: white; }
+        /* CARDS DIARIOS */
+        .daily-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        .task-card { padding: 20px; border-radius: 16px; border-left: 6px solid #ccc; cursor: pointer; background: white; transition: 0.2s; }
+        .task-card:hover { transform: translateX(5px); }
+        .badge { font-size: 0.65rem; font-weight: 800; padding: 4px 8px; border-radius: 5px; text-transform: uppercase; display: inline-block; margin-bottom: 10px; }
 
-        input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: inherit; }
-        
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; padding:20px; backdrop-filter: blur(4px); }
-        .modal-content { background:var(--card-bg); padding:35px; border-radius:24px; width:100%; max-width:400px; text-align:center; }
+        /* TIPOS */
+        .type-e { background: var(--bg-e); color: var(--color-e); border-color: var(--color-e) !important; }
+        .type-rev { background: var(--bg-rev); color: var(--color-rev); border-color: var(--color-rev) !important; }
+        .type-ex { background: var(--bg-ex); color: var(--color-ex); border-color: var(--color-ex) !important; }
+
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-top: 5px; box-sizing: border-box; }
+        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
+        .modal-content { background:white; padding:30px; border-radius:20px; width:400px; text-align:center; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-card">
-            <h1 id="l-title">Acesso Restrito</h1>
+            <h2>Chave de Acesso</h2>
             <input type="password" id="pass-input" class="login-input" placeholder="Senha">
-            <button class="btn" style="width:100%" onclick="checkAccess()">Entrar</button>
+            <button class="btn" onclick="checkAccess()">Entrar</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-bolt"></i><span>Hoje</span></div>
-        <div class="menu-item" onclick="showTab('meu-plano', this)"><i class="fas fa-folder-open"></i><span>Meu Plano</span></div>
-        <div class="menu-item" onclick="showTab('config', this)"><i class="fas fa-sliders"></i><span>Ajustes</span></div>
-        <div class="menu-item" onclick="logout()" style="margin-top: auto; margin-bottom: 20px; color: #f87171;"><i class="fas fa-power-off"></i><span>Sair</span></div>
+        <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-home"></i><span>Painel Diário</span></div>
+        <div class="menu-item" onclick="toggleSubmenu()"><i class="fas fa-folder-open"></i><span>Meu Plano</span></div>
+        <div id="sub-meu-plano" class="submenu">
+            <div class="sub-item" onclick="showTab('edital-vert', this)">Edital Verticalizado</div>
+            <div class="sub-item" onclick="showTab('ciclo-mat', this)">Ciclo de Matérias</div>
+            <div class="sub-item" onclick="showTab('sinalizar', this)">Sinalizar Assuntos</div>
+            <div class="sub-item" onclick="showTab('reativar', this)">Reativar / Desempenho</div>
+            <div class="sub-item" onclick="showTab('replanejar', this)">Replanejar Atrasos</div>
+        </div>
+        <div class="menu-item" style="margin-top:auto; color:#f87171;" onclick="location.reload()"><i class="fas fa-power-off"></i><span>Sair</span></div>
     </aside>
 
     <main class="main">
         <div id="diaria" class="page active">
-            <h1>Painel Diário</h1>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+                <h1>Hoje</h1>
+                <button class="btn" style="width:auto; background:#10b981" onclick="abrirExtra()">+ Matéria Extra</button>
+            </div>
             <div id="lista-hoje" class="daily-grid"></div>
         </div>
 
-        <div id="meu-plano" class="page">
-            <h1>Meu Plano de Estudos</h1>
-            <div class="sub-tab-container">
-                <div class="sub-tab active" onclick="showSubTab('edital-vert', this)">Edital Verticalizado</div>
-                <div class="sub-tab" onclick="showSubTab('assuntos-sinal', this)">Assuntos Sinalizados</div>
-            </div>
-
-            <div id="edital-vert" class="sub-page">
-                <div class="card">
-                    <h3>Cadastrar Novo Edital</h3>
-                    <input type="text" id="mat-nome" placeholder="Matéria (ex: Penal)">
-                    <textarea id="texto-bruto" placeholder="Assuntos (um por linha)" style="height: 150px;"></textarea>
-                    <button class="btn" style="margin-top:15px;" onclick="processar()">Salvar no Edital</button>
-                </div>
-            </div>
-
-            <div id="assuntos-sinal" class="sub-page" style="display:none;">
-                <div class="card">
-                    <h3>Gerenciar Progresso</h3>
-                    <p style="font-size:0.85rem; color:var(--text-muted);">Sinalize assuntos já estudados. Itens sinalizados aparecerão no ciclo apenas como Revisão e Exercícios.</p>
-                    <div id="lista-sinalizacao" style="margin-top:20px;"></div>
-                </div>
+        <div id="edital-vert" class="page">
+            <h1>Edital Verticalizado</h1>
+            <div class="card">
+                <h3>Cadastrar Disciplina</h3>
+                <input type="text" id="mat-nome" placeholder="Ex: Direito Penal">
+                <textarea id="texto-bruto" placeholder="Assuntos (um por linha)" style="height:150px;"></textarea>
+                <button class="btn" style="margin-top:15px;" onclick="salvarEdital()">Salvar no Edital</button>
             </div>
         </div>
 
-        <div id="config" class="page">
-            <h1>Configurações</h1>
+        <div id="ciclo-mat" class="page">
+            <h1>Escolha seu Ciclo</h1>
             <div class="card">
-                <h3>Ciclo Ativo</h3>
-                <div id="checks-ciclo" style="columns: 2; gap: 20px;"></div>
-                <button class="btn" style="margin-top: 25px;" onclick="replanejar()">Gerar Grade Semanal</button>
+                <div id="checks-ciclo" style="columns:2;"></div>
+                <button class="btn" style="margin-top:20px;" onclick="salvarCiclo()">Atualizar Ciclo</button>
             </div>
+        </div>
+
+        <div id="sinalizar" class="page">
+            <h1>Controle de Fluxo</h1>
+            <div class="card" style="padding:0; overflow-x:auto;">
+                <table id="tabela-sinalizar">
+                    <thead>
+                        <tr><th>Assunto</th><th>Atividade</th><th>Velocidade</th><th>Status</th></tr>
+                    </thead>
+                    <tbody id="corpo-sinalizar"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="reativar" class="page">
+            <h1>Desempenho e Reativação</h1>
             <div class="card">
-                <button class="btn" style="background:#4b5563" onclick="exportar()">Backup .JSON</button>
+                <table id="tabela-reativar">
+                    <thead>
+                        <tr><th>Assunto</th><th>Acerto %</th><th>Ação</th></tr>
+                    </thead>
+                    <tbody id="corpo-reativar"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="replanejar" class="page">
+            <h1>Gestão de Atrasos</h1>
+            <div class="card">
+                <p>Escolha a data de início do novo cronograma:</p>
+                <input type="date" id="data-inicio-rep" style="width:200px;">
+                <button class="btn" style="margin-top:20px;" onclick="confirmarReplanejamento()">Reorganizar Fluxo</button>
             </div>
         </div>
     </main>
 
     <div id="modal-feedback" class="modal">
         <div class="modal-content">
-            <h2 id="m-titulo">Concluir?</h2>
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 25px;">
-                <button class="btn" onclick="finalizar('ok')">Sim, Concluído</button>
-                <button class="btn" style="background:none; color:red;" onclick="fecharModal()">Cancelar</button>
+            <h2 id="m-titulo">Concluir atividade?</h2>
+            <div id="campos-questoes" style="display:none; margin-bottom:20px;">
+                <input type="number" id="q-feitas" placeholder="Q. Feitas">
+                <input type="number" id="q-acertos" placeholder="Q. Acertos">
             </div>
+            <button class="btn" onclick="finalizarAtividade()">Confirmar</button>
+            <button class="btn" style="background:none; color:red;" onclick="fecharModal()">Cancelar</button>
         </div>
     </div>
 
 <script>
-    let dados = JSON.parse(localStorage.getItem('prf_v16_final')) || { db: [], ciclo: [], pass: "" };
+    let dados = JSON.parse(localStorage.getItem('prf_v17_final')) || { db: [], ciclo: [], pass: "", dataInicio: new Date().toISOString().split('T')[0] };
     let tAtiva = null;
 
-    function save() { localStorage.setItem('prf_v16_final', JSON.stringify(dados)); }
+    function save() { localStorage.setItem('prf_v17_final', JSON.stringify(dados)); }
 
     function checkAccess() {
         const input = document.getElementById('pass-input').value;
         if(!dados.pass) { dados.pass = input; save(); }
-        if(input === dados.pass) { document.getElementById('login-screen').style.display = 'none'; replanejar(); }
-        else alert("Incorreto");
+        if(input === dados.pass) { document.getElementById('login-screen').style.display='none'; renderDiario(); }
+        else alert("Acesso negado");
     }
 
-    function showTab(id, el) { 
+    function toggleSubmenu() { document.getElementById('sub-meu-plano').classList.toggle('show'); }
+
+    function showTab(id, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.getElementById(id).classList.add('active'); el.classList.add('active');
+        document.getElementById(id).classList.add('active');
+        if(id === 'sinalizar') renderSinalizacao();
+        if(id === 'reativar') renderReativar();
+        if(id === 'ciclo-mat') renderChecksCiclo();
     }
 
-    function showSubTab(id, el) {
-        document.querySelectorAll('.sub-page').forEach(p => p.style.display = 'none');
-        document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(id).style.display = 'block'; el.classList.add('active');
-        if(id === 'assuntos-sinal') renderSinalizacao();
-    }
-
-    function processar() {
+    function salvarEdital() {
         const n = document.getElementById('mat-nome').value;
         const t = document.getElementById('texto-bruto').value;
         if(!n || !t) return;
         t.split('\n').filter(l => l.trim()).forEach(a => {
-            dados.db.push({d: n, a: a.trim(), f: false, estudado: false});
+            dados.db.push({d: n, a: a.trim(), f: false, est: false, tipo: 'Estudo', vel: 'Normal', acertos: 0, totalQ: 0});
         });
-        save(); alert("Edital salvo!");
+        document.getElementById('mat-nome').value = '';
+        document.getElementById('texto-bruto').value = '';
+        save(); alert("Matéria salva!");
     }
 
     function renderSinalizacao() {
-        const div = document.getElementById('lista-sinalizacao');
-        div.innerHTML = dados.db.map((it, idx) => `
-            <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--border);">
-                <span><b>${it.d}</b>: ${it.a}</span>
-                <input type="checkbox" onchange="toggleEstudado(${idx})" ${it.estudado?'checked':''} style="width:20px;">
-            </div>
+        const corpo = document.getElementById('corpo-sinalizar');
+        corpo.innerHTML = dados.db.map((it, i) => `
+            <tr>
+                <td><b>${it.d}</b><br>${it.a}</td>
+                <td><select onchange="updateIt(${i}, 'tipo', this.value)"><option value="Estudo" ${it.tipo=='Estudo'?'selected':''}>Estudo</option><option value="Revisão" ${it.tipo=='Revisão'?'selected':''}>Revisão</option><option value="Exercícios" ${it.tipo=='Exercícios'?'selected':''}>Exercícios</option></select></td>
+                <td><select onchange="updateIt(${i}, 'vel', this.value)"><option value="Lenta" ${it.vel=='Lenta'?'selected':''}>Lenta</option><option value="Normal" ${it.vel=='Normal'?'selected':''}>Normal</option><option value="Rápida" ${it.vel=='Rápida'?'selected':''}>Rápida</option></select></td>
+                <td><input type="checkbox" onchange="updateIt(${i}, 'est', this.checked)" ${it.est?'checked':''}></td>
+            </tr>
         `).join('');
     }
 
-    function toggleEstudado(idx) { dados.db[idx].estudado = !dados.db[idx].estudado; save(); }
+    function updateIt(i, field, val) { dados.db[i][field] = val; save(); renderDiario(); }
 
-    function replanejar() {
-        dados.ciclo = Array.from(document.querySelectorAll('.ck:checked')).map(c => c.value);
-        const diaria = document.getElementById('lista-hoje'); diaria.innerHTML = '';
-        const hoje = new Date().getDay();
-        let p = 0;
-
-        dados.db.filter(it => dados.ciclo.includes(it.d) && !it.f).forEach((it, i) => {
-            let tipo = it.estudado ? (i%2==0?'Revisão':'Exercícios') : 'Estudo';
-            let cls = tipo === 'Estudo' ? 'type-e' : tipo === 'Revisão' ? 'type-rev' : 'type-ex';
-            
-            diaria.innerHTML += `<div class="task-card ${cls}" onclick="preparar('${it.d}', '${it.a}', '${tipo}')">
-                <div class="badge ${cls}">${tipo}</div>
-                <div style="font-weight:700;">${it.d}</div>
-                <div style="font-size:0.9rem; opacity:0.8;">${it.a}</div>
+    function renderDiario() {
+        const lista = document.getElementById('lista-hoje');
+        const filtrados = dados.db.filter(x => dados.ciclo.includes(x.d) && !x.f);
+        if(!filtrados.length) return lista.innerHTML = "<p>Configure seu ciclo e edital.</p>";
+        
+        lista.innerHTML = filtrados.slice(0, 6).map(x => {
+            let cls = x.tipo === 'Estudo' ? 'type-e' : x.tipo === 'Revisão' ? 'type-rev' : 'type-ex';
+            return `<div class="task-card ${cls}" onclick="preparar('${x.d}', '${x.a}', '${x.tipo}')">
+                <div class="badge ${cls}">${x.tipo} | ${x.vel}</div>
+                <h3>${x.d}</h3><p>${x.a}</p>
             </div>`;
-        });
-        save(); renderConfig();
+        }).join('');
     }
 
-    function preparar(d, a, t) { tAtiva = { d, a, t }; document.getElementById('m-titulo').innerText = `${t}: ${d}`; document.getElementById('modal-feedback').style.display = 'flex'; }
-    function finalizar(modo) {
-        if(modo === 'ok') { 
-            const it = dados.db.find(x => x.d === tAtiva.d && x.a === tAtiva.a); 
-            if(it) {
-                if(tAtiva.t === 'Estudo') it.estudado = true; // Se terminou de estudar, sinaliza automaticamente
-                else it.f = true; // Se era revisão/exercício, conclui
-            }
+    function preparar(d, a, t) {
+        tAtiva = { d, a, t };
+        document.getElementById('m-titulo').innerText = t + ": " + d;
+        document.getElementById('campos-questoes').style.display = t === 'Exercícios' ? 'block' : 'none';
+        document.getElementById('modal-feedback').style.display = 'flex';
+    }
+
+    function finalizarAtividade() {
+        const it = dados.db.find(x => x.d === tAtiva.d && x.a === tAtiva.a);
+        if(tAtiva.t === 'Exercícios') {
+            it.totalQ += parseInt(document.getElementById('q-feitas').value || 0);
+            it.acertos += parseInt(document.getElementById('q-acertos').value || 0);
         }
-        fecharModal(); save(); replanejar();
+        if(tAtiva.t === 'Estudo') it.est = true;
+        else it.f = true;
+        save(); fecharModal(); renderDiario();
     }
 
-    function fecharModal() { document.getElementById('modal-feedback').style.display = 'none'; }
-    function renderConfig() { 
-        const nomes = [...new Set(dados.db.map(i => i.d))];
-        document.getElementById('checks-ciclo').innerHTML = nomes.map(d => `<label style="display:block; margin-bottom:10px;"><input type="checkbox" class="ck" value="${d}" ${dados.ciclo.includes(d)?'checked':''}> ${d}</label>`).join(''); 
+    function renderReativar() {
+        const corpo = document.getElementById('corpo-reativar');
+        corpo.innerHTML = dados.db.filter(x => x.totalQ > 0).map((it, i) => {
+            let perc = ((it.acertos / it.totalQ) * 100).toFixed(1);
+            return `<tr><td>${it.d}: ${it.a}</td><td>${perc}%</td><td><button onclick="reativar(${i})">Reativar</button></td></tr>`;
+        }).join('');
     }
-    function logout() { location.reload(); }
-    function exportar() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(dados)], {type:'application/json'})); a.download = 'backup.json'; a.click(); }
+
+    function reativar(i) { dados.db[i].f = false; save(); alert("Assunto de volta ao ciclo!"); }
+    function renderChecksCiclo() {
+        const nomes = [...new Set(dados.db.map(x => x.d))];
+        document.getElementById('checks-ciclo').innerHTML = nomes.map(n => `<label><input type="checkbox" class="ck" value="${n}" ${dados.ciclo.includes(n)?'checked':''}> ${n}</label><br>`).join('');
+    }
+    function salvarCiclo() { dados.ciclo = Array.from(document.querySelectorAll('.ck:checked')).map(c => c.value); save(); renderDiario(); alert("Ciclo atualizado!"); }
+    function fecharModal() { document.getElementById('modal-feedback').style.display = 'none'; }
+    function abrirExtra() { const m = prompt("Nome da Matéria:"); if(m) { dados.db.push({d: "Extra", a: m, f:false, tipo:'Exercícios', vel:'Normal'}); renderDiario(); } }
+    function confirmarReplanejamento() { dados.dataInicio = document.getElementById('data-inicio-rep').value; save(); alert("Fluxo reorganizado para " + dados.dataInicio); }
 </script>
 </body>
 </html>
