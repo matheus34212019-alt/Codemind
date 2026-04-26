@@ -3,170 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGE - PRF Alta Performance</title>
+    <title>SGE - Gestão de Alta Performance</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --sidebar-bg: #111827; --primary: #3b82f6; --bg-app: #f9fafb; --text-main: #111827;
-            --border: #e5e7eb; --card-bg: #ffffff;
-            --bg-e: #eff6ff; --color-e: #3b82f6; --bg-rev: #fffbeb; --color-rev: #f59e0b;
-            --bg-ex: #ecfdf5; --color-ex: #10b981; --bg-r: #f5f3ff; --color-r: #8b5cf6;
+            --text-muted: #6b7280; --card-bg: #ffffff; --border: #e5e7eb;
+            --color-e: #3b82f6; --color-r: #8b5cf6; --color-rev: #f59e0b; --color-ex: #10b981;
+            --bg-e: #eff6ff; --bg-r: #f5f3ff; --bg-rev: #fffbeb; --bg-ex: #ecfdf5;
         }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; display: flex; background: var(--bg-app); height: 100vh; overflow: hidden; color: var(--text-main); }
+        [data-theme="dark"] {
+            --bg-app: #0f172a; --text-main: #f1f5f9; --card-bg: #1e293b; --border: #334155;
+            --bg-e: #1e3a8a; --bg-r: #4c1d95; --bg-rev: #78350f; --bg-ex: #064e3b;
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: var(--bg-app); height: 100vh; overflow: hidden; color: var(--text-main); display: flex; }
         
-        /* Sidebar */
-        .sidebar { width: 70px; background: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding-top: 20px; transition: 0.3s; z-index: 100; }
-        .sidebar:hover { width: 200px; }
-        .menu-item { color: #9ca3af; cursor: pointer; display: flex; align-items: center; width: 100%; padding: 15px 25px; transition: 0.2s; border-left: 4px solid transparent; overflow: hidden; }
+        /* LOGIN */
+        #login-screen { position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; padding: 40px; border-radius: 24px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .login-input { width: 100%; padding: 14px; border: 2px solid #f3f4f6; border-radius: 12px; font-size: 1.2rem; text-align: center; margin-bottom: 20px; outline: none; }
+
+        /* SIDEBAR */
+        .sidebar { width: 80px; background: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding-top: 30px; transition: 0.3s; }
+        .sidebar:hover { width: 220px; }
+        .menu-item { color: #9ca3af; cursor: pointer; display: flex; align-items: center; width: 100%; padding: 18px 25px; transition: 0.2s; border-left: 4px solid transparent; overflow: hidden; text-decoration: none; box-sizing: border-box; }
         .menu-item i { font-size: 1.2rem; min-width: 30px; }
-        .menu-item span { font-size: 0.9rem; margin-left: 15px; opacity: 0; white-space: nowrap; font-weight: 500; }
+        .menu-item span { font-size: 0.9rem; margin-left: 15px; opacity: 0; white-space: nowrap; font-weight: 600; }
         .sidebar:hover .menu-item span { opacity: 1; }
-        .menu-item.active { color: white; background: rgba(255,255,255,0.1); border-left-color: var(--primary); }
+        .menu-item.active { color: white; background: rgba(255,255,255,0.08); border-left-color: var(--primary); }
 
-        /* Main Content */
-        .main { flex: 1; overflow-y: auto; padding: 30px; box-sizing: border-box; }
-        .page { display: none; animation: fadeIn 0.3s ease; }
+        /* CONTENT */
+        .main { flex: 1; overflow-y: auto; padding: 40px; }
+        .page { display: none; max-width: 1100px; margin: 0 auto; animation: slideUp 0.3s; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .card { background: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.2s; }
-        .btn:active { transform: scale(0.98); }
-
-        /* Estilo dos Cards de Estudo */
-        .task-card { border-left: 6px solid #ccc; cursor: pointer; transition: 0.2s; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 25px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: 0.2s; width: 100%; }
+        
+        /* TASK CARDS */
+        .daily-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        .task-card { cursor: pointer; padding: 20px; border-radius: 16px; border: 1px solid var(--border); border-left: 6px solid transparent; transition: 0.2s; }
         .task-card:hover { transform: translateX(5px); }
-        .badge { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
+        .badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 3px 10px; border-radius: 6px; display: inline-block; margin-bottom: 10px; }
         
         .type-e { background: var(--bg-e); color: var(--color-e); border-color: var(--color-e) !important; }
+        .type-r { background: var(--bg-r); color: var(--color-r); border-color: var(--color-r) !important; }
         .type-rev { background: var(--bg-rev); color: var(--color-rev); border-color: var(--color-rev) !important; }
         .type-ex { background: var(--bg-ex); color: var(--color-ex); border-color: var(--color-ex) !important; }
-        .type-r { background: var(--bg-r); color: var(--color-r); border-color: var(--color-r) !important; }
 
-        input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-top: 5px; font-size: 1rem; box-sizing: border-box; }
-        
-        /* Modal */
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; padding: 20px; }
-        .modal-content { background:var(--card-bg); padding:25px; border-radius:15px; width:100%; max-width:400px; text-align:center; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-top: 5px; box-sizing: border-box; }
+        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; padding:20px; }
+        .modal-content { background:var(--card-bg); padding:30px; border-radius:20px; width:100%; max-width:400px; text-align:center; }
     </style>
 </head>
 <body>
 
-    <div id="modal-feedback" class="modal">
-        <div class="modal-content">
-            <h2 id="modal-titulo">Concluir?</h2>
-            <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
-                <button class="btn" onclick="finalizar('ok')">Concluído</button>
-                <button class="btn" style="background:#6b7280" onclick="fecharModal()">Cancelar</button>
-            </div>
+    <div id="login-screen">
+        <div class="login-card">
+            <i class="fas fa-user-shield" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
+            <h1 id="l-title">Chave de Acesso</h1>
+            <p id="l-msg">Defina ou digite sua senha de aluno.</p>
+            <input type="password" id="pass-input" class="login-input" placeholder="••••">
+            <button class="btn" onclick="checkAccess()">Entrar</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-tasks"></i><span>Hoje</span></div>
-        <div class="menu-item" onclick="showTab('importar', this)"><i class="fas fa-plus-circle"></i><span>Importar</span></div>
-        <div class="menu-item" onclick="showTab('config', this)"><i class="fas fa-cog"></i><span>Ciclo</span></div>
+        <div class="menu-item active" onclick="showTab('diaria', this)"><i class="fas fa-home"></i><span>Painel Diário</span></div>
+        <div class="menu-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-alt"></i><span>Grade Semanal</span></div>
+        <div class="menu-item" onclick="showTab('importar', this)"><i class="fas fa-cloud-upload"></i><span>Importar</span></div>
+        <div class="menu-item" onclick="showTab('config', this)"><i class="fas fa-cog"></i><span>Configurações</span></div>
+        <div class="menu-item" onclick="toggleDarkMode()" style="margin-top: auto;"><i class="fas fa-moon"></i><span>Tema</span></div>
+        <div class="menu-item" onclick="location.reload()" style="margin-bottom: 20px; color: #ef4444;"><i class="fas fa-power-off"></i><span>Sair</span></div>
     </aside>
 
     <main class="main">
         <div id="diaria" class="page active">
-            <h1>Painel Diário</h1>
-            <div id="lista-hoje"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h1>Painel Diário</h1>
+                <button class="btn" style="width: auto; background: #10b981;" onclick="abrirExtra()">+ Matéria Extra</button>
+            </div>
+            <div id="lista-hoje" class="daily-grid"></div>
+        </div>
+
+        <div id="semanal" class="page">
+            <h1>Grade Semanal</h1>
+            <div class="card" style="padding:0; overflow-x: auto;"><div id="grid-semanal" style="display: flex; min-width: 900px;"></div></div>
         </div>
 
         <div id="importar" class="page">
             <h1>Importar Matéria</h1>
             <div class="card">
-                <input type="text" id="mat-nome" placeholder="Nome da Matéria (ex: Penal)">
-                <textarea id="texto-bruto" placeholder="Assuntos (um por linha)" style="height:150px;"></textarea>
-                <button class="btn" onclick="salvar()">Salvar no Banco</button>
+                <input type="text" id="mat-nome" placeholder="Nome da Disciplina">
+                <textarea id="texto-bruto" placeholder="Assuntos (um por linha)..." style="height: 150px;"></textarea>
+                <button class="btn" style="margin-top: 15px;" onclick="processar()">Salvar no Banco</button>
             </div>
         </div>
 
         <div id="config" class="page">
             <h1>Configurações</h1>
             <div class="card">
-                <h3>Backup</h3>
-                <button class="btn" style="background:#4b5563" onclick="exportar()">Exportar .JSON</button>
+                <button class="btn" style="background:#4b5563" onclick="exportar()">Exportar Backup .JSON</button>
             </div>
             <div class="card">
-                <h3>Ativar Matérias</h3>
-                <div id="lista-checks" style="columns:2; margin-bottom:20px;"></div>
-                <button class="btn" onclick="atualizarCiclo()">Gerar Grade de Hoje</button>
+                <h3>Ativar Ciclo</h3>
+                <div id="checks-ciclo" style="columns: 2; gap: 20px;"></div>
+                <button class="btn" style="margin-top: 20px;" onclick="replanejar()">Atualizar Ciclo</button>
             </div>
         </div>
     </main>
 
-    <script>
-        let dados = JSON.parse(localStorage.getItem('prf_tablet_v14')) || { db: [], ciclo: [] };
-        let tAtiva = null;
+    <div id="modal-feedback" class="modal">
+        <div class="modal-content">
+            <h2 id="m-titulo">Concluir?</h2>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                <button class="btn" onclick="finalizar('ok')">Concluído</button>
+                <button class="btn" style="background: transparent; color: var(--primary); border: 1px solid var(--primary);" onclick="document.getElementById('opt-extra').style.display='block'">Mais tempo</button>
+                <div id="opt-extra" style="display:none; padding-top:15px;">
+                    <input type="number" id="t-extra" value="1" step="0.5"> Horas
+                    <button class="btn" style="background:#f59e0b; margin-top:10px;" onclick="finalizar('replan')">Replanejar</button>
+                </div>
+                <button style="border:none; background:none; color:red; margin-top:10px;" onclick="fecharModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
 
-        function save() { localStorage.setItem('prf_tablet_v14', JSON.stringify(dados)); }
+<script>
+    let dados = JSON.parse(localStorage.getItem('prf_v13_final')) || { db: [], ciclo: [], extras: [], pass: "", dark: false };
+    let tAtiva = null;
 
-        function showTab(id, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            el.classList.add('active');
-        }
+    function save() { localStorage.setItem('prf_v13_final', JSON.stringify(dados)); }
+    function load() { 
+        if(!dados.pass) { document.getElementById('l-title').innerText = "Configurar Senha"; }
+    }
 
-        function salvar() {
-            const n = document.getElementById('mat-nome').value;
-            const t = document.getElementById('texto-bruto').value;
-            if(!n || !t) return alert("Preencha os campos.");
-            t.split('\n').filter(l => l.trim()).forEach(a => {
-                dados.db.push({d: n, a: a.trim(), f: false});
-            });
-            save(); alert("Importado!"); renderConfig();
-        }
+    function checkAccess() {
+        const input = document.getElementById('pass-input').value;
+        if(!dados.pass) { if(input.length < 4) return alert("Mínimo 4 dígitos"); dados.pass = input; save(); }
+        if(input === dados.pass) {
+            document.getElementById('login-screen').style.display = 'none';
+            if(dados.dark) document.body.setAttribute('data-theme', 'dark');
+            replanejar();
+        } else { alert("Senha incorreta"); }
+    }
 
-        function atualizarCiclo() {
-            dados.ciclo = Array.from(document.querySelectorAll('.ck:checked')).map(c => c.value);
-            save(); renderDiario(); alert("Ciclo atualizado!");
-        }
+    function toggleDarkMode() { dados.dark = !dados.dark; document.body.setAttribute('data-theme', dados.dark ? 'dark' : ''); save(); }
+    function showTab(id, el) { 
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.getElementById(id).classList.add('active'); el.classList.add('active');
+    }
 
-        function renderConfig() {
-            const nomes = [...new Set(dados.db.map(x => x.d))];
-            document.getElementById('lista-checks').innerHTML = nomes.map(n => `
-                <div style="margin-bottom:8px;"><input type="checkbox" class="ck" value="${n}" ${dados.ciclo.includes(n)?'checked':''}> ${n}</div>
-            `).join('');
-        }
+    function processar() {
+        const n = document.getElementById('mat-nome').value;
+        const t = document.getElementById('texto-bruto').value;
+        if(!n || !t) return;
+        t.split('\n').filter(l => l.trim()).forEach(a => {
+            dados.db.push({d: n, a: a.trim(), e:1, r:0.5, rev:0.5, ex:1, f:false});
+        });
+        save(); renderConfig(); alert("Salvo!");
+    }
 
-        function renderDiario() {
-            const lista = document.getElementById('lista-hoje');
-            const ativas = dados.db.filter(x => dados.ciclo.includes(x.d) && !x.f);
-            if(ativas.length === 0) return lista.innerHTML = "<p>Selecione matérias nos Ajustes para começar.</p>";
-            
-            lista.innerHTML = ativas.slice(0, 8).map((x, i) => {
-                // Alterna tipos automaticamente para o ciclo
-                const tipos = [{t:'Estudo', c:'type-e'}, {t:'Revisão', c:'type-rev'}, {t:'Exercícios', c:'type-ex'}, {t:'Resumo', c:'type-r'}];
-                const tipo = tipos[i % 4];
-                return `
-                <div class="card task-card ${tipo.c}" onclick="preparar('${x.d}', '${x.a}')">
-                    <div class="badge ${tipo.c}">${tipo.t}</div>
-                    <div style="font-weight:700; font-size:1.1rem;">${x.d}</div>
-                    <div style="opacity:0.8; font-size:0.9rem;">${x.a}</div>
-                </div>`;
-            }).join('');
-        }
+    function replanejar() {
+        dados.ciclo = Array.from(document.querySelectorAll('.ck:checked')).map(c => c.value);
+        const diaria = document.getElementById('lista-hoje'); diaria.innerHTML = '';
+        const grid = document.getElementById('grid-semanal'); grid.innerHTML = '';
+        const dias = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
+        const hoje = new Date().getDay();
 
-        function preparar(d, a) {
-            tAtiva = { d, a };
-            document.getElementById('modal-titulo').innerText = d;
-            document.getElementById('modal-feedback').style.display = 'flex';
-        }
+        let p = 0; let fila = [];
+        dados.db.filter(it => dados.ciclo.includes(it.d) && !it.f).forEach(it => {
+            fila.push({...it, t: 'Estudo', cls: 'type-e'});
+            fila.push({...it, t: 'Revisão', cls: 'type-rev'});
+        });
 
-        function finalizar(m) {
-            const it = dados.db.find(x => x.d === tAtiva.d && x.a === tAtiva.a);
-            if(it) it.f = true;
-            save(); fecharModal(); renderDiario();
-        }
+        dias.forEach((dia, idx) => {
+            let meta = 4; let blocos = [];
+            while(meta > 0 && p < fila.length) {
+                let it = fila[p];
+                blocos.push(`<div class="badge ${it.cls}" style="display:block; margin:5px; padding:8px;">${it.t}: ${it.d}</div>`);
+                if(idx === hoje) {
+                    diaria.innerHTML += `<div class="task-card ${it.cls}" onclick="preparar('${it.d}', '${it.a}', '${it.t}')">
+                        <div class="badge ${it.cls}">${it.t}</div>
+                        <div style="font-weight:700;">${it.d}</div>
+                        <div style="font-size:0.85rem; opacity:0.8;">${it.a}</div>
+                    </div>`;
+                }
+                meta -= 1; p++;
+            }
+            grid.innerHTML += `<div style="flex:1; border-right:1px solid var(--border);"><div style="text-align:center; padding:10px; background:var(--bg-app); font-size:0.7rem; font-weight:bold;">${dia}</div>${blocos.join('')}</div>`;
+        });
+        save(); renderConfig();
+    }
 
-        function fecharModal() { document.getElementById('modal-feedback').style.display = 'none'; }
-        function exportar() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(dados)], {type:'application/json'})); a.download = 'backup_prf.json'; a.click(); }
-
-        renderConfig();
-        renderDiario();
-    </script>
+    function preparar(d, a, t) { tAtiva = { d, a, t }; document.getElementById('m-titulo').innerText = `${t}: ${d}`; document.getElementById('modal-feedback').style.display = 'flex'; }
+    function finalizar(modo) {
+        if(modo === 'ok') { const it = dados.db.find(x => x.d === tAtiva.d && x.a === tAtiva.a); if(it) it.f = true; }
+        fecharModal(); save(); replanejar();
+    }
+    function fecharModal() { document.getElementById('modal-feedback').style.display = 'none'; }
+    function renderConfig() { document.getElementById('checks-ciclo').innerHTML = [...new Set(dados.db.map(i => i.d))].map(d => `<label style="display:block;"><input type="checkbox" class="ck" value="${d}" ${dados.ciclo.includes(d)?'checked':''}> ${d}</label>`).join(''); }
+    function exportar() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(dados)], {type:'application/json'})); a.download = 'backup.json'; a.click(); }
+    load();
+</script>
 </body>
 </html>
