@@ -3,24 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI NEXUS v.123 - PRF MASTER</title>
+    <title>OMNI NEXUS v.127 - PRF DEFINITIVE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* CORE DA v.120 MANTIDO INTACTO */
+        /* CORE DA v.120 + DESIGN PREMIUM */
         :root {
             --primary: #0f172a; --accent: #0ea5e9; --bg: #f8fafc;
-            --card-bg: #ffffff; --border: #e2e8f0; --text-main: #1e293b; --text-sec: #64748b;
+            --border: #e2e8f0; --text-main: #1e293b; --text-sec: #64748b;
             --color-e: #0ea5e9; --color-rev: #f59e0b; --color-ex: #10b981;
-            --radius: 16px;
+            --radius: 12px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
         .sidebar { width: 260px; background: var(--primary); padding: 30px 20px; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; z-index: 1000; }
-        .logo-box { color: white; font-weight: 800; font-size: 1.3rem; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
-        .nav-item { padding: 12px 16px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; border-radius: 12px; margin-bottom: 5px; transition: 0.2s; font-size: 0.9rem; }
+        .logo-box { color: white; font-weight: 800; font-size: 1.3rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .streak-sidebar { color:#f59e0b; font-weight:800; font-size:0.85rem; margin-bottom:25px; text-align:center; background: rgba(245, 158, 11, 0.1); padding: 10px; border-radius: 8px;}
+        
+        .nav-item { padding: 12px 16px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; border-radius: 10px; margin-bottom: 5px; transition: 0.2s; font-size: 0.9rem; }
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.06); color: white; }
         .nav-item.active { background: var(--accent); box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); }
         .submenu { margin-left: 15px; border-left: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; padding: 5px 0; }
@@ -29,83 +31,64 @@
         .sub-link:hover { color: white; }
 
         .main { flex: 1; overflow-y: auto; padding: 30px; scroll-behavior: smooth; position: relative; padding-bottom: 120px; }
-        .container { max-width: 1000px; margin: 0 auto; }
+        .container { max-width: 1050px; margin: 0 auto; }
         .page { display: none; } .page.active { display: block; }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); }
-        .stat-card small { text-transform: uppercase; font-weight: 800; font-size: 0.65rem; color: var(--text-sec); letter-spacing: 1px; }
-        .stat-val { font-size: 1.4rem; font-weight: 800; margin-top: 5px; color: var(--primary); }
+        /* HEADER PREMIUM E COMPONENTES */
+        .header-panel { background: white; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 20px; }
+        .atraso-banner { background: #0ea5e9; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; }
+        .simulado-banner { background: #ef4444; color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; border: 2px dashed #f87171; }
+        
+        .dash-row { display: flex; justify-content: space-around; border-top: 1px solid #f1f5f9; padding-top: 20px; margin-top: 15px; }
+        .dash-item { text-align: center; }
+        .dash-item i { font-size: 1.5rem; color: var(--accent); margin-bottom: 8px; display: block; }
+        .dash-item span { font-size: 0.85rem; font-weight: 800; }
 
-        /* V.120 GRID SEMANAL PURO */
+        /* GRID SEMANAL V.120 */
         .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; min-width: 900px; }
-        .day-column { background: white; border-radius: 12px; border: 1px solid var(--border); min-height: 450px; display: flex; flex-direction: column; overflow: hidden; }
+        .day-column { background: white; border-radius: var(--radius); border: 1px solid var(--border); min-height: 450px; display: flex; flex-direction: column; overflow: hidden; }
         .day-head { background: #f1f5f9; padding: 12px 8px; text-align: center; border-bottom: 1px solid var(--border); font-weight: 800; font-size: 0.7rem; color: var(--primary); }
         .sim-task { margin: 5px; padding: 8px; border-radius: 8px; font-size: 0.6rem; color: white; font-weight: 700; line-height: 1.2; }
         .tag-e { background: var(--color-e); } .tag-rev { background: var(--color-rev); } .tag-ex { background: var(--color-ex); }
 
-        /* NOVAS IMPLEMENTAÇÕES (ADICIONADAS COM SEGURANÇA) */
-        
-        /* 1. Header Premium (Espelho da Imagem) */
-        .atraso-banner { background: #0ea5e9; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; }
-        .btn-replan { background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; }
-        
-        .header-panel { background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .header-title { font-size: 1.4rem; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--primary); margin-bottom: 5px; }
-        .header-sub { color: var(--text-sec); font-size: 0.85rem; margin-bottom: 20px; }
-        
-        .dash-row { display: flex; justify-content: space-around; border-top: 1px solid #f1f5f9; padding-top: 20px; margin-bottom: 20px; }
-        .dash-item { text-align: center; }
-        .dash-item i { font-size: 1.5rem; color: var(--accent); margin-bottom: 8px; display: block; }
-        .dash-item span { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
-        
-        .ciclo-progress-bg { background: #e2e8f0; height: 12px; border-radius: 10px; overflow: hidden; width: 100%; margin-top: 5px; }
-        .ciclo-progress-fill { background: #0ea5e9; height: 100%; transition: 0.5s; }
+        /* CARDS */
+        .task-card { background: white; border-radius: 10px; padding: 18px; margin-bottom: 12px; border: 1px solid var(--border); border-left: 8px solid #ccc; position: relative; }
+        .tag-black { background: #1e293b; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; margin-right: 5px; }
+        .tag-late { background: #ef4444; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; }
+        .tag-type { color: white; font-size: 0.65rem; padding: 4px 10px; border-radius: 4px; font-weight: 800; display: inline-block; margin: 10px 0; text-transform: uppercase; }
 
-        /* 2. Cards de Tarefa Melhorados */
-        .task-card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 10px; border: 1px solid var(--border); border-left: 6px solid #ccc; }
-        .task-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .task-tags { display: flex; gap: 5px; }
-        .tag-date { background: #1e293b; color: white; font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; font-weight: 800; display: flex; align-items: center; gap: 5px; }
-        .tag-late { background: #ef4444; color: white; font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; font-weight: 800; display: flex; align-items: center; gap: 5px; }
-        .tag-type { color: white; font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; font-weight: 800; display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; }
-        .task-hit { font-size: 0.75rem; font-weight: 800; color: var(--text-sec); }
-        
-        .task-title { font-size: 1rem; font-weight: 800; margin-top: 5px; }
-        .task-sub { font-size: 0.8rem; color: var(--text-sec); margin-top: 3px; }
-        
-        .task-controls { display: flex; gap: 10px; margin-top: 15px; align-items: center; }
-        .btn-control { background: #0ea5e9; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .timer-display { background: #f1f5f9; padding: 4px 10px; border-radius: 4px; font-family: monospace; font-weight: 800; font-size: 0.9rem; color: var(--primary); }
+        #adiantar-box { background: #ecfdf5; border: 2px dashed #10b981; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; display: none; }
 
-        /* 3. Rodapé de Estudo Extra */
-        .extra-footer { position: fixed; bottom: 0; left: 260px; right: 0; background: #1e3a8a; color: white; z-index: 50; transition: 0.3s; }
-        .extra-toggle { padding: 15px; text-align: center; font-weight: 700; cursor: pointer; font-size: 0.9rem; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .extra-form { display: none; padding: 20px; background: white; color: var(--text-main); border-top: 1px solid var(--border); box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
+        /* FOOTER EXTRA */
+        .extra-footer { position: fixed; bottom: 0; left: 260px; right: 0; background: #1e3a8a; color: white; z-index: 1001; }
+        .extra-toggle { padding: 15px; text-align: center; font-weight: 700; cursor: pointer; }
+        .extra-form { display: none; padding: 20px; background: white; color: var(--text-main); border-top: 1px solid var(--border); }
         .extra-form.open { display: block; }
-        .extra-grid { display: grid; grid-template-columns: 2fr 2fr 1fr 1fr 1fr auto; gap: 10px; align-items: center; }
+        .extra-grid { display: grid; grid-template-columns: 2fr 2fr 1fr 1fr 1fr auto; gap: 10px; }
 
-        /* Básico de Formulários */
-        .btn { padding: 10px 18px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; }
-        input, select, textarea { padding: 10px; border-radius: 8px; border: 1px solid var(--border); width: 100%; font-family: inherit; background: #f8fafc; font-size: 0.85rem; }
-        input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+        /* BÁSICOS */
+        .btn { padding: 10px 20px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-success { background: #10b981; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        input, select, textarea { padding: 10px; border-radius: 8px; border: 1px solid var(--border); width: 100%; background: #f8fafc; font-family: inherit;}
+        input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;}
+        .stat-card { background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 20px;}
+        .stat-card h3 { font-weight: 800; font-size: 1.2rem; margin-bottom: 15px; color: var(--primary); }
 
-        /* Heatmap e Folders */
+        /* SINALIZAR FOLDERS */
         .folder { background: white; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; }
-        .folder-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border-bottom: 1px solid var(--border); cursor: pointer; }
-        .folder-content { display: none; padding: 5px 15px; }
+        .folder-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; cursor: pointer; font-weight: 800; }
+        .folder-content { display: none; padding: 10px 15px; }
         .folder-content.open { display: block; }
-        .sinal-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
-        .legend-box { background: white; padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; display: flex; gap: 15px; font-size: 0.75rem; font-weight: 800; }
+        .sinal-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
 
         #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: white; padding: 40px; border-radius: 20px; width: 340px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <div class="login-card">
+        <div style="background:white; padding:40px; border-radius:20px; text-align:center; width:340px;">
             <h2 style="margin-bottom:20px; font-weight:800;">OMNI NEXUS</h2>
             <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; margin-bottom: 20px;">
             <button class="btn" style="width:100%; justify-content:center;" onclick="checkAccess()">ENTRAR</button>
@@ -113,8 +96,8 @@
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box"><i class="fas fa-shield-halved"></i> OMNI v.123</div>
-        <div style="color:#f59e0b; font-weight:800; font-size:0.8rem; margin-bottom:15px; text-align:center;">🔥 <span id="streak-val">0</span> Dias Seguidos</div>
+        <div class="logo-box"><i class="fas fa-shield-halved"></i> OMNI v.127</div>
+        <div class="streak-sidebar">🔥 <span id="streak-val">0</span> Dias Seguidos</div>
         
         <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-calendar-day"></i><span>Painel Hoje</span></div>
         <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-week"></i><span>Cronograma IA</span></div>
@@ -127,6 +110,9 @@
             <div class="sub-link" onclick="showTab('ciclo')">Ciclo Ativo</div>
             <div class="sub-link" onclick="showTab('config-h')">Horas Diárias</div>
             <div class="sub-link" onclick="showTab('sinalizar')">Sinalizar Base</div>
+            <div class="sub-link" onclick="showTab('fluxo')">Ajustar Fluxos</div>
+            <div class="sub-link" onclick="showTab('rever')">Rever Assuntos</div>
+            <div class="sub-link" style="color:#ef4444;" onclick="showTab('replanejar')">Replanejar Atrasos</div>
         </div>
     </aside>
 
@@ -134,80 +120,116 @@
         <div class="container">
             
             <div id="diaria" class="page active">
-                <div id="atraso-container"></div>
+                <div id="atraso-banner"></div>
+                <div id="simulado-banner" style="display:none;"></div>
                 
-                <div class="header-panel">
-                    <div class="header-title"><i class="fas fa-calendar-alt"></i> Metas Diárias</div>
-                    <div class="header-sub">👋 Oi, Matheus. Continue cumprindo as suas metas para terminar seus estudos no dia <strong>01/02/2027</strong></div>
-                    
-                    <div class="dash-row">
-                        <div class="dash-item"><i class="fas fa-calendar-day"></i><span id="d-hoje">--</span><br><span style="font-size:0.65rem; color:var(--text-sec);">Hoje</span></div>
-                        <div class="dash-item"><i class="fas fa-book"></i><span id="d-mats">0 matérias</span><br><span style="font-size:0.65rem; color:var(--text-sec);">Na meta</span></div>
-                        <div class="dash-item"><i class="fas fa-clock"></i><span id="d-meta">0h de metas</span><br><span style="font-size:0.65rem; color:var(--text-sec);">Total</span></div>
-                        <div class="dash-item"><i class="fas fa-book-open"></i><span id="d-estudo">0h de estudo</span><br><span style="font-size:0.65rem; color:var(--text-sec);">Teoria</span></div>
-                    </div>
-                    
-                    <div style="font-size:0.7rem; font-weight:800; color:var(--text-sec); margin-bottom:5px; display:flex; justify-content:space-between;">
-                        <span>Progresso do Ciclo Ativo:</span> <span id="p-ciclo-txt">0%</span>
-                    </div>
-                    <div class="ciclo-progress-bg"><div class="ciclo-progress-fill" id="p-ciclo-bar"></div></div>
+                <div id="adiantar-box">
+                    <h3 style="color:#065f46; font-weight:800;">🚀 Missão Cumprida!</h3>
+                    <p style="color:#065f46; margin: 10px 0;">Você finalizou tudo por hoje. Deseja adiantar as atividades de amanhã?</p>
+                    <button class="btn btn-success" onclick="adiantarAmanha()">SIM, ADIANTAR METAS</button>
                 </div>
 
+                <div class="header-panel" id="header-diario">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <div style="font-weight:800; font-size:1.3rem; margin-bottom:5px; color:var(--primary);"><i class="fas fa-calendar-alt"></i> Metas Diárias</div>
+                            <div style="color:var(--text-sec); font-size:0.85rem;">Oi, João. Continue firme até <strong>01/02/2027</strong></div>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn btn-outline" style="padding:6px 12px; font-size:0.8rem;" onclick="navDay(0)"><i class="fas fa-undo"></i> Hoje</button>
+                            <button class="btn btn-outline" style="padding:6px 12px; font-size:0.8rem;" onclick="navDay(1)">Amanhã <i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="dash-row">
+                        <div class="dash-item"><i class="fas fa-calendar-day"></i><span id="d-hoje">--</span></div>
+                        <div class="dash-item"><i class="fas fa-book"></i><span id="d-mats">0 Matérias</span></div>
+                        <div class="dash-item"><i class="fas fa-clock"></i><span id="d-meta">0h Total</span></div>
+                        <div class="dash-item"><i class="fas fa-book-open"></i><span id="d-estudo">0h Estudo</span></div>
+                    </div>
+                    
+                    <div style="margin-top:20px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:800; color:var(--text-sec); margin-bottom:5px;">
+                            <span>Progresso do Ciclo Ativo</span> <span id="p-ciclo-txt">0%</span>
+                        </div>
+                        <div style="background:#e2e8f0; height:10px; border-radius:10px; overflow:hidden;">
+                            <div id="p-ciclo-bar" style="background:#0ea5e9; height:100%; width:0%; transition:0.5s;"></div>
+                        </div>
+                    </div>
+                </div>
                 <div id="lista-diaria"></div>
             </div>
 
             <div id="semanal" class="page">
-                <div class="legend-box" style="justify-content:center;">
-                    <span><i class="fas fa-square" style="color:var(--color-e)"></i> Estudo</span>
-                    <span><i class="fas fa-square" style="color:var(--color-rev)"></i> Revisão</span>
-                    <span><i class="fas fa-square" style="color:var(--color-ex)"></i> Exercícios</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h2 style="font-weight:800;">Simulação Neural 7 Dias</h2>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn btn-outline" onclick="navWeek(-1)"><i class="fas fa-chevron-left"></i> Semana Ant.</button>
+                        <button class="btn btn-outline" onclick="navWeek(1)">Próxima Sem. <i class="fas fa-chevron-right"></i></button>
+                    </div>
                 </div>
-                <h2 style="margin-bottom:15px; font-weight:800;">Simulação Neural 7 Dias</h2>
                 <div style="overflow-x:auto; padding-bottom:10px;"><div id="grid-semanal" class="grid-7"></div></div>
             </div>
 
             <div id="simulados" class="page">
                 <div class="stat-card">
-                    <h3 style="margin-bottom:15px;">Gestão de Simulados</h3>
+                    <h3>Meus Simulados</h3>
+                    <p style="font-size:0.85rem; color:var(--text-sec); margin-bottom:15px;">A IA não agendará teoria nos dias marcados como Simulado.</p>
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
-                        <input type="date" id="sim-date">
-                        <input type="number" id="sim-nota" placeholder="Nota Líquida">
-                        <button class="btn" onclick="addSim()">SALVAR</button>
+                        <input type="date" id="sim-d">
+                        <input type="number" id="sim-n" placeholder="Nota Líquida">
+                        <button class="btn btn-success" onclick="addSim()">AGENDAR/SALVAR</button>
                     </div>
                     <div id="lista-sims"></div>
                 </div>
             </div>
 
             <div id="performance" class="page">
-                <div class="stats-grid" id="perf-top"></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-bottom:20px;" id="perf-stats"></div>
                 <div class="stat-card"><canvas id="perfChart" height="100"></canvas></div>
             </div>
 
             <div id="edital" class="page">
                 <div class="stat-card">
-                    <h3 style="margin-bottom:15px;">Adicionar Matéria ao Banco</h3>
-                    <input type="text" id="add-mat" placeholder="Nome da Matéria">
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:15px; margin-top:15px;">
-                        <div><small>T. Estudo</small><input type="number" id="h-e" value="1.5" step="0.5"></div>
-                        <div><small>T. Revisão</small><input type="number" id="h-r" value="1.0" step="0.5"></div>
-                        <div><small>T. Exercício</small><input type="number" id="h-x" value="1.0" step="0.5"></div>
+                    <h3>Importar Edital</h3>
+                    <input type="text" id="add-mat" placeholder="Matéria">
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
+                        <input type="number" id="h-e" value="1.5" title="Horas Estudo">
+                        <input type="number" id="h-r" value="1.0" title="Horas Revisão">
+                        <input type="number" id="h-x" value="1.0" title="Horas Exercício">
                     </div>
-                    <textarea id="add-ass" placeholder="Assuntos (um por linha)..." style="height:120px; margin-top:15px;"></textarea>
-                    <button class="btn" style="width:100%; margin-top:15px; justify-content:center;" onclick="impEdital()">IMPORTAR ASSUNTOS</button>
+                    <textarea id="add-ass" placeholder="Assuntos (um por linha)..." style="height:120px; margin-top:10px;"></textarea>
+                    <button class="btn" style="width:100%; margin-top:15px; justify-content:center;" onclick="impEdital()">IMPORTAR</button>
                 </div>
             </div>
 
             <div id="ciclo" class="page">
                 <div class="stat-card">
-                    <h3 style="margin-bottom:15px;">Matérias no Ciclo</h3>
+                    <h3>Ciclo Ativo</h3>
                     <div id="check-c" style="columns:2;"></div>
                     <button class="btn" style="width:100%; margin-top:20px; justify-content:center;" onclick="saveC()">SALVAR CICLO</button>
                 </div>
             </div>
 
+            <div id="config-h" class="page">
+                <div class="stat-card" style="background:#f8fafc; border:2px dashed #cbd5e1; margin-bottom:20px;">
+                    <h3 style="font-size:1rem; margin-bottom:10px;">Preenchimento Rápido</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:10px; align-items:center;">
+                        <input type="number" id="h-quick-week" placeholder="Seg a Sex (ex: 4)" step="0.5">
+                        <input type="number" id="h-quick-end" placeholder="Sáb e Dom (ex: 6)" step="0.5">
+                        <button class="btn btn-success" onclick="quickFillH()">APLICAR</button>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3 style="text-align:center;">Carga Horária Manual</h3>
+                    <div id="grid-h-in" style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:20px;"></div>
+                    <button class="btn" style="width:100%; justify-content:center;" onclick="saveH()">SALVAR CARGA</button>
+                </div>
+            </div>
+
             <div id="sinalizar" class="page">
-                <div class="legend-box">
-                    <strong>LEGENDA DE RETENÇÃO:</strong>
+                <div style="background:white; padding:15px; border-radius:12px; border:1px solid var(--border); margin-bottom:15px; font-size:0.8rem; font-weight:700; display:flex; gap:15px;">
+                    <strong>LEGENDA:</strong>
                     <span><i class="fas fa-square" style="color:#ef4444"></i> &lt; 50%</span>
                     <span><i class="fas fa-square" style="color:#f59e0b"></i> 50-79%</span>
                     <span><i class="fas fa-square" style="color:#10b981"></i> &gt; 80%</span>
@@ -215,11 +237,21 @@
                 <div id="tree"></div>
             </div>
 
-            <div id="config-h" class="page">
-                <div class="stat-card">
-                    <h3 style="margin-bottom:15px; text-align:center;">Sua Disponibilidade Diária</h3>
-                    <div id="grid-h-in" style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:20px;"></div>
-                    <button class="btn" style="width:100%; justify-content:center;" onclick="saveH()">SALVAR CARGA HORÁRIA</button>
+            <div id="fluxo" class="page">
+                <h2 style="margin-bottom:15px;">Ajuste Fino (Horas Estudo)</h2>
+                <div id="fluxo-content"></div>
+            </div>
+
+            <div id="rever" class="page">
+                <h2 style="margin-bottom:15px;">Assuntos Finalizados</h2>
+                <div id="lista-rever"></div>
+            </div>
+
+            <div id="replanejar" class="page">
+                <div class="stat-card" style="border-color:#ef4444;">
+                    <h3 style="color:#ef4444;">Marco Zero</h3>
+                    <p style="font-size:0.85rem; color:var(--text-sec); margin-bottom:15px;">Isso irá perdoar todos os seus atrasos passados e reagendar a sua fila a partir de hoje. Deseja prosseguir?</p>
+                    <button class="btn" style="background:#ef4444; width:100%; justify-content:center;" onclick="execReplan()">RECALCULAR TUDO AGORA</button>
                 </div>
             </div>
 
@@ -228,67 +260,95 @@
 
     <div class="extra-footer">
         <div class="extra-toggle" onclick="document.getElementById('ex-form').classList.toggle('open')">
-            <i class="fas fa-plus"></i> Estudou algo fora do planejado hoje? Informe aqui
+            <i class="fas fa-plus"></i> Estudou algo fora do planejado? Informe aqui
         </div>
         <div class="extra-form" id="ex-form">
             <div class="extra-grid">
                 <select id="ex-mat" onchange="loadExAss()"><option value="">Matéria</option></select>
                 <select id="ex-ass"><option value="">Assunto</option></select>
                 <input type="number" id="ex-h" placeholder="Horas" step="0.5">
-                <input type="number" id="ex-q" placeholder="Qtd Questões">
+                <input type="number" id="ex-q" placeholder="Questões">
                 <input type="number" id="ex-a" placeholder="Acertos">
-                <button class="btn" onclick="saveExtra()">LANÇAR</button>
+                <button class="btn btn-success" onclick="saveExtra()">LANÇAR</button>
             </div>
         </div>
     </div>
 
     <script>
-        /* MOTOR v.120 BASE (INALTERADO) + VARIÁVEIS EXTRAS */
-        let db = JSON.parse(localStorage.getItem('prf_v123')) || { 
-            lista: [], ciclo: [], h: {1:4, 2:4, 3:4, 4:4, 5:4, 6:4, 0:4}, metaFixa: {},
-            perf: {}, sims: [], streak: 0, lastCheck: null 
+        let db = JSON.parse(localStorage.getItem('prf_v127')) || { 
+            lista: [], 
+            ciclo: [], 
+            h: {1:4, 2:4, 3:4, 4:4, 5:4, 6:4, 0:4}, 
+            metaFixa: {},
+            perf: {}, 
+            sims: [], 
+            streak: 0, 
+            lastCheck: null 
         };
+        
         let vDate = new Date();
-        let timers = {}; // Guarda IDs de cronômetros
+        let weekOffset = 0;
+        let timers = {};
 
-        const save = () => localStorage.setItem('prf_v123', JSON.stringify(db));
-        const formatT = (h) => h === 0.5 ? "30m" : h === 1 ? "1h" : h === 1.5 ? "1.5h" : h === 2 ? "2h" : h+"h";
-
+        function save() {
+            localStorage.setItem('prf_v127', JSON.stringify(db));
+        }
+        
         function checkAccess() { 
             if(document.getElementById('pass-input').value === "123") { 
-                document.getElementById('login-screen').style.display='none'; init(); 
+                document.getElementById('login-screen').style.display = 'none'; 
+                init(); 
             } 
         }
 
         function init() { 
             checkStreak();
             renderDiario(vDate); 
-            loadExMats();
+            loadExMats(); 
         }
 
         function showTab(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(id).classList.add('active'); if(el) el.classList.add('active');
+            document.getElementById(id).classList.add('active'); 
+            if(el) el.classList.add('active');
             
-            if(id === 'semanal') renderSemanal();
+            if(id === 'semanal') { weekOffset = 0; renderSemanal(); }
             if(id === 'ciclo') renderCiclo();
             if(id === 'config-h') renderHInputs();
             if(id === 'sinalizar') renderTree();
             if(id === 'performance') renderPerf();
+            if(id === 'fluxo') renderFluxo();
+            if(id === 'rever') renderRever();
             if(id === 'simulados') renderSims();
         }
 
-        function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
+        function toggleSub() { 
+            document.getElementById('sub-plano').classList.toggle('show'); 
+        }
 
-        // --- CÉREBRO v.120: RITO LINEAR + ROUND-ROBIN + LOOP (INTACTO) ---
-        function getNeuralPool(limit, simList, cState) {
-            let pool = []; let somaH = 0;
+        function navDay(dir) {
+            if(dir === 0) vDate = new Date();
+            else vDate.setDate(vDate.getDate() + dir);
+            renderDiario(vDate);
+        }
+
+        function navWeek(dir) {
+            weekOffset += dir;
+            renderSemanal();
+        }
+
+        // --- MOTOR IA (ROUND-ROBIN + LOOP + TRAVA 24H) ---
+        function getNeuralPool(limit, simList, cState, dayContext) {
+            let pool = []; 
+            let somaH = 0;
             if(!db.ciclo.length) return pool;
 
             let safety = 0;
             while(somaH < limit && safety < 100) {
-                safety++; let addedAny = false;
+                safety++; 
+                let addedAny = false;
+                
                 for(let i = 0; i < db.ciclo.length; i++) {
                     if(somaH >= limit) break;
                     let m = db.ciclo[cState.index];
@@ -296,42 +356,61 @@
                     let addedThisIter = false;
 
                     if(pending) {
-                        const rito = [{k:'E', l:'Estudo', h: parseFloat(pending.h.E)}, {k:'Rev', l:'Revisão', h: parseFloat(pending.h.Rev)}, {k:'Ex', l:'Exercícios', h: parseFloat(pending.h.Ex)}];
+                        const rito = [
+                            {k:'E', l:'Estudo', h:pending.h.E}, 
+                            {k:'Rev', l:'Revisão', h:pending.h.Rev}, 
+                            {k:'Ex', l:'Exercícios', h:pending.h.Ex}
+                        ];
+                        
                         for(let s of rito) {
                             if(!pending.done[s.k]) {
+                                // Trava: Exercício não entra no mesmo dia que a Revisão
+                                if(s.k === 'Ex' && pending.lockedDay === dayContext) continue;
+
                                 if(s.k === 'E') {
-                                    let p = s.h - (pending.hF || 0); let alocar = Math.min(p, limit - somaH);
+                                    let p = s.h - (pending.hF || 0); 
+                                    let alocar = Math.min(p, limit - somaH);
                                     if(alocar > 0) {
                                         pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: alocar });
-                                        pending.hF = (pending.hF || 0) + alocar; if(pending.hF >= s.h - 0.05) pending.done.E = true;
-                                        somaH += alocar; addedThisIter = true;
+                                        pending.hF = (pending.hF || 0) + alocar; 
+                                        if(pending.hF >= s.h - 0.05) pending.done.E = true;
+                                        somaH += alocar; 
+                                        addedThisIter = true;
                                     }
-                                } else {
-                                    if(somaH + s.h <= limit + 0.05) {
-                                        pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: s.h });
-                                        pending.done[s.k] = true; somaH += s.h; addedThisIter = true;
-                                        if(s.k === 'Ex') pending.f = true;
-                                    }
+                                } else if(somaH + s.h <= limit + 0.05) {
+                                    pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: s.h });
+                                    pending.done[s.k] = true; 
+                                    somaH += s.h; 
+                                    addedThisIter = true;
+                                    
+                                    if(s.k === 'Rev') pending.lockedDay = dayContext; 
+                                    if(s.k === 'Ex') pending.f = true;
                                 }
                                 break; 
                             }
                         }
                     } else {
-                        let concluidos = simList.filter(x => x.m === m && x.f);
-                        if(concluidos.length > 0) {
-                            let mItem = concluidos.find(x => !x.mEx);
-                            if(!mItem) { concluidos.forEach(x => { x.mRev = false; x.mEx = false; }); mItem = concluidos[0]; }
-                            if(!mItem.mRev) {
-                                let hRev = parseFloat(mItem.h.Rev);
-                                if(somaH + hRev <= limit + 0.05) {
-                                    pool.push({ m: mItem.m, a: mItem.a, l: 'Revisão', k: 'mRev', h: hRev });
-                                    mItem.mRev = true; somaH += hRev; addedThisIter = true;
-                                }
-                            } else if(!mItem.mEx) {
-                                let hEx = parseFloat(mItem.h.Ex);
-                                if(somaH + hEx <= limit + 0.05) {
-                                    pool.push({ m: mItem.m, a: mItem.a, l: 'Exercícios', k: 'mEx', h: hEx });
-                                    mItem.mEx = true; somaH += hEx; addedThisIter = true;
+                        // Loop Manutenção
+                        let conc = simList.filter(x => x.m === m && x.f);
+                        if(conc.length > 0) {
+                            let mItem = conc.find(x => !x.mEx);
+                            if(!mItem) { 
+                                conc.forEach(x => { x.mRev = false; x.mEx = false; }); 
+                                mItem = conc[0]; 
+                            }
+                            if(!mItem.mRev && somaH + parseFloat(mItem.h.Rev) <= limit + 0.05) {
+                                pool.push({ m: mItem.m, a: mItem.a, l: 'Revisão', k: 'mRev', h: parseFloat(mItem.h.Rev) });
+                                mItem.mRev = true; 
+                                somaH += parseFloat(mItem.h.Rev); 
+                                addedThisIter = true;
+                                mItem.lockedDay = dayContext;
+                            } else if(!mItem.mEx && mItem.lockedDay !== dayContext) {
+                                let hX = parseFloat(mItem.h.Ex);
+                                if(somaH + hX <= limit + 0.05) {
+                                    pool.push({ m: mItem.m, a: mItem.a, l: 'Exercícios', k: 'mEx', h: hX });
+                                    mItem.mEx = true; 
+                                    somaH += hX; 
+                                    addedThisIter = true;
                                 }
                             }
                         }
@@ -344,236 +423,460 @@
             return pool;
         }
 
-        // --- PAINEL DIÁRIO COM ATRASOS E CARDS NOVOS ---
+        // --- PAINEL HOJE ---
         function renderDiario(date) {
             const hjStr = new Date().toLocaleDateString('pt-BR');
             const curStr = date.toLocaleDateString('pt-BR');
-            const hMeta = parseFloat(db.h[date.getDay()]);
+            const hM = db.h[date.getDay()];
             
-            // Lógica de Atrasos
+            // Verifica Bloqueio de Simulado
+            const isSimuladoDay = db.sims.some(s => {
+                let sDate = new Date(s.d + 'T00:00:00').toLocaleDateString('pt-BR');
+                return sDate === curStr;
+            });
+
+            // Reseta exibições
+            document.getElementById('simulado-banner').style.display = 'none';
+            document.getElementById('lista-diaria').style.display = 'block';
+            document.getElementById('header-diario').style.display = 'block';
+
+            if(isSimuladoDay) {
+                document.getElementById('simulado-banner').style.display = 'block';
+                document.getElementById('simulado-banner').innerHTML = `<h2>🚨 HOJE É DIA DE SIMULADO</h2><p>O cronograma teórico está pausado. Foque na prova e depois lance seu resultado na aba Simulados.</p>`;
+                document.getElementById('lista-diaria').style.display = 'none';
+                document.getElementById('header-diario').style.display = 'none';
+                document.getElementById('atraso-banner').innerHTML = '';
+                document.getElementById('adiantar-box').style.display = 'none';
+                return; // Interrompe a renderização de tarefas
+            }
+
+            // Atrasos
             let atrasos = [];
-            let hjD = new Date(hjStr.split('/').reverse().join('-'));
+            let hjData = new Date(hjStr.split('/').reverse().join('-'));
             Object.keys(db.metaFixa).forEach(d => {
-                if(new Date(d.split('/').reverse().join('-')) < hjD) {
-                    atrasos = atrasos.concat(db.metaFixa[d].filter(t => !t.c).map(t => ({...t, isLate: true, origD: d})));
+                let dData = new Date(d.split('/').reverse().join('-'));
+                if(dData < hjData) {
+                    atrasos = atrasos.concat(db.metaFixa[d].filter(t => !t.c).map(t => ({...t, isL: true, dO: d})));
                 }
             });
 
-            // Banner Atraso
-            let uniqAtrasos = [...new Set(atrasos.map(a => a.origD))].length;
-            document.getElementById('atraso-container').innerHTML = uniqAtrasos > 0 ? `
+            // Banner
+            let uniqAtrasos = [...new Set(atrasos.map(a => a.dO))].length;
+            document.getElementById('atraso-banner').innerHTML = uniqAtrasos > 0 ? `
                 <div class="atraso-banner">
-                    <div>Matheus, infelizmente, você possui ${uniqAtrasos} dias de atraso.</div>
-                    <button class="btn-replan" onclick="execReplan()">Replanejar</button>
+                    <span>Você possui ${uniqAtrasos} dias de atraso pendentes.</span>
+                    <button class="btn-replan" onclick="showTab('replanejar')">Resolver</button>
                 </div>` : '';
 
+            // Gerar dia
             if(!db.metaFixa[curStr] || curStr !== hjStr) {
                 let simL = JSON.parse(JSON.stringify(db.lista));
-                db.metaFixa[curStr] = getNeuralPool(hMeta, simL, { index: 0 });
+                db.metaFixa[curStr] = getNeuralPool(hM, simL, { index: 0 }, curStr);
             }
 
             const tasks = atrasos.concat(db.metaFixa[curStr]);
             
-            // Dashboard Atualização
             document.getElementById('d-hoje').innerText = curStr.substring(0,5);
-            document.getElementById('d-mats').innerText = [...new Set(tasks.map(t=>t.m))].length + " mat.";
+            document.getElementById('d-mats').innerText = [...new Set(tasks.map(t=>t.m))].length;
             document.getElementById('d-meta').innerText = tasks.reduce((a,b)=>a+b.h,0).toFixed(1) + "h";
             document.getElementById('d-estudo').innerText = tasks.filter(t=>t.k==='E').reduce((a,b)=>a+b.h,0).toFixed(1) + "h";
 
-            // Barra Progresso Ciclo (Apenas matérias ativas)
-            let ativos = db.lista.filter(x => db.ciclo.includes(x.m));
-            let tTotal = ativos.length * 3; let tDone = 0;
-            ativos.forEach(a => { if(a.done.E) tDone++; if(a.done.Rev) tDone++; if(a.done.Ex) tDone++; });
-            let pCiclo = tTotal ? Math.round((tDone/tTotal)*100) : 0;
-            document.getElementById('p-ciclo-txt').innerText = pCiclo + '%';
-            document.getElementById('p-ciclo-bar').style.width = pCiclo + '%';
+            // Overdrive Check
+            let curMeta = db.metaFixa[curStr] || [];
+            const isDone = curMeta.length > 0 && curMeta.every(t => t.c);
+            document.getElementById('adiantar-box').style.display = (isDone && curStr === hjStr && atrasos.length === 0) ? 'block' : 'none';
 
-            // Render Cards
+            // Cards
             document.getElementById('lista-diaria').innerHTML = tasks.map((t, i) => {
-                let colorKey = (t.k === 'Ex' || t.k === 'mEx') ? 'ex' : ((t.k === 'Rev' || t.k === 'mRev') ? 'rev' : 'e');
-                let hitR = getHitR(t.m, t.a);
+                let hit = getHit(t.m, t.a);
+                let col = t.k === 'Ex'||t.k === 'mEx' ? 'ex' : (t.k === 'Rev'||t.k === 'mRev' ? 'rev' : 'e');
                 let uid = `${t.m.replace(/\s/g,'')}-${i}`;
-                
                 return `
-                <div class="task-card" style="border-left-color:var(--color-${colorKey})">
-                    <div class="task-top">
-                        <div class="task-tags">
-                            <div class="tag-date"><i class="fas fa-calendar-day"></i> meta do dia ${t.origD || curStr.substring(0,5)}</div>
-                            ${t.isLate ? '<div class="tag-late"><i class="fas fa-exclamation-triangle"></i> atrasada</div>' : ''}
-                        </div>
-                        <div class="task-hit">${hitR}% acertos</div>
+                <div class="task-card" style="border-left-color:var(--color-${col})">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <div><span class="tag-black">📅 Meta ${t.dO || curStr.substring(0,5)}</span> ${t.isL?'<span class="tag-late">ATRASADA</span>':''}</div>
+                        <div style="font-weight:800; color:var(--text-sec); font-size:0.8rem;">${hit}% acertos</div>
                     </div>
+                    <span class="tag-type" style="background:var(--color-${col})">${t.l} (${t.h}h)</span>
+                    <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:5px;">${t.m}</h3>
+                    <p style="font-size:0.85rem; color:var(--text-sec);">${t.a}</p>
                     
-                    <span class="tag-type" style="background:var(--color-${colorKey})"><i class="fas fa-info-circle"></i> ${t.h} hora(s) de ${t.l.toLowerCase()}</span>
-                    
-                    <div class="task-title">${t.m}</div>
-                    <div class="task-sub">${t.a}</div>
-                    
-                    <div class="task-controls">
-                        <button class="btn-control" onclick="tCron('${uid}')"><i class="fas fa-clock"></i> Cronômetro</button>
-                        <div class="timer-display" id="tmr-${uid}">00:00</div>
-                        <label style="margin-left:auto; display:flex; align-items:center; gap:5px; font-weight:800; cursor:pointer;">
-                            <input type="checkbox" ${t.c ? 'checked' : ''} onclick="concluirTask('${t.origD || curStr}', ${i})"> Feito
+                    <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f5f9; padding-top:15px;">
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <button class="btn" style="padding:6px 12px; font-size:0.75rem;" onclick="tTmr('${uid}')"><i class="fas fa-clock"></i> Cronômetro</button>
+                            <div id="tmr-${uid}" style="font-family:monospace; font-weight:800; background:#f1f5f9; padding:5px 10px; border-radius:5px;">00:00</div>
+                        </div>
+                        <label style="font-weight:800; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" ${t.c?'checked':''} onclick="concluirTask('${t.dO||curStr}', ${i})"> Feito
                         </label>
                     </div>
                 </div>`;
-            }).join('') || "<p style='text-align:center; padding:20px; color:gray;'>Nenhuma atividade.</p>";
+            }).join('') || "<div style='text-align:center; padding:30px; background:white; border-radius:12px; border:1px solid var(--border); color:gray;'>Nenhuma atividade agendada.</div>";
+            
+            updateProg();
         }
 
         function concluirTask(dK, idx) {
-            let t = db.metaFixa[dK][idx];
+            let t = db.metaFixa[dK][idx]; 
             t.c = !t.c;
+            
             let it = db.lista.find(x => x.m === t.m && x.a === t.a);
             if(it) {
-                if(t.k === 'E') { it.hF = (it.hF || 0) + (t.c ? t.h : -t.h); it.done.E = it.hF >= (it.h.E - 0.05); } 
-                else if(t.k === 'Rev' || t.k === 'Ex') { it.done[t.k] = t.c; if(t.k === 'Ex') it.f = t.c; } 
-                else if(t.k === 'mRev' || t.k === 'mEx') { it[t.k] = t.c; }
+                if(t.k === 'E') { 
+                    it.hF = (it.hF || 0) + (t.c ? t.h : -t.h); 
+                    it.done.E = it.hF >= (it.h.E - 0.05); 
+                }
+                else if(t.k === 'Rev' || t.k === 'Ex') { 
+                    it.done[t.k] = t.c; 
+                    if(t.k === 'Ex') it.f = t.c; 
+                }
+                else if(t.k === 'mRev' || t.k === 'mEx') { 
+                    it[t.k] = t.c; 
+                }
             }
-            if(t.c) { db.lastCheck = new Date().toLocaleDateString('pt-BR'); checkStreak(); }
-            save(); init();
+            
+            if(t.c) { 
+                db.lastCheck = new Date().toLocaleDateString('pt-BR'); 
+                checkStreak(); 
+            }
+            
+            save(); 
+            init();
+        }
+
+        function adiantarAmanha() {
+            let am = new Date(); 
+            am.setDate(am.getDate() + 1);
+            let aStr = am.toLocaleDateString('pt-BR');
+            let hj = new Date().toLocaleDateString('pt-BR');
+            
+            let simL = JSON.parse(JSON.stringify(db.lista));
+            let pAm = getNeuralPool(db.h[am.getDay()], simL, { index: 0 }, aStr);
+            
+            if(!pAm.length) {
+                alert("Não há matérias para adiantar amanhã.");
+                return;
+            }
+            
+            pAm.forEach(t => { 
+                t.dO = aStr.substring(0,5); 
+                db.metaFixa[hj].push(t); 
+            });
+            
+            save(); 
+            init();
         }
 
         function execReplan() {
-            db.metaFixa = {}; save(); init(); alert("Cronograma recalibrado e dívidas perdoadas!");
+            if(confirm("Você irá perdoar todos os atrasos e recomeçar a fila a partir de hoje. Continuar?")) {
+                db.metaFixa = {}; 
+                save(); 
+                showTab('diaria', document.querySelectorAll('.nav-item')[0]); 
+            }
         }
 
-        // --- CRONOGRAMA SEMANAL (V.120 RESTAURADO E INTOCADO) ---
+        // --- CRONOGRAMA SEMANAL ---
         function renderSemanal() {
-            let vList = JSON.parse(JSON.stringify(db.lista));
-            let cState = { index: 0 };
-            const dNames = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
+            let vL = JSON.parse(JSON.stringify(db.lista)); 
+            let cS = { index: 0 };
+            const dN = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
             
             document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(off => {
-                let d = new Date(); d.setDate(d.getDate() + off);
-                let dayTasks = getNeuralPool(parseFloat(db.h[d.getDay()]), vList, cState);
+                let d = new Date(); 
+                d.setDate(d.getDate() + (weekOffset * 7) + off);
+                let dStr = d.toLocaleDateString('pt-BR');
                 
-                return `<div class="day-column">
-                    <div class="day-head">${dNames[d.getDay()]}<br>${d.toLocaleDateString('pt-BR').substring(0,5)}</div>
-                    ${dayTasks.map(x => {
-                        let cKey = (x.k === 'Ex' || x.k === 'mEx') ? 'ex' : ((x.k === 'Rev' || x.k === 'mRev') ? 'rev' : 'e');
-                        return `<div class="sim-task tag-${cKey}"><b>${x.m}</b><br>${x.a}</div>`;
-                    }).join('')}
+                // Checa simulado
+                let isSim = db.sims.some(s => new Date(s.d + 'T00:00:00').toLocaleDateString('pt-BR') === dStr);
+                
+                let htmlTasks = "";
+                if(isSim) {
+                    htmlTasks = `<div style="text-align:center; padding:20px 5px; color:#ef4444; font-weight:800; font-size:0.7rem;">🚨 SIMULADO</div>`;
+                } else {
+                    let ts = getNeuralPool(db.h[d.getDay()], vL, cS, dStr);
+                    htmlTasks = ts.map(x => `<div class="sim-task tag-${x.k==='Ex'||x.k==='mEx'?'ex':(x.k==='Rev'||x.k==='mRev'?'rev':'e')}"><b>${x.m}</b><br>${x.a}</div>`).join('');
+                }
+                
+                return `
+                <div class="day-column">
+                    <div class="day-head">${dN[d.getDay()]}<br><span style="font-size:0.9rem;">${dStr.substring(0,5)}</span></div>
+                    <div style="padding:5px;">${htmlTasks}</div>
                 </div>`;
             }).join('');
         }
 
-        // --- FUNÇÕES EXTRAS (ACERTOS, CRONÔMETRO, SIMULADO) ---
-        function getHitR(m, a) { let d = db.perf[m+'-'+a]; return (d && d.q>0) ? Math.round((d.h/d.q)*100) : 0; }
-
-        function tCron(id) {
-            if(!timers[id]) timers[id] = { sec: 0, int: null };
-            let tmr = timers[id];
-            if(!tmr.int) {
-                tmr.int = setInterval(() => {
-                    tmr.sec++;
-                    let m = Math.floor(tmr.sec/60).toString().padStart(2,'0'); let s = (tmr.sec%60).toString().padStart(2,'0');
-                    document.getElementById('tmr-'+id).innerText = `${m}:${s}`;
-                }, 1000);
-            } else {
-                clearInterval(tmr.int); tmr.int = null;
-            }
-        }
-
-        function checkStreak() {
-            let hj = new Date().toLocaleDateString('pt-BR');
-            if(db.lastCheck && db.lastCheck !== hj) {
-                let d1 = new Date(db.lastCheck.split('/').reverse().join('-'));
-                let d2 = new Date(hj.split('/').reverse().join('-'));
-                if(Math.ceil(Math.abs(d2-d1)/(1000*60*60*24)) > 1) db.streak = 0;
-                else db.streak++;
-            } else if (!db.lastCheck) { db.streak = 0; }
-            document.getElementById('streak-val').innerText = db.streak;
-        }
-
-        function loadExMats() {
-            let mats = [...new Set(db.lista.map(x => x.m))];
-            document.getElementById('ex-mat').innerHTML = '<option value="">Matéria</option>' + mats.map(m => `<option value="${m}">${m}</option>`).join('');
-        }
-        function loadExAss() {
-            let m = document.getElementById('ex-mat').value;
-            let ass = db.lista.filter(x => x.m === m).map(x => x.a);
-            document.getElementById('ex-ass').innerHTML = '<option value="">Assunto</option>' + ass.map(a => `<option value="${a}">${a}</option>`).join('');
-        }
-        function saveExtra() {
-            let m = document.getElementById('ex-mat').value, a = document.getElementById('ex-ass').value;
-            let h = parseFloat(document.getElementById('ex-h').value)||0, q = parseInt(document.getElementById('ex-q').value)||0, hit = parseInt(document.getElementById('ex-a').value)||0;
-            if(!m||!a) return; let k = m+'-'+a;
-            if(!db.perf[k]) db.perf[k] = {q:0,h:0,hrs:0};
-            db.perf[k].q+=q; db.perf[k].h+=hit; db.perf[k].hrs+=h;
-            save(); alert("Salvo!"); document.getElementById('ex-form').classList.remove('open'); init();
-        }
-
-        function renderSims() {
-            document.getElementById('lista-sims').innerHTML = db.sims.map((s,i) => `<div style="background:#f1f5f9; padding:15px; margin-bottom:10px; border-radius:8px;"><b>Simulado #${i+1} (${s.d})</b> - Nota: ${s.n}</div>`).join('');
-        }
-        function addSim() {
-            let d = document.getElementById('sim-date').value, n = document.getElementById('sim-nota').value;
-            if(!d||!n) return; db.sims.push({d, n}); save(); renderSims();
-        }
-
-        function renderPerf() {
-            let tQ=0, tH=0, tHrs=0;
-            Object.values(db.perf).forEach(v => { tQ+=v.q; tH+=v.h; tHrs+=v.hrs; });
-            document.getElementById('perf-top').innerHTML = `
-                <div class="stat-card"><small>Questões Totais</small><div class="stat-val">${tQ}</div></div>
-                <div class="stat-card"><small>Média Global</small><div class="stat-val">${tQ?Math.round((tH/tQ)*100):0}%</div></div>
-                <div class="stat-card"><small>Horas Lançadas</small><div class="stat-val">${tHrs.toFixed(1)}h</div></div>`;
-            
-            let labels = [...new Set(db.lista.map(x => x.m))];
-            let data = labels.map(l => {
-                let q=0, h=0; Object.keys(db.perf).filter(k => k.startsWith(l)).forEach(k => { q+=db.perf[k].q; h+=db.perf[k].h; });
-                return q ? Math.round((h/q)*100) : 0;
-            });
-            new Chart(document.getElementById('perfChart'), { type:'bar', data:{ labels, datasets:[{ label:'% Acertos', data, backgroundColor:'#0ea5e9' }] }});
-        }
-
-        // --- EDITAL, CICLO, HORAS E TREE (V.120) ---
-        function impEdital() {
-            const m = document.getElementById('add-mat').value, hE = parseFloat(document.getElementById('h-e').value), hR = parseFloat(document.getElementById('h-r').value), hX = parseFloat(document.getElementById('h-x').value);
-            const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim().length > 1);
-            ass.forEach(a => { if(!db.lista.some(x=>x.m===m&&x.a===a.trim())) db.lista.push({ m, a: a.trim(), h: {E:hE, Rev:hR, Ex:hX}, f: false, done: {E:false, Rev:false, Ex:false}, hF: 0, mRev: false, mEx: false }); });
-            save(); init(); alert("Importado!");
-        }
-        function renderCiclo() {
-            const mats = [...new Set(db.lista.map(x => x.m))];
-            document.getElementById('check-c').innerHTML = mats.map(m => `<label style="display:flex; gap:8px; margin-bottom:10px;"><input type="checkbox" class="ckc" value="${m}" ${db.ciclo.includes(m)?'checked':''}> ${m}</label>`).join('');
-        }
-        function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); db.metaFixa = {}; save(); init(); }
-        function renderHInputs() {
-            document.getElementById('grid-h-in').innerHTML = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"].map((n,i) => `<div style="background:#f1f5f9; padding:10px; border-radius:8px; text-align:center;"><small>${n}</small><br><input type="number" id="h-in-${i}" value="${db.h[i]}" step="0.5" style="width:60px;"></div>`).join('');
-        }
-        function saveH() { for(let i=0; i<7; i++) db.h[i] = parseFloat(document.getElementById(`h-in-${i}`).value); db.metaFixa = {}; save(); init(); }
-
-        // Heatmap no Sinalizar
+        // --- SINALIZAR BASE ---
         function renderTree() {
             const mats = [...new Set(db.lista.map(x => x.m))];
+            
             document.getElementById('tree').innerHTML = mats.map(m => {
                 const ass = db.lista.filter(x => x.m === m);
                 return `
                 <div class="folder">
                     <div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')">
-                        <b>${m}</b> <button class="btn btn-sm" style="background:#10b981;" onclick="event.stopPropagation(); markAll('${m}',true)">Tudo</button>
+                        <span>${m}</span>
+                        <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); markAll('${m}',true)">Tudo</button>
                     </div>
                     <div class="folder-content">
                         ${ass.map(a => {
-                            let hr = getHitR(a.m, a.a);
+                            let hr = getHit(a.m, a.a);
                             let col = !db.perf[a.m+'-'+a.a] ? '#e2e8f0' : (hr>=80 ? '#10b981' : (hr>=50 ? '#f59e0b' : '#ef4444'));
                             return `
-                            <div class="sinal-row" style="border-left:4px solid ${col}; padding-left:10px;">
-                                <span style="font-size:0.85rem;">${a.a} <b>(${hr}%)</b></span>
+                            <div class="sinal-row" style="border-left:4px solid ${col}; padding-left:10px; margin-bottom:5px;">
+                                <span style="font-size:0.85rem; font-weight:600;">${a.a} <span style="color:var(--text-sec);">(${hr}%)</span></span>
                                 <div style="display:flex; gap:10px; font-weight:800; font-size:0.75rem;">
-                                    <label>E <input type="checkbox" ${a.done.E?'checked':''} onclick="tItem('${a.m}','${a.a}','E')"></label>
-                                    <label>R <input type="checkbox" ${a.done.Rev?'checked':''} onclick="tItem('${a.m}','${a.a}','Rev')"></label>
-                                    <label>X <input type="checkbox" ${a.done.Ex?'checked':''} onclick="tItem('${a.m}','${a.a}','Ex')"></label>
+                                    <label style="cursor:pointer; display:flex; align-items:center; gap:4px;">E <input type="checkbox" ${a.done.E?'checked':''} onclick="tItm('${a.m}','${a.a}','E')"></label>
+                                    <label style="cursor:pointer; display:flex; align-items:center; gap:4px;">R <input type="checkbox" ${a.done.Rev?'checked':''} onclick="tItm('${a.m}','${a.a}','Rev')"></label>
+                                    <label style="cursor:pointer; display:flex; align-items:center; gap:4px;">X <input type="checkbox" ${a.done.Ex?'checked':''} onclick="tItm('${a.m}','${a.a}','Ex')"></label>
                                 </div>
                             </div>`;
                         }).join('')}
                     </div>
                 </div>`;
-            }).join('');
+            }).join('') || "<p>Nenhuma matéria importada.</p>";
         }
-        function markAll(m,s) { db.lista.filter(x=>x.m===m).forEach(a=>{a.done.E=s;a.done.Rev=s;a.done.Ex=s;a.f=s;a.hF=s?a.h.E:0;}); db.metaFixa={}; save(); init(); }
-        function tItem(m,a,s) { let it = db.lista.find(x=>x.m===m&&x.a===a); it.done[s]=!it.done[s]; if(!it.done.E){it.done.Rev=false;it.done.Ex=false;it.f=false;it.hF=0;} if(s==='Ex'&&it.done.Ex) it.f=true; db.metaFixa={}; save(); init(); }
+
+        function markAll(m,s) { 
+            db.lista.filter(x=>x.m===m).forEach(a=>{ a.done.E=s; a.done.Rev=s; a.done.Ex=s; a.f=s; a.hF=s?a.h.E:0; }); 
+            db.metaFixa={}; 
+            save(); 
+            renderTree(); 
+            init(); 
+        }
+        
+        function tItm(m,a,s) { 
+            let it = db.lista.find(x=>x.m===m&&x.a===a); 
+            it.done[s] = !it.done[s]; 
+            if(!it.done.E){ it.done.Rev=false; it.done.Ex=false; it.f=false; it.hF=0; } 
+            if(s==='Ex' && it.done.Ex) it.f=true; 
+            db.metaFixa={}; 
+            save(); 
+            renderTree(); 
+            init(); 
+        }
+
+        // --- HORAS DIÁRIAS E PREENCHIMENTO RÁPIDO ---
+        function renderHInputs() {
+            const dN = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
+            document.getElementById('grid-h-in').innerHTML = dN.map((n,i) => `
+                <div style="background:#f1f5f9; padding:15px; border-radius:8px; text-align:center;">
+                    <small style="font-weight:800; color:var(--text-sec);">${n}</small><br>
+                    <input type="number" id="h-in-${i}" value="${db.h[i]}" step="0.5" style="width:70px; margin-top:5px; text-align:center; font-weight:800;">
+                </div>`).join('');
+        }
+        
+        function quickFillH() {
+            let w = parseFloat(document.getElementById('h-quick-week').value);
+            let e = parseFloat(document.getElementById('h-quick-end').value);
+            if(!isNaN(w)) { for(let i=1; i<=5; i++) document.getElementById(`h-in-${i}`).value = w; }
+            if(!isNaN(e)) { document.getElementById('h-in-0').value = e; document.getElementById('h-in-6').value = e; }
+        }
+        
+        function saveH() { 
+            for(let i=0; i<7; i++) {
+                db.h[i] = parseFloat(document.getElementById(`h-in-${i}`).value); 
+            }
+            db.metaFixa = {}; 
+            save(); 
+            init(); 
+            alert("Horas atualizadas com sucesso!"); 
+        }
+
+        // --- OUTROS MENUS ---
+        function renderRever() {
+            const fin = db.lista.filter(x => x.f);
+            document.getElementById('lista-rever').innerHTML = fin.map(a => `
+                <div class="stat-card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><b style="color:var(--primary);">${a.m}</b><br><span style="font-size:0.85rem; color:var(--text-sec);">${a.a}</span></div>
+                    <button class="btn" style="background:#f59e0b;" onclick="resetA('${a.m}','${a.a}')"><i class="fas fa-undo"></i> Resetar</button>
+                </div>`).join('') || "<p>Nenhum assunto 100% finalizado.</p>";
+        }
+        
+        function resetA(m, a) {
+            let it = db.lista.find(x => x.m === m && x.a === a);
+            it.done = {E:false, Rev:false, Ex:false}; 
+            it.f = false; 
+            it.hF = 0; 
+            it.mRev = false; 
+            it.mEx = false;
+            db.metaFixa = {}; 
+            save(); 
+            renderRever(); 
+            init();
+        }
+
+        function renderFluxo() {
+            document.getElementById('fluxo-content').innerHTML = db.lista.map((it, i) => `
+                <div class="stat-card" style="display:flex; justify-content:space-between; align-items:center; padding:15px;">
+                    <div><b style="font-size:0.9rem;">${it.m}</b><br><span style="font-size:0.8rem; color:var(--text-sec);">${it.a}</span></div>
+                    <div>
+                        <small style="font-weight:800; font-size:0.6rem;">HORAS ESTUDO</small><br>
+                        <input type="number" step="0.5" value="${it.h.E}" onchange="db.lista[${i}].h.E=parseFloat(this.value); db.metaFixa={}; save(); init();" style="width:70px; text-align:center; padding:5px;">
+                    </div>
+                </div>`).join('');
+        }
+
+        // --- PERFORMANCE E SIMULADOS ---
+        function renderPerf() { 
+            let tQ=0, tA=0, tH=0; 
+            Object.values(db.perf).forEach(v => { tQ+=v.q; tA+=v.a; tH+=v.h; }); 
+            
+            document.getElementById('perf-stats').innerHTML = `
+                <div class="stat-card"><small>Questões Totais</small><div class="stat-val">${tQ}</div></div>
+                <div class="stat-card"><small>Média Acertos</small><div class="stat-val">${tQ ? Math.round((tA/tQ)*100) : 0}%</div></div>
+                <div class="stat-card"><small>Horas Extras</small><div class="stat-val">${tH.toFixed(1)}h</div></div>`; 
+                
+            let labels = [...new Set(db.lista.map(x=>x.m))]; 
+            let data = labels.map(l => { 
+                let q=0, a=0; 
+                Object.keys(db.perf).filter(k=>k.startsWith(l)).forEach(k=>{ q+=db.perf[k].q; a+=db.perf[k].a; }); 
+                return q ? Math.round((a/q)*100) : 0; 
+            }); 
+            
+            new Chart(document.getElementById('perfChart'), {
+                type:'bar',
+                data:{labels, datasets:[{label:'% Acertos', data, backgroundColor:'#0ea5e9'}]}
+            }); 
+        }
+
+        function renderSims() { 
+            document.getElementById('lista-sims').innerHTML = db.sims.map(s => `
+                <div class="stat-card" style="display:flex; justify-content:space-between;">
+                    <b>Data: ${new Date(s.d + 'T00:00:00').toLocaleDateString('pt-BR')}</b>
+                    <span style="font-weight:800; color:var(--accent);">Nota Líquida: ${s.n}</span>
+                </div>`).join(''); 
+        }
+        
+        function addSim() { 
+            let d = document.getElementById('sim-d').value;
+            let n = document.getElementById('sim-n').value; 
+            if(!d) return alert("Selecione uma data válida."); 
+            db.sims.push({d,n}); 
+            db.metaFixa = {}; // Força recalculation
+            save(); 
+            renderSims(); 
+            init(); // Atualiza painel caso hoje seja o dia marcado
+        }
+
+        // --- UTILIDADES ---
+        function getHit(m, a) { 
+            let d = db.perf[m+'-'+a]; 
+            return d && d.q ? Math.round((d.a/d.q)*100) : 0; 
+        }
+        
+        function updateProg() {
+            let at = db.lista.filter(x => db.ciclo.includes(x.m)); 
+            let t = at.length*3; 
+            let d = 0;
+            at.forEach(a => { if(a.done.E) d++; if(a.done.Rev) d++; if(a.done.Ex) d++; });
+            let p = t ? Math.round((d/t)*100) : 0;
+            document.getElementById('p-ciclo-txt').innerText = p + '%';
+            document.getElementById('p-ciclo-bar').style.width = p + '%';
+        }
+        
+        function checkStreak() {
+            let hj = new Date().toLocaleDateString('pt-BR');
+            if(db.lastCheck && db.lastCheck !== hj) {
+                let d1 = new Date(db.lastCheck.split('/').reverse().join('-')); 
+                let d2 = new Date(hj.split('/').reverse().join('-'));
+                if(Math.ceil(Math.abs(d2-d1)/(1000*60*60*24)) > 1) db.streak = 0; 
+                else db.streak++;
+            }
+            document.getElementById('streak-val').innerText = db.streak;
+        }
+        
+        function tTmr(id) {
+            if(!timers[id]) { 
+                timers[id] = { 
+                    s:0, 
+                    i: setInterval(() => { 
+                        timers[id].s++; 
+                        let m = Math.floor(timers[id].s/60).toString().padStart(2,'0');
+                        let s = (timers[id].s%60).toString().padStart(2,'0'); 
+                        document.getElementById('tmr-'+id).innerText = m+':'+s; 
+                    }, 1000)
+                }; 
+            } else { 
+                clearInterval(timers[id].i); 
+                delete timers[id]; 
+            }
+        }
+        
+        function loadExMats() { 
+            document.getElementById('ex-mat').innerHTML = '<option value="">Matéria</option>' + [...new Set(db.lista.map(x=>x.m))].map(m=>`<option value="${m}">${m}</option>`).join(''); 
+        }
+        
+        function loadExAss() { 
+            let m = document.getElementById('ex-mat').value; 
+            document.getElementById('ex-ass').innerHTML = db.lista.filter(x=>x.m===m).map(x=>`<option value="${x.a}">${x.a}</option>`).join(''); 
+        }
+        
+        function saveExtra() { 
+            let m = document.getElementById('ex-mat').value;
+            let a = document.getElementById('ex-ass').value;
+            let h = parseFloat(document.getElementById('ex-h').value) || 0;
+            let q = parseInt(document.getElementById('ex-q').value) || 0;
+            let acc = parseInt(document.getElementById('ex-a').value) || 0; 
+            
+            if(!m||!a) return alert("Selecione a matéria e assunto."); 
+            
+            let k = m+'-'+a; 
+            if(!db.perf[k]) db.perf[k]={q:0, a:0, h:0}; 
+            db.perf[k].q += q; 
+            db.perf[k].a += acc; 
+            db.perf[k].h += h; 
+            
+            save(); 
+            init(); 
+            alert("Lançamento salvo!"); 
+            document.getElementById('ex-form').classList.remove('open'); 
+        }
+        
+        function impEdital() { 
+            const m = document.getElementById('add-mat').value;
+            const hE = parseFloat(document.getElementById('h-e').value);
+            const hR = parseFloat(document.getElementById('h-r').value);
+            const hX = parseFloat(document.getElementById('h-x').value); 
+            const ass = document.getElementById('add-ass').value.split('\n').filter(l=>l.trim().length>1); 
+            
+            if(!m || ass.length === 0) return alert("Preencha matéria e assuntos!");
+
+            ass.forEach(a => { 
+                if(!db.lista.some(x=>x.m===m&&x.a===a.trim())) {
+                    db.lista.push({
+                        m, 
+                        a: a.trim(),
+                        h: {E:hE, Rev:hR, Ex:hX},
+                        f: false,
+                        done: {E:false, Rev:false, Ex:false},
+                        hF: 0,
+                        mRev: false,
+                        mEx: false
+                    }); 
+                }
+            }); 
+            
+            save(); 
+            init(); 
+            alert("Matéria salva com sucesso no banco de dados!"); 
+            document.getElementById('add-mat').value = ""; 
+            document.getElementById('add-ass').value = ""; 
+        }
+        
+        function renderCiclo() { 
+            document.getElementById('check-c').innerHTML = [...new Set(db.lista.map(x=>x.m))].map(m=>`
+                <label style="display:flex; gap:10px; margin-bottom:10px; font-weight:700;">
+                    <input type="checkbox" class="ckc" value="${m}" ${db.ciclo.includes(m)?'checked':''}> ${m}
+                </label>`).join(''); 
+        }
+        
+        function saveC() { 
+            db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c=>c.value); 
+            db.metaFixa = {}; 
+            save(); 
+            init(); 
+            alert("Ciclo salvo e atualizado!"); 
+        }
     </script>
 </body>
 </html>
