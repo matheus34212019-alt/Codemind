@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI ANALYTICS v.85 - FULL ENGINE</title>
+    <title>OMNI ANALYTICS v.86 - SMART PARSER</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -14,11 +14,10 @@
             --status-green: #10b981; --status-yellow: #f59e0b; --status-red: #ef4444;
             --radius: 20px; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        /* --- SIDEBAR --- */
+        /* SIDEBAR */
         .sidebar { width: 280px; background: var(--primary); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; overflow-y: auto; padding: 25px; border-right: 1px solid rgba(255,255,255,0.05); }
         .logo-box { padding: 10px 10px 30px 10px; color: white; display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.3rem; }
         .nav-group { margin-bottom: 25px; }
@@ -26,32 +25,31 @@
         .nav-item { padding: 14px 16px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; border-radius: 14px; transition: 0.3s; margin-bottom: 6px; }
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.06); color: white; }
         .nav-item.active { background: var(--accent); box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4); }
-        
         .submenu { margin-left: 12px; border-left: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; }
         .submenu.show { display: flex; }
         .sub-link { padding: 10px 10px 10px 30px; color: #64748b; font-size: 0.85rem; cursor: pointer; font-weight: 500; transition: 0.2s; }
         .sub-link:hover { color: white; }
 
-        /* --- MAIN CONTENT --- */
+        /* MAIN CONTENT */
         .main { flex: 1; height: 100vh; overflow-y: auto; padding: 40px; scroll-behavior: smooth; }
         .container { max-width: 1100px; margin: 0 auto; }
         .page-header { margin-bottom: 35px; }
         .page-header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -1.2px; color: var(--primary); }
 
-        /* --- DASHBOARD IA --- */
+        /* DASHBOARDS */
         .ai-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
         .ai-card { background: white; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); position: relative; overflow: hidden; }
-        .ai-card small { color: var(--text-sec); font-weight: 800; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; }
+        .ai-card small { color: var(--text-sec); font-weight: 800; font-size: 0.65rem; text-transform: uppercase; }
         .ai-val { margin-top: 12px; font-weight: 800; font-size: 1.4rem; color: var(--primary); }
 
-        /* --- ANALYTICS TABLES --- */
+        /* ANALYTICS */
         .table-container { width: 100%; overflow-x: auto; background: white; border-radius: var(--radius); border: 1px solid var(--border); margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: #f8fafc; padding: 15px 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-sec); border-bottom: 1px solid var(--border); }
         td { padding: 18px 20px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; font-weight: 600; }
         .perc-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; }
 
-        /* --- CARDS & GRID --- */
+        /* CARDS */
         .card { background: var(--card-bg); border-radius: var(--radius); padding: 25px; margin-bottom: 25px; border: 1px solid var(--border); box-shadow: var(--shadow); }
         .task-card { display: flex; justify-content: space-between; align-items: center; border-left: 10px solid #ccc; transition: 0.3s; }
         .task-card:hover { transform: translateX(8px); }
@@ -62,7 +60,7 @@
         .day-label { background: #f8fafc; padding: 15px; text-align: center; font-weight: 800; font-size: 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-sec); text-transform: uppercase; }
         .week-task { margin: 6px; padding: 10px; border-radius: 12px; font-size: 0.65rem; font-weight: 700; color: white; line-height: 1.3; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 
-        /* --- GESTÃO --- */
+        /* GESTÃO */
         .folder { background: white; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; }
         .folder-header { padding: 20px 25px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; }
         .folder-header:hover { background: #f8fafc; }
@@ -76,7 +74,7 @@
 
         #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 10000; display: flex; align-items: center; justify-content: center; }
         .login-card { background: white; padding: 60px; border-radius: 35px; width: 420px; text-align: center; }
-        .page { display: none; animation: fadeIn 0.4s ease; } .page.active { display: block; }
+        .page { display: none; animation: fadeIn 0.3s ease; } .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         input[type="checkbox"] { width: 24px; height: 24px; cursor: pointer; accent-color: var(--accent); }
     </style>
@@ -85,19 +83,19 @@
 
     <div id="login-screen">
         <div class="login-card">
-            <i class="fas fa-chart-line" style="font-size: 3.5rem; color: var(--accent); margin-bottom: 25px;"></i>
-            <h2 style="margin-bottom: 10px; font-weight: 800;">OMNI ENGINE</h2>
-            <p style="margin-bottom: 35px; color: gray; font-weight: 500;">Versão v.85 • Desempenho Ativo</p>
-            <input type="password" id="pass-input" placeholder="Sua Chave" style="text-align:center; letter-spacing: 8px;">
+            <i class="fas fa-microchip" style="font-size: 3.5rem; color: var(--accent); margin-bottom: 25px;"></i>
+            <h2 style="margin-bottom: 10px; font-weight: 800;">OMNI v.86</h2>
+            <p style="margin-bottom: 35px; color: gray; font-weight: 500;">IA com Smart Parser Ativo.</p>
+            <input type="password" id="pass-input" placeholder="Chave Mestra" style="text-align:center; letter-spacing: 8px;">
             <button class="btn" style="width: 100%; margin-top: 30px;" onclick="checkAccess()">INICIAR ANALYTICS</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box"><i class="fas fa-brain" style="color:var(--accent)"></i> OMNI v.85</div>
+        <div class="logo-box"><i class="fas fa-bolt" style="color:var(--accent)"></i> OMNI v.86</div>
         <div class="nav-group">
-            <div class="nav-label">Monitoramento</div>
-            <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-bolt-lightning"></i><span>Painel de Hoje</span></div>
+            <div class="nav-label">Operação</div>
+            <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-calendar-day"></i><span>Hoje</span></div>
             <div class="nav-item" onclick="showTab('performance', this)"><i class="fas fa-chart-pie"></i><span>Desempenho</span></div>
             <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-microchip"></i><span>Simulação IA</span></div>
         </div>
@@ -118,16 +116,16 @@
     <main class="main">
         <div class="container">
             <div class="ai-stats">
-                <div class="ai-card"><small>Carga Restante</small><div id="total-remaining-hrs" class="ai-val">0h</div></div>
+                <div class="ai-card"><small>Carga Restante Total</small><div id="total-remaining-hrs" class="ai-val">0h</div></div>
                 <div class="ai-card"><small>Aproveitamento Global</small><div id="global-accuracy" class="ai-val">0%</div></div>
-                <div class="ai-card"><small>Previsão Término</small><div id="completion-date" class="ai-val">--/--/--</div></div>
+                <div class="ai-card"><small>Status do Prazo</small><div id="risk-status" class="ai-val">--</div></div>
             </div>
 
             <div id="performance" class="page">
-                <div class="page-header"><h1>Performance Analítica</h1><p>Métricas reais baseadas nos seus exercícios</p></div>
+                <div class="page-header"><h1>Performance Analítica</h1><p>Métricas por matéria e assunto</p></div>
                 <div class="card">
                     <h3 style="margin-bottom:20px;">Desempenho por Matéria</h3>
-                    <div class="table-container"><table id="table-mats"><thead><tr><th>Matéria</th><th>Tempo Gasto</th><th>Questões</th><th>Acertos</th><th>%</th></tr></thead><tbody></tbody></table></div>
+                    <div class="table-container"><table id="table-mats"><thead><tr><th>Matéria</th><th>Investimento</th><th>Questões</th><th>Acertos</th><th>%</th></tr></thead><tbody></tbody></table></div>
                 </div>
                 <div class="card">
                     <h3 style="margin-bottom:20px;">Ranking de Assuntos</h3>
@@ -137,28 +135,27 @@
 
             <div id="diaria" class="page active">
                 <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
-                    <div><h1>Foco do Plantão 🚓</h1><p id="meta-status">Otimizando sua carga...</p></div>
+                    <div><h1>Estratégia de Hoje 🚓</h1><p id="meta-status">Otimizando sua carga...</p></div>
                     <button class="btn" onclick="regenerateDaily()"><i class="fas fa-rotate"></i> Recalcular Hoje</button>
                 </div>
                 <div id="lista-diaria"></div>
             </div>
 
-            <div id="semanal" class="page"><div class="page-header"><h1>Simulação de 7 Dias</h1></div><div id="grid-semanal" class="grid-7"></div></div>
-
             <div id="edital" class="page">
-                <div class="page-header"><h1>Importar Disciplinas</h1></div>
+                <div class="page-header"><h1>Importar Disciplina</h1></div>
                 <div class="card">
                     <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
                         <div><label>Matéria</label><input type="text" id="add-mat" placeholder="Ex: Informática"></div>
                         <div><label>Dificuldade</label><select id="add-diff"><option value="1.0">Fácil</option><option value="1.5" selected>Média</option><option value="2.5">Difícil</option></select></div>
                     </div>
-                    <div style="margin-top:20px;"><label>Prazo Final (Data da Prova)</label><input type="date" id="add-deadline"></div>
-                    <textarea id="add-ass" placeholder="Assuntos (um por linha)" style="height:150px; margin-top:20px;"></textarea>
-                    <button class="btn" style="width:100%; margin-top:25px;" onclick="saveEdital()">SALVAR EDITAL</button>
+                    <div style="margin-top:20px;"><label>Data da Prova (Deadline)</label><input type="date" id="add-deadline"></div>
+                    <textarea id="add-ass" placeholder="Cole os assuntos aqui (mesmo que estejam colados, a IA vai tentar separar)" style="height:150px; margin-top:20px;"></textarea>
+                    <button class="btn" style="width:100%; margin-top:25px;" onclick="saveEdital()">SALVAR NO BANCO E LIMPAR</button>
                 </div>
             </div>
 
-            <div id="config-h" class="page"><div class="page-header"><h1>Carga Horária</h1></div><div class="card"><div id="grid-horas-manual" style="display:grid; grid-template-columns:repeat(7,1fr); gap:12px; text-align:center;"></div><button class="btn" style="width:100%; margin-top:25px;" onclick="saveH()">SALVAR</button></div></div>
+            <div id="semanal" class="page"><div class="page-header"><h1>Simulação de 7 Dias</h1></div><div id="grid-semanal" class="grid-7"></div></div>
+            <div id="config-h" class="page"><div class="page-header"><h1>Horas Disponíveis</h1></div><div class="card"><div id="grid-horas-manual" style="display:grid; grid-template-columns:repeat(7,1fr); gap:12px; text-align:center;"></div><button class="btn" style="width:100%; margin-top:25px;" onclick="saveH()">SALVAR</button></div></div>
             <div id="ciclo" class="page"><div class="page-header"><h1>Ciclo Ativo</h1></div><div id="checks-ciclo" class="card" style="columns:2;"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveC()">SALVAR</button></div>
             <div id="sinalizar" class="page"><div class="page-header"><h1>Sinalizar Base</h1></div><div id="tree-container"></div></div>
             <div id="rever" class="page"><div class="page-header"><h1>Rever Finalizados</h1></div><div id="rever-container"></div></div>
@@ -167,12 +164,12 @@
     </main>
 
 <script>
-    /* ENGINE v.85 - CORE LOGIC */
-    let db = JSON.parse(localStorage.getItem('prf_v85_engine')) || { 
+    /* ENGINE v.86 - SMART ANALYTICS */
+    let db = JSON.parse(localStorage.getItem('prf_v86_final')) || { 
         lista: [], ciclo: [], h: {0:4,1:4,2:4,3:4,4:4,5:4,6:4}, history: [], metaFixa: {} 
     };
 
-    const save = () => localStorage.setItem('prf_v85_engine', JSON.stringify(db));
+    const save = () => localStorage.setItem('prf_v86_final', JSON.stringify(db));
     const formatTime = (h) => { h = parseFloat(h); return h === 0.5 ? "30m" : h === 1.0 ? "60m" : h === 1.5 ? "90m" : h === 2.0 ? "2h" : (h*60)+"m"; };
     let openedFolders = new Set();
 
@@ -227,8 +224,8 @@
                     for(let s of rito) {
                         if(!ass.done[s.k]) {
                             let hT = (s.k === 'E' ? parseFloat(ass.h[s.k]) : 1.0);
-                            if(s.k === 'E') { if(somaH + hT > limit) hT = Math.max(0, limit - somaH); }
-                            else { if(somaH + 1.0 > limit) continue; }
+                            if(s.k === 'E' && (somaH + hT > limit)) hT = Math.max(0, limit - somaH);
+                            else if(s.k !== 'E' && (somaH + 1.0 > limit)) continue;
                             if(hT > 0) {
                                 pool.push({ m: ass.m, a: ass.a, label: s.l, key: s.k, hrs: hT });
                                 ass.done[s.k] = true; somaH += hT; added = true; break;
@@ -247,12 +244,9 @@
             if(!a.done.E) hRest += parseFloat(a.h.E); if(!a.done.Rev) hRest += 1; if(!a.done.Ex) hRest += 1;
         });
         document.getElementById('total-remaining-hrs').innerText = hRest.toFixed(1) + "h";
-        let hSem = Object.values(db.h).reduce((a,b)=>parseFloat(a)+parseFloat(b), 0);
-        let dias = Math.ceil(hRest / (hSem/7 || 1));
-        let fin = new Date(); fin.setDate(fin.getDate() + dias);
-        document.getElementById('completion-date').innerText = fin.toLocaleDateString();
         let qT = 0, aT = 0; db.lista.forEach(a => { qT += (a.qntQ || 0); aT += (a.qntA || 0); });
         document.getElementById('global-accuracy').innerText = qT > 0 ? ((aT/qT)*100).toFixed(1) + "%" : "0%";
+        document.getElementById('risk-status').innerHTML = "<span style='color:var(--status-green)'>🟢 SEGURO</span>";
     }
 
     function renderDiario() {
@@ -263,11 +257,12 @@
             <div class="card task-card" style="border-left-color:var(--color-${(t.key.includes('Rev')?'rev':t.key.includes('Ex')?'ex':'e').toLowerCase()})">
                 <div><span class="tag type-${(t.key.includes('Rev')?'rev':t.key.includes('Ex')?'ex':'e')}">${t.label} (${formatTime(t.hrs)})</span><div style="font-weight:800; font-size:1.1rem;">${t.m}: ${t.a}</div></div>
                 <input type="checkbox" ${t.completed?'checked':''} onclick="concluir(${i},'${t.m}','${t.a}','${t.key}', ${t.agI})">
-            </div>`).join('') || "<p style='padding:20px;'>Verifique o Ciclo e Edital.</p>";
+            </div>`).join('') || "<p style='padding:20px;'>Verifique seu edital e ciclo.</p>";
     }
 
     function concluir(idx, m, a, k, agI) {
-        const hjK = new Date().toLocaleDateString(); db.metaFixa[hjK][idx].completed = !db.metaFixa[hjK][idx].completed;
+        const hjK = new Date().toLocaleDateString();
+        db.metaFixa[hjK][idx].completed = !db.metaFixa[hjK][idx].completed;
         const it = db.lista.find(x => x.m === m && x.a === a);
         if(db.metaFixa[hjK][idx].completed && k.includes('Ex')) {
             let q = prompt("Questões feitas:"); let ac = prompt("Acertos:");
@@ -303,6 +298,7 @@
     }
 
     function regenerateDaily() { delete db.metaFixa[new Date().toLocaleDateString()]; db.metaFixa = {}; save(); init(); }
+    
     function renderSemanal() {
         document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(dayIdx => {
             let h = `<div class="day-box"><div class="day-label">${["DOM","SEG","TER","QUA","QUI","SEX","SAB"][dayIdx]}</div>`;
@@ -313,10 +309,28 @@
     }
 
     function saveEdital() {
-        const m = document.getElementById('add-mat').value; const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
-        if(!m || ass.length === 0) return alert("Erro!");
-        ass.forEach(a => { if(!db.lista.some(x => x.m === m && x.a === a.trim())) db.lista.push({ m, a: a.trim(), f: false, deadline: document.getElementById('add-deadline').value, done: {E:false, Rev:false, Ex:false}, h: {E: (1.5 * parseFloat(document.getElementById('add-diff').value)).toFixed(1), Rev: 1.0, Ex: 1.0}, agendas: null, doneAgendas: [], qntQ: 0, qntA: 0, hrsIn: 0 }); });
-        save(); alert("Salvo!"); regenerateDaily();
+        const m = document.getElementById('add-mat').value;
+        const diff = parseFloat(document.getElementById('add-diff').value);
+        const rawText = document.getElementById('add-ass').value;
+        
+        // LÓGICA SMART PARSER: Tenta quebrar por linha, ou por Aula/Modulo/Ponto se estiver tudo colado
+        let assList = rawText.includes('\n') ? rawText.split('\n') : rawText.split(/(?=Aula|Módulo|Capítulo|\d+\.)/);
+        assList = assList.map(l => l.trim()).filter(l => l.length > 3);
+
+        if(!m || assList.length === 0) return alert("Erro no formato!");
+
+        assList.forEach(a => {
+            if(!db.lista.some(x => x.m === m && x.a === a)) {
+                db.lista.push({ m, a, f: false, deadline: document.getElementById('add-deadline').value, done: {E:false, Rev:false, Ex:false}, h: {E: (1.5 * diff).toFixed(1), Rev: 1.0, Ex: 1.0}, agendas: null, doneAgendas: [], qntQ: 0, qntA: 0, hrsIn: 0 });
+            }
+        });
+
+        // LIMPEZA DOS CAMPOS
+        document.getElementById('add-mat').value = "";
+        document.getElementById('add-ass').value = "";
+        document.getElementById('add-deadline').value = "";
+
+        save(); alert(`${assList.length} assuntos importados com sucesso!`); regenerateDaily();
     }
 
     function renderH() { const d = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]; document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `<div><small style="font-weight:800;">${x}</small><input type="number" id="h-in-${i}" value="${db.h[i]}" style="text-align:center;"></div>`).join(''); }
@@ -338,7 +352,7 @@
         document.getElementById('rever-container').innerHTML = mats.map(m => {
             const ass = fin.filter(x => x.m === m);
             return `<div class="folder"><div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b><input type="checkbox" onclick="event.stopPropagation(); toggleBulkRes('${m}')"></div><div class="folder-content">${ass.map(a => `<div class="subject-row done" onclick="resetA('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-undo"></i></div>`).join('')}</div></div>`;
-        }).join('') || "<p style='padding:20px;'>Vazio.</p>";
+        }).join('') || "<p style='padding:20px;'>Nada finalizado.</p>";
     }
     function toggleBulkRes(m) { if(confirm(`Resetar ${m}?`)) { db.lista.filter(x => x.m === m).forEach(a => { a.f=false; a.done={E:false,Rev:false,Ex:false}; a.agendas=null; }); save(); renderRever(); regenerateDaily(); } }
     function resetA(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.f=false; it.done={E:false,Rev:false,Ex:false}; it.agendas=null; save(); renderRever(); regenerateDaily(); }
