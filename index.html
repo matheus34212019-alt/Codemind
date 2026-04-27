@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI NEXUS v.106 - RITO LINEAR</title>
+    <title>OMNI NEXUS v.107 - NAVIGATION MASTER</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -22,7 +22,8 @@
         .sidebar { width: 280px; background: var(--primary); display: flex; flex-direction: column; padding: 30px 20px; border-right: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; overflow-y: auto; }
         .logo-box { padding-bottom: 40px; color: white; display: flex; align-items: center; gap: 15px; font-weight: 800; font-size: 1.4rem; letter-spacing: -1px; }
         .nav-item { padding: 14px 18px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; border-radius: 16px; transition: 0.3s; margin-bottom: 8px; }
-        .nav-item.active { background: var(--accent); color: white; box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4); }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.06); color: white; }
+        .nav-item.active { background: var(--accent); box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4); }
         .submenu { margin-left: 15px; border-left: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; padding: 5px 0; }
         .submenu.show { display: flex; }
         .sub-link { padding: 10px 10px 10px 25px; color: #64748b; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
@@ -40,7 +41,7 @@
         .stat-card small { text-transform: uppercase; font-weight: 800; font-size: 0.65rem; color: var(--text-sec); letter-spacing: 1px; }
         .stat-val { font-size: 1.5rem; font-weight: 800; margin-top: 8px; color: var(--primary); }
 
-        .task-card { background: white; border-radius: 18px; padding: 22px; margin-bottom: 15px; border: 1px solid var(--border); border-left: 12px solid #ccc; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .task-card { background: white; border-radius: 18px; padding: 22px; margin-bottom: 15px; border: 1px solid var(--border); border-left: 10px solid #ccc; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
         .tag { font-size: 0.65rem; font-weight: 800; padding: 6px 14px; border-radius: 50px; color: white; margin-bottom: 8px; display: inline-block; }
         .tag-e { background: var(--color-e); } .tag-rev { background: var(--color-rev); } .tag-ex { background: var(--color-ex); }
 
@@ -55,9 +56,9 @@
         .folder-content { display: none; padding: 10px; }
         .folder-content.open { display: block; }
         .subject-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 15px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
-        .subject-row.done { background: #eff6ff; color: var(--accent); }
 
         .btn { padding: 14px 22px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .btn-outline { background: transparent; border: 2px solid var(--accent); color: var(--accent); }
         input, select, textarea { padding: 14px 18px; border: 1px solid var(--border); border-radius: 14px; background: #f1f5f9; font-family: inherit; width: 100%; margin-top: 8px; }
 
         #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 10000; display: flex; align-items: center; justify-content: center; }
@@ -69,14 +70,14 @@
 <body>
     <div id="login-screen">
         <div class="login-card">
-            <h2 style="margin-bottom: 10px; font-weight: 800;">OMNI NEXUS v.106</h2>
-            <input type="password" id="pass-input" placeholder="Sua Chave" style="text-align:center; letter-spacing: 5px;">
+            <h2 style="margin-bottom: 10px; font-weight: 800;">OMNI NEXUS v.107</h2>
+            <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; letter-spacing: 5px;">
             <button class="btn" style="width:100%; margin-top:25px;" onclick="checkAccess()">ENTRAR</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box"><i class="fas fa-microchip"></i> OMNI v.106</div>
+        <div class="logo-box"><i class="fas fa-microchip"></i> OMNI v.107</div>
         <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-calendar-day"></i><span>Painel Hoje</span></div>
         <div class="nav-item" onclick="showTab('performance', this)"><i class="fas fa-chart-line"></i><span>Performance</span></div>
         <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-brain"></i><span>Simulação IA</span></div>
@@ -95,7 +96,7 @@
     <main class="main">
         <div class="container">
             <div class="progress-section">
-                <div style="display:flex; justify-content:space-between; font-weight:800;"><span>Conclusão do Edital</span><span id="progress-perc">0%</span></div>
+                <div style="display:flex; justify-content:space-between; font-weight:800;"><span>Conclusão Centurion</span><span id="progress-perc">0%</span></div>
                 <div class="progress-bar-bg"><div id="progress-fill" class="progress-bar-fill"></div></div>
                 <div style="margin-top:10px; font-size:0.8rem; font-weight:700; color:var(--text-sec); display:flex; justify-content:space-between;">
                     <span id="exam-stat">Prova: --/--/--</span>
@@ -111,21 +112,19 @@
 
             <div id="diaria" class="page active">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-                    <div><h1 style="font-weight:800; letter-spacing:-1px;">Missão de Hoje 🚓</h1><p id="meta-status"></p></div>
-                    <button class="btn btn-outline" onclick="previewNextDay()">VER AMANHÃ</button>
+                    <div id="btn-voltar-box" style="width: 160px;"></div>
+                    <div><h1 style="font-weight:800; letter-spacing:-1px; text-align:center;">Missão Diária 🚓</h1><p id="meta-status" style="text-align:center;"></p></div>
+                    <div id="btn-avancar-box" style="width: 160px; text-align:right;">
+                        <button class="btn btn-outline" onclick="previewNextDay()">VER AMANHÃ</button>
+                    </div>
                 </div>
                 <div id="lista-diaria"></div>
-                <button class="btn" style="width:100%; margin-top:20px; background:#1e293b;" onclick="openExtra()">ESTUDOU FORA DO PLANO?</button>
+                <button class="btn" style="width:100%; margin-top:20px; background:#1e293b;" onclick="openExtra()">ESTUDOU ALGO FORA DO PLANO?</button>
             </div>
 
             <div id="semanal" class="page">
-                <div class="page-header"><h1>Simulação Neural de 7 Dias</h1></div>
+                <div class="page-header"><h1>Simulação Neural de 7 Dias</h1><p>Projeção de rito progressivo (E -> Rev -> Ex)</p></div>
                 <div style="overflow-x:auto;"><div id="grid-semanal" class="grid-7"></div></div>
-            </div>
-
-            <div id="performance" class="page">
-                <div class="stats-grid"><div class="stat-card"><canvas id="mainChart"></canvas></div><div class="stat-card"><canvas id="typeChart"></canvas></div></div>
-                <div class="table-res" style="margin-top:20px;"><table id="table-mats" style="width:100%;"><thead><tr><th>Matéria</th><th>H Gasta</th><th>Qst</th><th>%</th></tr></thead><tbody></tbody></table></div>
             </div>
 
             <div id="ciclo" class="page">
@@ -142,10 +141,15 @@
             <div id="sinalizar" class="page"><div id="tree-container"></div></div>
             <div id="rever" class="page"><div id="rever-container"></div></div>
 
+            <div id="performance" class="page">
+                <div class="stats-grid"><div class="stat-card"><canvas id="mainChart"></canvas></div><div class="stat-card"><canvas id="typeChart"></canvas></div></div>
+                <div class="table-res" style="margin-top:20px;"><table id="table-mats" style="width:100%;"><thead><tr><th>Matéria</th><th>H</th><th>%</th></tr></thead><tbody></tbody></table></div>
+            </div>
+
             <div id="edital" class="page">
                 <div class="stat-card" style="padding:30px;">
-                    <input type="text" id="add-mat" placeholder="Nome da Matéria">
-                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px; margin-top:15px;">
+                    <input type="text" id="add-mat" placeholder="Matéria">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:15px; margin-top:15px;">
                         <div><small>Estudo(h)</small><input type="number" id="h-e" value="1.5"></div>
                         <div><small>Rev(h)</small><input type="number" id="h-r" value="1.0"></div>
                         <div><small>Ex(h)</small><input type="number" id="h-x" value="1.0"></div>
@@ -157,19 +161,19 @@
             </div>
 
             <div id="replanejar" class="page">
-                <div class="stat-card"><label>Reiniciar plano em:</label><input type="date" id="replan-date">
-                <button class="btn" style="margin-top:20px; width:100%;" onclick="db.metaFixa={}; save(); init(); alert('Sincronizado!')">RECALCULAR</button></div>
+                <div class="stat-card"><label>Nova data de início:</label><input type="date" id="replan-date">
+                <button class="btn" style="margin-top:20px; width:100%;" onclick="db.metaFixa={}; save(); init(); alert('Sincronizado!')">EXECUTAR</button></div>
             </div>
         </div>
     </main>
 
 <script>
-    /* ENGINE v.106 - RITO LINEAR OBRIGATÓRIO */
-    let db = JSON.parse(localStorage.getItem('prf_v106_nexus')) || { 
+    /* ENGINE v.107 CORE - NAVIGATION & SIMULATION FIX */
+    let db = JSON.parse(localStorage.getItem('prf_v107_nexus')) || { 
         lista: [], ciclo: [], h: {1:4,2:4,3:4,4:4,5:4,6:4,0:4}, metaFixa: {}, examDate: ""
     };
 
-    const save = () => localStorage.setItem('prf_v106_nexus', JSON.stringify(db));
+    const save = () => localStorage.setItem('prf_v107_nexus', JSON.stringify(db));
 
     const formatT = (h) => {
         h = parseFloat(h);
@@ -194,10 +198,10 @@
         init();
     }
 
-    // MOTOR DE PRIORIDADE v.106 - BLOQUEIO LINEAR DE MATÉRIA
+    // MOTOR DE PRIORIDADE v.107 - RITO LINEAR OBRIGATÓRIO
     function generateNeuralPool(limit, dataSim = new Date(), snapshotLista = null) {
         let pool = []; let somaH = 0; 
-        let simL = snapshotLista ? snapshotLista : JSON.parse(JSON.stringify(db.lista));
+        let simL = snapshotLista ? JSON.parse(JSON.stringify(snapshotLista)) : JSON.parse(JSON.stringify(db.lista));
         if(!db.ciclo.length) return { tasks: [], updatedList: simL };
 
         let safety = 0;
@@ -206,11 +210,9 @@
             for(let m of db.ciclo) {
                 if(somaH >= limit) break;
                 
-                // Acha o primeiro assunto dessa matéria que não está 100% concluído
                 let it = simL.find(x => x.m === m && !x.f);
                 if(!it) continue;
 
-                // RITO LINEAR: Ele obrigatoriamente segue E -> Rev -> Ex antes de qualquer outro da matéria
                 const steps = [
                     {k:'E', l:'Estudo', h:parseFloat(it.h.E)},
                     {k:'Rev', l:'Revisão', h:1},
@@ -220,7 +222,6 @@
                 for(let s of steps) {
                     if(!it.done[s.k]) {
                         let actualH = s.h;
-                        // Regra de Fragmentação: Apenas Estudo pode dividir
                         if(s.k === 'E') {
                             let hPendente = actualH - (it.hFeito || 0);
                             let hDisp = limit - somaH;
@@ -232,32 +233,50 @@
                                 somaH += alocar; addedAny = true;
                             }
                         } else {
-                            // Revisão e Exercício não dividem
                             if(somaH + actualH <= limit + 0.01) {
                                 pool.push({ m: it.m, a: it.a, label: s.l, key: s.k, hrs: actualH });
                                 it.done[s.k] = true; somaH += actualH; addedAny = true;
                                 if(s.k === 'Ex') it.f = true;
                             }
                         }
-                        break; // Se entrou em um step, trava o ciclo da matéria aqui
+                        break; 
                     }
                 }
-                if(addedAny) break; // Gira para a próxima matéria do ciclo
+                if(addedAny) break;
             }
             if(!addedAny) break;
         } return { tasks: pool, updatedList: simL };
     }
 
-    function renderDiario(data = new Date()) {
+    function renderDiario(data = new Date(), isPreview = false) {
         const hj = data.toLocaleDateString(); const hM = parseFloat(db.h[data.getDay()]);
         if(!db.metaFixa[hj]) { db.metaFixa[hj] = generateNeuralPool(hM, data).tasks; save(); }
         const tasks = db.metaFixa[hj];
+        
         document.getElementById('meta-status').innerText = `${tasks.reduce((a,b)=>a+b.hrs,0).toFixed(1)}h / ${hM}h meta`;
+        
+        // Correção de Navegação (Voltar para Hoje)
+        const btnVoltar = document.getElementById('btn-voltar-box');
+        const btnAvancar = document.getElementById('btn-avancar-box');
+        
+        if(isPreview) {
+            btnVoltar.innerHTML = `<button class="btn btn-outline" onclick="renderDiario(new Date(), false)"><i class="fas fa-backward"></i> VOLTAR HOJE</button>`;
+            btnAvancar.innerHTML = ``; 
+        } else {
+            btnVoltar.innerHTML = ``;
+            btnAvancar.innerHTML = `<button class="btn btn-outline" onclick="previewNextDay()">VER AMANHÃ <i class="fas fa-forward"></i></button>`;
+        }
+
         document.getElementById('lista-diaria').innerHTML = tasks.map((t, i) => `
             <div class="task-card" style="border-left-color:var(--color-${(t.key.includes('Rev')?'rev':t.key==='Ex'?'ex':'e').toLowerCase()})">
                 <div><span class="tag tag-${t.key.toLowerCase()}">${t.label} (${formatT(t.hrs)})</span><div style="font-weight:800; font-size:1.1rem;">${t.m}: ${t.a}</div></div>
                 <input type="checkbox" ${t.completed?'checked':''} onclick="concluir(${i}, '${hj}')">
             </div>`).join('') || "<p>Ative matérias no ciclo ativo.</p>";
+    }
+
+    function previewNextDay() {
+        let am = new Date(); am.setDate(am.getDate() + 1);
+        renderDiario(am, true);
     }
 
     function concluir(idx, dataStr) {
@@ -266,8 +285,7 @@
         if(t.key === 'E') { it.hFeito = (it.hFeito || 0) + (t.completed ? t.hrs : -t.hrs); it.done.E = it.hFeito >= parseFloat(it.h.E); }
         else { it.done[t.key] = t.completed; }
         if(t.key === 'Ex' && t.completed) { it.f = true; let q = prompt("Questões:"); let ac = prompt("Acertos:"); it.qntQ = (it.qntQ||0) + parseInt(q||0); it.qntA = (it.qntA||0) + parseInt(ac||0); }
-        it.hrsIn = (it.hrsIn || 0) + t.hrs;
-        save(); init();
+        it.hrsIn = (it.hrsIn || 0) + t.hrs; save(); init();
     }
 
     function renderSemanal() {
@@ -285,9 +303,9 @@
 
     function renderCiclo() {
         const mats = [...new Set(db.lista.map(x => x.m))];
-        document.getElementById('checks-ciclo').innerHTML = mats.map(m => `<label style="display:flex; gap:10px; margin-bottom:12px; font-weight:700;"><input type="checkbox" class="ckc" value="${m}" ${db.ciclo.includes(m)?'checked':''}> ${m}</label>`).join('') || "Sem matérias.";
+        document.getElementById('checks-ciclo').innerHTML = mats.map(m => `<label style="display:flex; gap:10px; margin-bottom:12px; font-weight:700;"><input type="checkbox" class="ckc" value="${m}" ${db.ciclo.includes(m)?'checked':''}> ${m}</label>`).join('') || "Importe matérias.";
     }
-    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); db.metaFixa = {}; save(); init(); }
+    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); db.metaFixa = {}; save(); init(); alert("Ciclo salvo!"); }
 
     function renderFluxo() {
         document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `<div class="folder" style="padding:20px; border-left: 5px solid var(--accent);"><b>${it.m}: ${it.a}</b><br><small>H Estudo:</small><input type="number" value="${it.h.E}" onchange="db.lista[${i}].h.E=this.value;save()"></div>`).join('');
@@ -304,25 +322,14 @@
         document.getElementById('tree-container').innerHTML = mats.map(m => {
             const ass = db.lista.filter(x => x.m === m);
             const allD = ass.every(a => a.done.E);
-            return `<div class="folder"><div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b><button class="btn btn-sm" onclick="event.stopPropagation(); batchE('${m}', ${!allD})">${allD ? 'Resetar' : 'Marcar'}</button></div><div class="folder-content open">${ass.map(a => `<div class="subject-row"><span>${a.a}</span><input type="checkbox" ${a.done.E?'checked':''} onclick="toggleE('${a.m}','${a.a}')"></div>`).join('')}</div></div>`;
+            return `<div class="folder">
+                <div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b><button class="btn btn-sm" onclick="event.stopPropagation(); batchE('${m}', ${!allD})">${allD ? 'Resetar' : 'Marcar Matéria'}</button></div>
+                <div class="folder-content open">${ass.map(a => `<div class="subject-row"><span>${a.a}</span><input type="checkbox" ${a.done.E?'checked':''} onclick="toggleE('${a.m}','${a.a}')"></div>`).join('')}</div>
+            </div>`;
         }).join('');
     }
     function batchE(m, val) { db.lista.filter(x => x.m === m).forEach(a => { a.done.E = val; if(!val){ a.done.Rev=false; a.done.Ex=false; a.f=false; a.hFeito=0; } else { a.done.Rev=true; a.done.Ex=true; a.f=true; } }); db.metaFixa = {}; save(); init(); }
     function toggleE(m, a) { let it = db.lista.find(x => x.m===m && x.a===a); it.done.E = !it.done.E; if(!it.done.E){ it.done.Rev=false; it.done.Ex=false; it.f=false; it.hFeito=0; } db.metaFixa={}; save(); init(); }
-
-    function renderRever() {
-        const fin = db.lista.filter(x => x.f);
-        document.getElementById('rever-container').innerHTML = fin.map(a => `<div class="folder" style="padding:15px; display:flex; justify-content:space-between; align-items:center;"><span>${a.m}: ${a.a}</span><button class="btn btn-sm" onclick="resetA('${a.m}','${a.a}')">Resetar</button></div>`).join('') || "Vazio.";
-    }
-    function resetA(m, a) { let it = db.lista.find(x => x.m===m && x.a===a); it.f=false; it.done={E:false,Rev:false,Ex:false}; it.hFeito=0; db.metaFixa={}; save(); init(); }
-
-    function saveEdital() {
-        const m = document.getElementById('add-mat').value;
-        const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim().length > 2);
-        if(document.getElementById('exam-date-input').value) db.examDate = document.getElementById('exam-date-input').value;
-        ass.forEach(a => { if(!db.lista.some(x => x.m === m && x.a === a)) db.lista.push({ m, a, f:false, done:{E:false,Rev:false,Ex:false}, h:{E:document.getElementById('h-e').value}, hrsIn:0, qntQ:0, qntA:0, hFeito:0 }); });
-        document.getElementById('add-mat').value=""; document.getElementById('add-ass').value=""; save(); init(); alert("Gravado!");
-    }
 
     function renderPredictor() {
         let hR = 0; db.lista.filter(x => !x.f).forEach(a => { if(!a.done.E) hR += (parseFloat(a.h.E) - (a.hFeito||0)); if(!a.done.Rev) hR += 1; if(!a.done.Ex) hR += 1; });
@@ -334,13 +341,20 @@
         let p = total > 0 ? (done/total)*100 : 0;
         document.getElementById('progress-perc').innerText = Math.round(p) + "%";
         document.getElementById('progress-fill').style.width = p + "%";
+        if(db.examDate){ let dias = Math.ceil((new Date(db.examDate) - new Date()) / (1000*60*60*24)); document.getElementById('exam-stat').innerText = "Prova: " + new Date(db.examDate).toLocaleDateString(); document.getElementById('countdown-stat').innerText = dias + " dias"; }
     }
     function renderPerformance() { 
         const tbody = document.querySelector('#table-mats tbody'); tbody.innerHTML = "";
         db.lista.forEach(a => { tbody.innerHTML += `<tr><td>${a.m}: ${a.a}</td><td>${a.hrsIn.toFixed(1)}h</td><td>${a.qntQ||0} qst</td><td>${a.qntQ>0?Math.round((a.qntA/a.qntQ)*100):0}%</td></tr>`; });
     }
+    function saveEdital() {
+        const m = document.getElementById('add-mat').value;
+        const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim().length > 2);
+        if(document.getElementById('exam-date-input').value) db.examDate = document.getElementById('exam-date-input').value;
+        ass.forEach(a => { if(!db.lista.some(x => x.m === m && x.a === a)) db.lista.push({ m, a, f:false, done:{E:false,Rev:false,Ex:false}, h:{E:document.getElementById('h-e').value}, hrsIn:0, qntQ:0, qntA:0, hFeito:0 }); });
+        document.getElementById('add-mat').value=""; document.getElementById('add-ass').value=""; save(); init();
+    }
     function regenerateDaily() { db.metaFixa = {}; save(); init(); }
-    function previewNextDay() { let am = new Date(); am.setDate(am.getDate()+1); renderDiario(am); }
     function openExtra() { let m = prompt("Matéria:"); let a = prompt("Assunto:"); if(m && a) { db.lista.push({ m, a, f:true, done:{E:true,Rev:true,Ex:true}, h:{E:1}, hrsIn:1, qntQ:0, qntA:0, hFeito:1 }); save(); init(); } }
 </script>
 </body>
