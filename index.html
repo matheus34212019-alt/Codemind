@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI NEXUS v.140 - PRF ULTRA MASTER</title>
+    <title>OMNI NEXUS v.150 - PRF GAMIFIED ELITE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,260 +12,550 @@
             --primary: #0f172a; --accent: #0ea5e9; --bg: #f8fafc;
             --border: #e2e8f0; --text-main: #1e293b; --text-sec: #64748b;
             --color-e: #0ea5e9; --color-rev: #f59e0b; --color-ex: #10b981;
-            --radius: 12px;
+            --gold: #fbbf24; --radius: 16px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+        /* SIDEBAR GAMIFICADA */
+        .sidebar { width: 280px; background: var(--primary); padding: 30px 20px; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; z-index: 1000; border-right: 1px solid rgba(255,255,255,0.05); }
+        .logo-box { color: white; font-weight: 800; font-size: 1.5rem; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
         
-        .sidebar { width: 260px; background: var(--primary); padding: 30px 20px; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; z-index: 1000; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
-        .logo-box { color: white; font-weight: 800; font-size: 1.4rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .streak-sidebar { color:#f59e0b; font-weight:800; font-size:0.85rem; margin-bottom:25px; text-align:center; background: rgba(245, 158, 11, 0.1); padding: 12px; border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.2); }
-        .nav-item { padding: 12px 16px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; border-radius: 10px; margin-bottom: 5px; transition: 0.2s; font-size: 0.9rem; }
-        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.06); color: white; }
-        .nav-item.active { background: var(--accent); box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); }
-        .submenu { margin-left: 15px; border-left: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; padding: 5px 0; }
+        .profile-card { background: rgba(255,255,255,0.05); border-radius: var(--radius); padding: 15px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.1); }
+        .lvl-badge { background: var(--gold); color: var(--primary); padding: 2px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
+        .xp-bar-bg { background: rgba(255,255,255,0.1); height: 6px; border-radius: 10px; margin-top: 10px; overflow: hidden; }
+        .xp-bar-fill { background: var(--gold); height: 100%; width: 0%; transition: 1s; }
+
+        .nav-item { padding: 14px 16px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; border-radius: 12px; margin-bottom: 6px; transition: 0.3s; font-size: 0.9rem; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.08); color: white; }
+        .nav-item.active { background: var(--accent); box-shadow: 0 8px 15px rgba(14, 165, 233, 0.2); }
+        
+        .submenu { margin-left: 20px; border-left: 2px solid rgba(255,255,255,0.05); display: none; flex-direction: column; padding: 5px 0; }
         .submenu.show { display: flex; }
-        .sub-link { padding: 8px 20px; color: #64748b; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: 500; }
+        .sub-link { padding: 10px 20px; color: #64748b; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: 600; }
         .sub-link:hover { color: white; }
 
-        .main { flex: 1; overflow-y: auto; padding: 30px; scroll-behavior: smooth; position: relative; padding-bottom: 160px; }
-        .container { max-width: 1050px; margin: 0 auto; }
+        /* MAIN */
+        .main { flex: 1; overflow-y: auto; padding: 30px; scroll-behavior: smooth; position: relative; background: var(--bg); }
+        .container { max-width: 1100px; margin: 0 auto; }
         .page { display: none; animation: fadeIn 0.4s ease; } 
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .header-panel { background: white; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .dash-row { display: flex; justify-content: space-around; border-top: 1px solid #f1f5f9; padding-top: 20px; margin-top: 15px; }
-        .dash-item { text-align: center; flex: 1; }
-        .dash-item i { font-size: 1.5rem; color: var(--accent); margin-bottom: 8px; display: block; }
-        .dash-item span { font-size: 0.85rem; font-weight: 800; color: var(--primary); }
+        /* INFODISC (BULA) */
+        .info-box { background: #eff6ff; border-left: 4px solid var(--accent); padding: 15px 20px; border-radius: 12px; margin-bottom: 25px; display: flex; gap: 15px; align-items: center; }
+        .info-box i { color: var(--accent); font-size: 1.2rem; }
+        .info-box p { font-size: 0.85rem; font-weight: 600; color: #1e40af; line-height: 1.4; }
 
-        .task-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 12px; border: 1px solid var(--border); border-left: 10px solid #ccc; position: relative; transition: 0.3s; }
-        .timer-box { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); margin-top: 15px; }
-        .timer-display { font-family: 'Courier New', monospace; font-weight: 800; font-size: 1.2rem; color: var(--primary); min-width: 85px; text-align: center; }
-        
+        /* DASHBOARD GRID */
+        .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); transition: 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        .stat-val { font-size: 1.5rem; font-weight: 800; color: var(--primary); display: block; margin-top: 5px; }
+        .stat-label { font-size: 0.7rem; font-weight: 800; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* PROBABILIDADE */
+        .prob-container { background: white; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 30px; }
+        .prob-bar-bg { background: #f1f5f9; height: 16px; border-radius: 20px; margin: 15px 0; overflow: hidden; position: relative; }
+        .prob-bar-fill { height: 100%; transition: 1.5s cubic-bezier(0.4, 0, 0.2, 1); width: 0%; }
+        .prob-msg { font-weight: 800; font-size: 0.9rem; text-align: center; margin-top: 10px; }
+
+        /* CRONOGRAMA GRID */
         .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; min-width: 1000px; }
-        .day-column { background: white; border-radius: var(--radius); border: 1px solid var(--border); min-height: 500px; overflow: hidden; }
-        .day-head { background: #f1f5f9; padding: 15px 10px; text-align: center; border-bottom: 1px solid var(--border); font-weight: 800; font-size: 0.75rem; color: var(--primary); text-transform: uppercase; }
-        .sim-task { margin: 8px; padding: 10px; border-radius: 8px; font-size: 0.65rem; color: white; font-weight: 700; line-height: 1.3; }
-
-        .btn { padding: 10px 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-success { background: #10b981; } .btn-danger { background: #ef4444; } .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        .day-column { background: white; border-radius: var(--radius); border: 1px solid var(--border); min-height: 550px; display: flex; flex-direction: column; overflow: hidden; }
+        .day-head { background: #f8fafc; padding: 15px 10px; text-align: center; border-bottom: 1px solid var(--border); font-weight: 800; font-size: 0.75rem; color: var(--primary); }
         
-        input, select, textarea { padding: 12px; border-radius: 8px; border: 1px solid var(--border); width: 100%; background: #f8fafc; font-weight: 600; }
-        .stat-card { background: white; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 20px; }
-        
-        .perf-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .perf-table th { background: #f1f5f9; text-align: left; padding: 15px; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; color: var(--text-sec); }
-        .perf-table td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; font-weight: 600; }
+        /* LEGENDAS BULA CRONOGRAMA */
+        .legenda-cron { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; background: white; padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
+        .leg-item { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
 
-        .folder { background: white; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; }
-        .folder-header { padding: 18px 25px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; cursor: pointer; font-weight: 800; }
-        .folder-content { display: none; padding: 10px 25px 20px 25px; }
-        .folder-content.active { display: block; }
-        .sinal-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .task-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); border-left: 10px solid #ccc; position: relative; transition: 0.3s; }
+        .tag-type { color: white; font-size: 0.65rem; padding: 5px 12px; border-radius: 50px; font-weight: 800; display: inline-block; margin: 10px 0; text-transform: uppercase; }
+        
+        .btn { padding: 12px 20px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; font-size: 0.8rem; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-success { background: var(--color-ex); color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-outline { background: white; border: 2px solid var(--border); }
 
         #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .extra-footer { position: fixed; bottom: 0; left: 260px; right: 0; background: #1e3a8a; color: white; z-index: 1001; transition: 0.4s; border-top: 3px solid var(--accent); }
-        .extra-toggle { padding: 18px; text-align: center; font-weight: 800; cursor: pointer; font-size: 0.95rem; }
-        .extra-form { display: none; padding: 25px; background: white; color: var(--text-main); border-top: 1px solid var(--border); }
-        .extra-form.open { display: block; }
-        .extra-grid { display: grid; grid-template-columns: 2fr 2fr 1fr 1fr 1fr auto; gap: 15px; align-items: flex-end; }
+        
+        /* BADGES */
+        .badge-grid { display: flex; gap: 10px; margin-top: 15px; }
+        .badge-icon { width: 35px; height: 35px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: #475569; font-size: 0.9rem; border: 1px dashed rgba(255,255,255,0.2); }
+        .badge-icon.active { background: var(--gold); color: var(--primary); border-style: solid; box-shadow: 0 0 10px var(--gold); }
+
+        /* EDITAR HORAS UX */
+        .h-grid-master { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 15px; }
+        .h-input-box { background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
     <div id="login-screen">
-        <div style="background:white; padding:50px; border-radius:30px; text-align:center; width:380px;">
-            <h2 style="margin-bottom:10px; font-weight: 800;">OMNI NEXUS</h2>
-            <p style="color: var(--text-sec); margin-bottom: 30px;">v.140 Master PRF</p>
-            <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; margin-bottom: 20px; letter-spacing: 5px;">
-            <button class="btn" style="width:100%; justify-content:center; background:var(--accent); color:white; padding:15px;" onclick="checkAccess()">ENTRAR</button>
+        <div style="background:white; padding:50px; border-radius:30px; text-align:center; width:400px; box-shadow: 0 20px 25px rgba(0,0,0,0.2);">
+            <h2 style="margin-bottom:10px; font-weight: 800; color: var(--primary);">OMNI NEXUS v.150</h2>
+            <p style="color: var(--text-sec); margin-bottom: 30px; font-weight: 600;">SISTEMA DE ALTA PERFORMANCE</p>
+            <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; margin-bottom: 20px; font-size: 1.2rem; letter-spacing: 5px; padding:15px; border-radius:12px; border:1px solid #ddd; width:100%;">
+            <button class="btn" style="width:100%; background:var(--accent); color:white; padding: 18px;" onclick="checkAccess()">INICIAR COMBATE</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box"><i class="fas fa-shield-halved" style="color:var(--accent);"></i> OMNI v.140</div>
-        <div class="streak-sidebar">🔥 <span id="streak-val">0</span> Dias Seguidos</div>
-        <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-calendar-day"></i><span>Painel Hoje</span></div>
+        <div class="logo-box"><i class="fas fa-shield-halved" style="color:var(--accent);"></i> OMNI ELITE</div>
+        
+        <div class="profile-card">
+            <span class="lvl-badge" id="lvl-txt">Iniciante</span>
+            <div style="color:white; font-weight:800; font-size:1.1rem;" id="xp-total">0 XP</div>
+            <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-fill"></div></div>
+            <div class="badge-grid" id="badge-container"></div>
+        </div>
+
+        <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-rocket"></i><span>Dashboard</span></div>
         <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-week"></i><span>Cronograma IA</span></div>
-        <div class="nav-item" onclick="showTab('performance', this)"><i class="fas fa-chart-line"></i><span>Performance</span></div>
-        <div class="nav-item" onclick="toggleSub()"><i class="fas fa-gears"></i><span>Meu Plano</span><i class="fas fa-chevron-down" style="margin-left:auto;"></i></div>
+        <div class="nav-item" onclick="showTab('performance', this)"><i class="fas fa-chart-pie"></i><span>Análise de Rendimento</span></div>
+        
+        <div class="nav-item" onclick="toggleSub()"><i class="fas fa-gears"></i><span>Configurações Táticas</span><i class="fas fa-chevron-down" style="margin-left:auto;"></i></div>
         <div id="sub-plano" class="submenu">
             <div class="sub-link" onclick="showTab('edital')">Importar Edital</div>
             <div class="sub-link" onclick="showTab('ciclo')">Ciclo Ativo</div>
             <div class="sub-link" onclick="showTab('pesos')">Gestão de Pesos</div>
-            <div class="sub-link" onclick="showTab('banco')">Gerenciar Banco</div>
-            <div class="sub-link" onclick="showTab('config-h')">Horas Diárias</div>
+            <div class="sub-link" onclick="showTab('config-h')">Editar Horas</div>
             <div class="sub-link" onclick="showTab('sinalizar')">Sinalizar Base</div>
             <div class="sub-link" onclick="showTab('fluxo')">Ajustar Fluxos</div>
-            <div class="sub-link" style="color:#ef4444;" onclick="showTab('replanejar')">Replanejar Atrasos</div>
+            <div class="sub-link" style="color:#ef4444;" onclick="showTab('replanejar')">Zerar Atrasos</div>
         </div>
     </aside>
 
     <main class="main">
         <div class="container">
+            
             <div id="diaria" class="page active">
-                <div class="header-panel">
+                <div class="info-box">
+                    <i class="fas fa-circle-info"></i>
+                    <p>Bem-vindo ao seu Comando Central. Aqui você acompanha sua evolução, probabilidade de aprovação e suas missões de hoje.</p>
+                </div>
+
+                <div class="dash-grid">
+                    <div class="stat-card"><span class="stat-label">🔥 Streak</span><span class="stat-val" id="d-streak">0 Dias</span></div>
+                    <div class="stat-card"><span class="stat-label">🏆 Pontos Hoje</span><span class="stat-val" id="d-xp-hoje">0 XP</span></div>
+                    <div class="stat-card"><span class="stat-label">⏳ Horas Totais</span><span class="stat-val" id="d-h-total">0.0h</span></div>
+                    <div class="stat-card"><span class="stat-label">🎯 Acerto Geral</span><span class="stat-val" id="d-acerto-geral">0%</span></div>
+                </div>
+
+                <div class="prob-container">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div><div style="font-weight:800; font-size:1.6rem; color:var(--primary);">Meta Diária</div><div id="d-label" style="color:var(--text-sec); font-weight:600;"></div></div>
-                        <div style="display:flex; gap:10px;"><button class="btn btn-outline" onclick="navDay(0)">Hoje</button><button class="btn btn-outline" onclick="navDay(1)">Próximo <i class="fas fa-chevron-right"></i></button></div>
+                        <h3 style="font-weight:800;">Probabilidade de Aprovação</h3>
+                        <span style="font-weight:900; font-size:1.2rem; color:var(--accent);" id="prob-val">0%</span>
                     </div>
-                    <div class="dash-row">
-                        <div class="dash-item"><i class="fas fa-clock"></i><span id="d-meta">0h Total</span></div>
-                        <div class="dash-item"><i class="fas fa-book-open"></i><span id="d-estudo">0h Teoria</span></div>
-                    </div>
-                    <div style="margin-top:25px;">
-                        <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:800; color:var(--text-sec); margin-bottom:8px;"><span>PROGRESSO DO CICLO</span> <span id="p-ciclo-txt">0%</span></div>
-                        <div style="background:#e2e8f0; height:12px; border-radius:20px; overflow:hidden;"><div id="p-ciclo-bar" style="background: linear-gradient(90deg, #0ea5e9, #38bdf8); height:100%; width:0%; transition:0.8s;"></div></div>
+                    <div class="prob-bar-bg"><div class="prob-bar-fill" id="prob-fill"></div></div>
+                    <div class="prob-msg" id="prob-msg">Alimente o sistema para gerar a previsão.</div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h2 style="font-weight:800;">Missões de Hoje</h2>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn btn-outline" onclick="navDay(0)">Hoje</button>
+                        <button class="btn btn-outline" onclick="navDay(1)">Amanhã <i class="fas fa-chevron-right"></i></button>
                     </div>
                 </div>
                 <div id="lista-diaria"></div>
             </div>
 
-            <div id="performance" class="page">
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-bottom:25px;" id="perf-stats"></div>
-                <div class="stat-card"><h3>Rendimento Detalhado por Assunto</h3><div style="overflow-x:auto;"><table class="perf-table"><thead><tr><th>Matéria</th><th>Assunto</th><th>Horas</th><th>Qtd</th><th>Acertos</th><th>Rend. %</th></tr></thead><tbody id="body-perf"></tbody></table></div></div>
+            <div id="semanal" class="page">
+                <div class="info-box">
+                    <i class="fas fa-calendar-check"></i>
+                    <p>Esta é a Projeção IA da sua semana. Se você cumprir as metas de hoje, o amanhã será recalculado automaticamente para otimizar seu tempo.</p>
+                </div>
+                <div class="legenda-cron">
+                    <div class="leg-item"><div class="dot" style="background:var(--color-e)"></div> Estudo</div>
+                    <div class="leg-item"><div class="dot" style="background:var(--color-rev)"></div> Revisão</div>
+                    <div class="leg-item"><div class="dot" style="background:var(--color-ex)"></div> Exercícios</div>
+                    <div class="leg-item"><div class="dot" style="background:#ef4444"></div> Simulado</div>
+                </div>
+                <div style="overflow-x:auto; padding-bottom:20px;"><div id="grid-semanal" class="grid-7"></div></div>
             </div>
 
-            <div id="fluxo" class="page"><div class="stat-card"><h3>Ajustar Estudo, Revisão e Exercício</h3><p style="margin-bottom:20px; font-size:0.85rem;">Defina a carga horária de cada fase por assunto.</p><div id="fluxo-content"></div></div></div>
-            <div id="sinalizar" class="page"><div class="stat-card"><h3>Sinalizar Base</h3><div id="tree"></div></div></div>
-            <div id="semanal" class="page"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;"><h2 style="font-weight:800;">Grade Semanal IA</h2><div><button class="btn btn-outline" onclick="navWeek(-1)">Anterior</button><button class="btn btn-outline" onclick="navWeek(1)">Próxima</button></div></div><div style="overflow-x:auto;"><div id="grid-semanal" class="grid-7"></div></div></div>
-            <div id="edital" class="page"><div class="stat-card"><h3>Importar Edital</h3><input type="text" id="add-mat" placeholder="Matéria"><div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin: 15px 0;"><input type="number" id="h-e" value="1.5" title="Teoria"><input type="number" id="h-r" value="1.0" title="Rev"><input type="number" id="h-x" value="1.0" title="Ex"></div><textarea id="add-ass" placeholder="Assuntos (um por linha)..." style="height:150px;"></textarea><button class="btn btn-success" style="width:100%; justify-content:center; margin-top:20px;" onclick="impEdital()">IMPORTAR</button></div></div>
-            <div id="ciclo" class="page"><div class="stat-card"><h3>Ciclo Ativo</h3><div id="check-c" style="columns:2;"></div><button class="btn btn-success" style="width:100%; margin-top:20px;" onclick="saveC()">SALVAR</button></div></div>
-            <div id="pesos" class="page"><div class="stat-card"><h3>Gestão de Pesos (1-5)</h3><div id="lista-pesos" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"></div></div></div>
-            <div id="banco" class="page"><div class="stat-card"><h3>Gerenciar Banco</h3><div id="lista-banco"></div></div></div>
-            <div id="config-h" class="page"><div class="stat-card"><div id="grid-h-in" style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;"></div><button class="btn btn-success" style="width:100%; margin-top:20px;" onclick="saveH()">SALVAR</button></div></div>
-            <div id="replanejar" class="page"><div class="stat-card" style="border:2px solid #ef4444; text-align:center;"><h3>Zerar Atrasos</h3><button class="btn btn-danger" onclick="execReplan()">CONFIRMAR RECALCULO</button></div></div>
+            <div id="pesos" class="page">
+                <div class="info-box">
+                    <i class="fas fa-weight-hanging"></i>
+                    <div>
+                        <strong>O que são os Pesos?</strong>
+                        <p>Matérias com Peso 5 aparecerão 5x mais no seu cronograma do que as de Peso 1. Use isso para focar nas disciplinas que você tem dificuldade ou que caem mais na prova.</p>
+                    </div>
+                </div>
+                <div class="stat-card"><div id="lista-pesos" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"></div></div>
+            </div>
+
+            <div id="config-h" class="page">
+                <div class="info-box">
+                    <i class="fas fa-clock"></i>
+                    <p>Ajuste sua disponibilidade. A IA redistribuirá seus estudos automaticamente com base nesses valores.</p>
+                </div>
+                <div class="stat-card">
+                    <div class="h-grid-master">
+                        <div class="h-input-box">
+                            <label class="stat-label">Segunda a Sexta</label>
+                            <input type="number" id="h-week" placeholder="Ex: 4" step="0.5" style="margin-top:10px;">
+                        </div>
+                        <div class="h-input-box">
+                            <label class="stat-label">Sábado</label>
+                            <input type="number" id="h-sab" placeholder="Ex: 6" step="0.5" style="margin-top:10px;">
+                        </div>
+                        <div class="h-input-box">
+                            <label class="stat-label">Domingo</label>
+                            <input type="number" id="h-dom" placeholder="Ex: 2" step="0.5" style="margin-top:10px;">
+                        </div>
+                    </div>
+                    <button class="btn btn-success" style="width:100%; margin-top:20px; padding:15px;" onclick="saveHMaster()">APLICAR CARGA HORÁRIA</button>
+                </div>
+            </div>
+
+            <div id="sinalizar" class="page">
+                <div class="info-box">
+                    <i class="fas fa-map-signs"></i>
+                    <p>Marque os assuntos que você já domina. Eles serão pulados na fila teórica, acelerando seu progresso no edital.</p>
+                </div>
+                <div id="tree"></div>
+            </div>
+
+            <div id="performance" class="page">
+                <div class="info-box">
+                    <i class="fas fa-chart-line"></i>
+                    <p>Análise cirúrgica do seu rendimento. Foque em transformar as barras vermelhas em verdes através de exercícios.</p>
+                </div>
+                <div id="perf-content"></div>
+            </div>
+            
+            <div id="ciclo" class="page">
+                <div class="info-box"><i class="fas fa-sync"></i><p>Selecione as matérias que devem "girar" no seu dia a dia. Você também pode remover matérias permanentemente aqui.</p></div>
+                <div class="stat-card"><div id="check-c"></div><button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="saveC()">SALVAR CICLO</button></div>
+            </div>
+
+            <div id="fluxo" class="page"><div class="stat-card"><h3>Ajuste de Carga por Rito</h3><div id="fluxo-content"></div></div></div>
+            <div id="replanejar" class="page"><div class="stat-card" style="border:2px solid #ef4444; text-align:center;"><h3 style="color:#ef4444;">Deseja perdoar todos os atrasos e recomeçar hoje?</h3><button class="btn btn-danger" style="margin-top:20px;" onclick="execReplan()">CONFIRMAR ZERAGEM</button></div></div>
+            <div id="edital" class="page"><div class="stat-card"><h3>Importar Edital</h3><input type="text" id="add-mat" placeholder="Matéria"><div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:15px 0;"><input type="number" id="h-e" value="1.5"><input type="number" id="h-r" value="1.0"><input type="number" id="h-x" value="1.0"></div><textarea id="add-ass" placeholder="Assuntos (um por linha)..." style="height:150px;"></textarea><button class="btn btn-success" style="width:100%; margin-top:15px;" onclick="impEdital()">IMPORTAR</button></div></div>
+
         </div>
     </main>
 
-    <div class="extra-footer"><div class="extra-toggle" onclick="document.getElementById('ex-form').classList.toggle('open')"><i class="fas fa-plus-circle"></i> ESTUDO FORA DO PLANO</div><div class="extra-form" id="ex-form"><div class="extra-grid">
-        <select id="ex-mat" onchange="loadExAss()"><option value="">--</option></select><select id="ex-ass"><option value="">--</option></select>
-        <input type="number" id="ex-h" placeholder="Horas"><input type="number" id="ex-q" placeholder="Qtd"><input type="number" id="ex-a" placeholder="Acertos"><button class="btn btn-success" onclick="saveExtra()">LANÇAR</button></div></div></div>
-
     <script>
-        let db = JSON.parse(localStorage.getItem('prf_v140_f')) || { lista:[], ciclo:[], h:{1:4,2:4,3:4,4:4,5:4,6:4,0:4}, metaFixa:{}, perf:{}, sims:[], streak:0, lastCheck:null, mPesos:{} };
+        /* MOTOR v.150 - GAMIFICATION & DINAMIC ENGINE */
+        let db = JSON.parse(localStorage.getItem('prf_v150_g')) || { 
+            lista: [], ciclo: [], h: {1:4, 2:4, 3:4, 4:4, 5:4, 6:4, 0:4}, 
+            metaFixa: {}, perf: {}, streak: 0, lastCheck: null, mPesos: {}, 
+            xp: 0, badges: [], lastXPDate: null, xpHistory: {}
+        };
+        
         let vDate = new Date(); let weekOffset = 0; let timers = {};
-        const save = () => localStorage.setItem('prf_v140_f', JSON.stringify(db));
 
-        function checkAccess() { if(document.getElementById('pass-input').value === "123") { document.getElementById('login-screen').style.display='none'; init(); } }
-        function init() { checkStreak(); renderDiario(vDate); updateProg(); loadExMats(); }
+        const save = () => localStorage.setItem('prf_v150_g', JSON.stringify(db));
+
+        function checkAccess() { 
+            if(document.getElementById('pass-input').value === "123") { 
+                document.getElementById('login-screen').style.display='none'; init(); 
+            } else alert("Chave incorreta."); 
+        }
+
+        function init() { updateGamification(); renderDiario(vDate); loadExMats(); updateProg(); }
 
         function showTab(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(id).classList.add('active'); if(el) el.classList.add('active');
-            if(id === 'semanal') renderSemanal(); if(id === 'pesos') renderPesos(); if(id === 'performance') renderPerf();
-            if(id === 'ciclo') renderCiclo(); if(id === 'config-h') renderHInputs(); if(id === 'sinalizar') renderTree();
-            if(id === 'fluxo') renderFluxo(); if(id === 'banco') renderBanco();
+            if(id === 'semanal') renderSemanal();
+            if(id === 'performance') renderPerf();
+            if(id === 'pesos') renderPesos();
+            if(id === 'ciclo') renderCiclo();
+            if(id === 'config-h') renderHInputs();
+            if(id === 'sinalizar') renderTree();
+            if(id === 'fluxo') renderFluxo();
+            if(id === 'banco') renderBanco();
         }
 
         function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
         function navDay(dir) { if(dir === 0) vDate = new Date(); else vDate.setDate(vDate.getDate() + dir); renderDiario(vDate); }
         function navWeek(dir) { weekOffset += dir; renderSemanal(); }
 
+        /* --- MOTOR DE PONTUAÇÃO E GAMIFICAÇÃO --- */
+        function addXP(amount) {
+            db.xp += amount;
+            const hj = new Date().toLocaleDateString('pt-BR');
+            db.xpHistory[hj] = (db.xpHistory[hj] || 0) + amount;
+            updateGamification();
+            save();
+        }
+
+        function updateGamification() {
+            const xp = db.xp;
+            let lvl = "Iniciante"; let fill = 0;
+            if(xp >= 5000) { lvl = "Elite"; fill = 100; }
+            else if(xp >= 3000) { lvl = "Focado"; fill = ((xp-3000)/2000)*100; }
+            else if(xp >= 1500) { lvl = "Avançado"; fill = ((xp-1500)/1500)*100; }
+            else if(xp >= 500) { lvl = "Consistente"; fill = ((xp-500)/1000)*100; }
+            else { lvl = "Iniciante"; fill = (xp/500)*100; }
+
+            document.getElementById('lvl-txt').innerText = lvl;
+            document.getElementById('xp-total').innerText = xp + " XP";
+            document.getElementById('xp-fill').style.width = fill + "%";
+            
+            // Streak
+            const hj = new Date().toLocaleDateString('pt-BR');
+            if(db.lastCheck && db.lastCheck !== hj) {
+                let d1 = new Date(db.lastCheck.split('/').reverse().join('-'));
+                let d2 = new Date(hj.split('/').reverse().join('-'));
+                let diff = Math.ceil(Math.abs(d2 - d1) / (1000 * 60 * 60 * 24));
+                if(diff > 1) db.streak = 0;
+            }
+            document.getElementById('d-streak').innerText = db.streak + " Dias";
+            document.getElementById('d-xp-hoje').innerText = (db.xpHistory[hj] || 0) + " XP";
+            
+            // Probabilidade
+            calculateProb();
+            renderBadges();
+        }
+
+        function calculateProb() {
+            let concluidos = db.lista.filter(x => x.done.E && x.done.Rev && x.done.Ex).length;
+            let total = db.lista.length || 1;
+            let cPerc = (concluidos / total) * 100;
+            
+            let rendSoma = 0; let counts = 0;
+            Object.values(db.perf).forEach(p => { if(p.q > 0) { rendSoma += (p.a/p.q); counts++; } });
+            let rendMedio = counts ? (rendSoma / counts) : 0;
+
+            let prob = (cPerc * 0.4) + (rendMedio * 40) + (Math.min(db.streak, 30) * 0.6);
+            prob = Math.min(Math.round(prob), 99);
+
+            document.getElementById('prob-val').innerText = prob + "%";
+            document.getElementById('prob-fill').style.width = prob + "%";
+            
+            let color = "#ef4444"; let msg = "Alto risco. Aumente o ritmo!";
+            if(prob > 70) { color = "#10b981"; msg = "Excelente ritmo! Chances de Elite."; }
+            else if(prob > 40) { color = "#fbbf24"; msg = "Ritmo mediano. Foco na constância."; }
+            
+            document.getElementById('prob-fill').style.background = color;
+            document.getElementById('prob-msg').innerText = msg;
+            document.getElementById('prob-msg').style.color = color;
+        }
+
+        function renderBadges() {
+            const container = document.getElementById('badge-container');
+            const list = [
+                { id: '7d', icon: 'fa-fire', active: db.streak >= 7 },
+                { id: '100xp', icon: 'fa-trophy', active: db.xp >= 1000 },
+                { id: 'sniper', icon: 'fa-crosshairs', active: false }
+            ];
+            container.innerHTML = list.map(b => `<div class="badge-icon ${b.active?'active':''}" title="${b.id}"><i class="fas ${b.icon}"></i></div>`).join('');
+        }
+
+        /* --- MOTOR IA DE CRONOGRAMA DINÂMICO --- */
         function getNeuralPool(limit, simList, cState, dContext) {
             let pool = []; let somaH = 0; if(!db.ciclo.length) return pool;
-            let safety = 0; while(somaH < limit && safety < 200) {
+            let safety = 0;
+            while(somaH < limit && safety < 150) {
                 safety++; let addedAny = false;
                 for(let i = 0; i < db.ciclo.length; i++) {
-                    let m = db.ciclo[cState.index]; let pMat = db.mPesos[m] || 1;
+                    let m = db.ciclo[cState.index];
+                    let pMat = db.mPesos[m] || 1;
                     for(let p = 0; p < pMat; p++) {
                         if(somaH >= limit) break;
                         let pending = simList.find(x => x.m === m && !x.f);
                         if(pending) {
                             const rito = [{k:'E', l:'Estudo', h:parseFloat(pending.h.E)}, {k:'Rev', l:'Revisão', h:parseFloat(pending.h.Rev)}, {k:'Ex', l:'Exercícios', h:parseFloat(pending.h.Ex)}];
-                            for(let s of rito) { if(!pending.done[s.k]) { if(s.k === 'Ex' && pending.lockedDay === dContext) continue;
-                                if(s.k === 'E') { let al = Math.min(s.h - (pending.hF||0), limit - somaH); if(al > 0.1) { pool.push({m:pending.m, a:pending.a, l:s.l, k:s.k, h:al}); pending.hF = (pending.hF||0) + al; if(pending.hF >= s.h - 0.05) pending.done.E = true; somaH += al; addedAny = true; } }
-                                else if(somaH + s.h <= limit + 0.05) { pool.push({m:pending.m, a:pending.a, l:s.l, k:s.k, h:s.h}); pending.done[s.k] = true; somaH += s.h; addedAny = true; if(s.k === 'Rev') pending.lockedDay = dContext; if(s.k === 'Ex') pending.f = true; } break; } }
+                            for(let s of rito) {
+                                if(!pending.done[s.k]) {
+                                    if(s.k === 'Ex' && pending.lockedDay === dContext) continue;
+                                    if(s.k === 'E') {
+                                        let al = Math.min(s.h - (pending.hF||0), limit - somaH);
+                                        if(al > 0.1) {
+                                            pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: al });
+                                            pending.hF = (pending.hF||0) + al;
+                                            if(pending.hF >= s.h - 0.05) pending.done.E = true;
+                                            somaH += al; addedAny = true;
+                                        }
+                                    } else if(somaH + s.h <= limit + 0.05) {
+                                        pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: s.h });
+                                        pending.done[s.k] = true; somaH += s.h; addedAny = true;
+                                        if(s.k === 'Rev') pending.lockedDay = dContext;
+                                        if(s.k === 'Ex') pending.f = true;
+                                    }
+                                    break; 
+                                }
+                            }
                         }
-                    } cState.index = (cState.index + 1) % db.ciclo.length;
-                } if(!addedAny) break;
-            } return pool;
+                    }
+                    cState.index = (cState.index + 1) % db.ciclo.length;
+                }
+                if(!addedAny) break;
+            }
+            return pool;
         }
 
         function renderDiario(date) {
-            const curStr = date.toLocaleDateString('pt-BR'); const hM = db.h[date.getDay()];
-            if(!db.metaFixa[curStr]) { let simL = JSON.parse(JSON.stringify(db.lista)); db.metaFixa[curStr] = getNeuralPool(hM, simL, { index: 0 }, curStr); }
+            const hjStr = new Date().toLocaleDateString('pt-BR');
+            const curStr = date.toLocaleDateString('pt-BR');
+            const hM = db.h[date.getDay()];
+            
+            if(!db.metaFixa[curStr]) {
+                let simL = JSON.parse(JSON.stringify(db.lista));
+                db.metaFixa[curStr] = getNeuralPool(hM, simL, { index: 0 }, curStr);
+            }
+
             const tasks = db.metaFixa[curStr];
-            document.getElementById('d-label').innerText = curStr;
+            document.getElementById('d-label').innerText = curStr === hjStr ? "Hoje" : curStr;
             document.getElementById('d-meta').innerText = tasks.reduce((a,b)=>a+b.h,0).toFixed(1) + "h";
             document.getElementById('d-estudo').innerText = tasks.filter(t=>t.k==='E').reduce((a,b)=>a+b.h,0).toFixed(1) + "h";
+            
             document.getElementById('lista-diaria').innerHTML = tasks.map((t, i) => {
-                let col = (t.k === 'Ex') ? 'ex' : ((t.k === 'Rev') ? 'rev' : 'e');
-                return `<div class="task-card" style="border-left-color:var(--color-${col})"><h3>${t.m}</h3><p>${t.a}</p>
-                <small style="font-weight:800; color:var(--color-${col}); text-transform:uppercase;">${t.l} | ${t.h.toFixed(1)}H</small>
-                <div class="timer-box"><button class="btn btn-outline btn-sm" onclick="tTmr('${i}')"><i class="fas fa-play"></i></button><button class="btn btn-outline btn-sm" onclick="resetTmr('${i}')"><i class="fas fa-undo"></i></button><div id="tmr-${i}" class="timer-display">00:00</div>
-                <div style="margin-left:auto;"><input type="checkbox" ${t.c?'checked':''} onclick="concluirTask('${curStr}', ${i})"></div></div></div>`;
-            }).join('');
+                let col = t.k==='Ex'?'ex':(t.k==='Rev'?'rev':'e');
+                return `<div class="task-card" style="border-left-color:var(--color-${col})">
+                    <div style="display:flex; justify-content:space-between;"><b>${t.m}</b> <span style="font-size:0.7rem; font-weight:800;">${getHit(t.m,t.a)}%</span></div>
+                    <p style="font-size:0.9rem; margin:5px 0;">${t.a}</p>
+                    <span class="tag-type" style="background:var(--color-${col})">${t.l} | ${t.h.toFixed(1)}h</span>
+                    <div class="timer-box">
+                        <button class="btn btn-outline btn-sm" onclick="tTmr('${i}')"><i class="fas fa-play"></i></button>
+                        <button class="btn btn-outline btn-sm" onclick="resetTmr('${i}')"><i class="fas fa-undo"></i></button>
+                        <div id="tmr-${i}" class="timer-display">00:00</div>
+                        <div style="margin-left:auto;"><input type="checkbox" ${t.c?'checked':''} onclick="concluirTask('${curStr}', ${i})"></div>
+                    </div>
+                </div>`;
+            }).join('') || "<p style='text-align:center;'>Nenhuma meta para hoje.</p>";
         }
 
         function concluirTask(dK, idx) {
-            let t = db.metaFixa[dK][idx]; let k = t.m + '-' + t.a; 
-            if (!t.c && t.k === 'Ex') {
+            let t = db.metaFixa[dK][idx]; let k = t.m + '-' + t.a;
+            if(!t.c && t.k === 'Ex') {
                 let q = parseInt(prompt("Questões?")), a = parseInt(prompt("Acertos?"));
-                if (q > 0) { alert(Math.round((a/q)*100) + "%"); if(!db.perf[k]) db.perf[k]={q:0, a:0, h:0}; db.perf[k].q+=q; db.perf[k].a+=a; }
+                if(q > 0) { 
+                    if(!db.perf[k]) db.perf[k]={q:0, a:0, h:0}; 
+                    db.perf[k].q+=q; db.perf[k].a+=a; 
+                    addXP(q * 2); // 2 XP por questão
+                }
             }
-            t.c = !t.c; if(!db.perf[k]) db.perf[k] = {q:0, a:0, h:0}; db.perf[k].h += t.c ? t.h : -t.h;
+            t.c = !t.c; 
+            if(t.c) {
+                addXP(50); // Meta concluída
+                db.lastCheck = new Date().toLocaleDateString('pt-BR');
+                if(db.streak === 0) db.streak = 1; else db.streak++;
+            }
+            if(!db.perf[k]) db.perf[k]={q:0, a:0, h:0};
+            db.perf[k].h += t.c ? t.h : -t.h;
+
             let it = db.lista.find(x => x.m === t.m && x.a === t.a);
-            if(it) { if(t.k==='E'){ it.hF=(it.hF||0)+(t.c?t.h:-t.h); it.done.E=it.hF>=(it.h.E-0.05); } else { it.done[t.k]=t.c; if(t.k==='Ex') it.f=t.c; } }
+            if(it) {
+                if(t.k==='E') { it.hF = (it.hF||0) + (t.c?t.h:-t.h); it.done.E = it.hF >= (it.h.E - 0.05); }
+                else { it.done[t.k] = t.c; if(t.k === 'Ex') it.f = t.c; }
+            }
             save(); init();
         }
 
-        function tTmr(id) { if(!timers[id]) { timers[id]={s:0, i:setInterval(()=>{timers[id].s++; let m=Math.floor(timers[id].s/60).toString().padStart(2,'0'), s=(timers[id].s%60).toString().padStart(2,'0'); document.getElementById('tmr-'+id).innerText=m+':'+s;},1000)}; } else { clearInterval(timers[id].i); delete timers[id]; } }
+        function tTmr(id) {
+            if(!timers[id]) { timers[id]={s:0, i:setInterval(()=>{timers[id].s++; let m=Math.floor(timers[id].s/60).toString().padStart(2,'0'), s=(timers[id].s%60).toString().padStart(2,'0'); document.getElementById('tmr-'+id).innerText=m+':'+s;},1000)}; } 
+            else { clearInterval(timers[id].i); delete timers[id]; }
+        }
         function resetTmr(id) { if(timers[id]) { clearInterval(timers[id].i); delete timers[id]; document.getElementById('tmr-'+id).innerText="00:00"; } }
-
-        function renderPerf() {
-            let tQ=0, tA=0, tH=0, html="";
-            db.lista.forEach(it => {
-                let p = db.perf[it.m+'-'+it.a] || {q:0, a:0, h:0};
-                if(p.q > 0 || p.h > 0) {
-                    let r = p.q ? Math.round((p.a/p.q)*100) : 0; tQ+=p.q; tA+=p.a; tH+=p.h;
-                    html += `<tr><td>${it.m}</td><td>${it.a}</td><td>${p.h.toFixed(1)}h</td><td>${p.q}</td><td>${p.a}</td><td>${r}%</td></tr>`;
-                }
-            });
-            document.getElementById('body-perf').innerHTML = html;
-            document.getElementById('perf-stats').innerHTML = `<div class="stat-card">Questões: ${tQ}</div><div class="stat-card">Rend: ${tQ?Math.round((tA/tQ)*100):0}%</div><div class="stat-card">Horas: ${tH.toFixed(1)}h</div>`;
-        }
-
-        function renderTree() {
-            const mats = [...new Set(db.lista.map(x=>x.m))];
-            document.getElementById('tree').innerHTML = mats.map(m => `<div class="folder"><div class="folder-header" onclick="this.nextElementSibling.classList.toggle('active')"><span>${m}</span></div><div class="folder-content active">${db.lista.filter(x=>x.m===m).map(a => `<div class="sinal-row"><span>${a.a}</span><div>E <input type="checkbox" ${a.done.E?'checked':''} onclick="tItm('${a.m}','${a.a}','E')"> R <input type="checkbox" ${a.done.Rev?'checked':''} onclick="tItm('${a.m}','${a.a}','Rev')"> X <input type="checkbox" ${a.done.Ex?'checked':''} onclick="tItm('${a.m}','${a.a}','Ex')"></div></div>`).join('')}</div></div>`).join('');
-        }
-        function tItm(m,a,s) { let it=db.lista.find(x=>x.m===m&&x.a===a); it.done[s]=!it.done[s]; if(s==='Ex'&&it.done.Ex) it.f=true; db.metaFixa={}; save(); updateProg(); }
-
-        function renderFluxo() {
-            document.getElementById('fluxo-content').innerHTML = db.lista.map((it, i) => `<div class="stat-card" style="display:flex; justify-content:space-between; align-items:center;"><div><b>${it.m}</b><br><small>${it.a}</small></div><div style="display:flex; gap:10px;"><input type="number" step="0.5" value="${it.h.E}" onchange="db.lista[${i}].h.E=parseFloat(this.value); db.metaFixa={}; save();" title="E"><input type="number" step="0.5" value="${it.h.Rev}" onchange="db.lista[${i}].h.Rev=parseFloat(this.value); db.metaFixa={}; save();" title="R"><input type="number" step="0.5" value="${it.h.Ex}" onchange="db.lista[${i}].h.Ex=parseFloat(this.value); db.metaFixa={}; save();" title="X"></div></div>`).join('');
-        }
 
         function renderSemanal() {
             let vL = JSON.parse(JSON.stringify(db.lista)); let cS = { index: 0 };
             document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(o => {
                 let d = new Date(); d.setDate(d.getDate()+(weekOffset*7)+o); let dS = d.toLocaleDateString('pt-BR');
                 let tasks = getNeuralPool(db.h[d.getDay()], vL, cS, dS);
-                return `<div class="day-column"><div class="day-head">${dS.substring(0,5)}</div>${tasks.map(x=>`<div class="sim-task" style="background:var(--color-${x.k==='Ex'?'ex':(x.k==='Rev'?'rev':'e')})">${x.m}<br>${x.a}</div>`).join('')}</div>`;
+                return `<div class="day-column"><div class="day-head">${dS.substring(0,5)}</div>${tasks.map(x=>`<div class="sim-task" style="background:var(--color-${x.k==='Ex'?'ex':(x.k==='Rev'?'rev':'e')})">${x.m}<br><small>${x.a}</small></div>`).join('')}</div>`;
             }).join('');
         }
 
-        function impEdital() { const m=document.getElementById('add-mat').value, hE=parseFloat(document.getElementById('h-e').value), hR=parseFloat(document.getElementById('h-r').value), hX=parseFloat(document.getElementById('h-x').value); const ass=document.getElementById('add-ass').value.split('\n').filter(l=>l.trim().length>1); ass.forEach(a=>{ if(!db.lista.some(x=>x.m===m&&x.a===a.trim())) db.lista.push({m, a:a.trim(), h:{E:hE, Rev:hR, Ex:hX}, done:{E:false, Rev:false, Ex:false}, f:false, hF:0}); }); document.getElementById('add-mat').value=""; document.getElementById('add-ass').value=""; save(); init(); }
-        function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c=>c.value); db.metaFixa={}; save(); init(); }
-        function renderCiclo() { document.getElementById('check-c').innerHTML = [...new Set(db.lista.map(x=>x.m))].map(m=>`<label style="display:block; margin-bottom:10px;"><input type="checkbox" class="ckc" value="${m}" ${db.ciclo.includes(m)?'checked':''}> ${m}</label>`).join(''); }
-        function renderPesos() { document.getElementById('lista-pesos').innerHTML = [...new Set(db.lista.map(x=>x.m))].map(m => `<div class="stat-card" style="display:flex; justify-content:space-between; align-items:center;"><b>${m}</b><select onchange="db.mPesos['${m}']=parseInt(this.value); db.metaFixa={}; save();">${[1,2,3,4,5].map(v => `<option value="${v}" ${db.mPesos[m]==v?'selected':''}>PESO ${v}</option>`).join('')}</select></div>`).join(''); }
-        function renderBanco() { document.getElementById('lista-banco').innerHTML = [...new Set(db.lista.map(x=>x.m))].map(m => `<div class="stat-card" style="display:flex; justify-content:space-between; align-items:center;"><b>${m}</b><button class="btn btn-danger" onclick="delMat('${m}')">Remover</button></div>`).join(''); }
-        function delMat(m) { if(confirm("Apagar?")) { db.lista=db.lista.filter(x=>x.m!==m); db.ciclo=db.ciclo.filter(x=>x!==m); db.metaFixa={}; save(); renderBanco(); init(); } }
-        function renderHInputs() { const dN=["DOM","SEG","TER","QUA","QUI","SEX","SAB"]; document.getElementById('grid-h-in').innerHTML = dN.map((n,i)=>`<div><small>${n}</small><br><input type="number" id="h-in-${i}" value="${db.h[i]}" step="0.5" style="width:60px;"></div>`).join(''); }
-        function saveH() { for(let i=0; i<7; i++) db.h[i]=parseFloat(document.getElementById('h-in-'+i).value); db.metaFixa={}; save(); init(); }
-        function updateProg() { let at=db.lista.filter(x=>db.ciclo.includes(x.m)), tot=at.length*3, d=0; at.forEach(a=>{if(a.done.E)d++;if(a.done.Rev)d++;if(a.done.Ex)d++;}); let p=tot?Math.round((d/tot)*100):0; document.getElementById('p-ciclo-txt').innerText=p+'%'; document.getElementById('p-ciclo-bar').style.width=p+'%'; }
-        function checkStreak() { let hj=new Date().toLocaleDateString('pt-BR'); if(db.lastCheck && db.lastCheck!==hj) { let d1=new Date(db.lastCheck.split('/').reverse().join('-')), d2=new Date(hj.split('/').reverse().join('-')); if(Math.ceil(Math.abs(d2-d1)/(1000*60*60*24))>1) db.streak=0; else db.streak++; } document.getElementById('streak-val').innerText=db.streak; }
-        function saveExtra() {
-            let m=document.getElementById('ex-mat').value, a=document.getElementById('ex-ass').value, h=parseFloat(document.getElementById('ex-h').value)||0, q=parseInt(document.getElementById('ex-q').value)||0, acc=parseInt(document.getElementById('ex-a').value)||0;
-            if(!m || !a) return; let k=m+'-'+a; if(!db.perf[k]) db.perf[k]={q:0, a:0, h:0}; db.perf[k].q+=q; db.perf[k].a+=acc; db.perf[k].h+=h;
-            ["ex-h","ex-q","ex-a"].forEach(id=>document.getElementById(id).value=""); save(); init();
+        /* --- CONFIGS --- */
+        function saveHMaster() {
+            let week = parseFloat(document.getElementById('h-week').value) || 0;
+            let sab = parseFloat(document.getElementById('h-sab').value) || 0;
+            let dom = parseFloat(document.getElementById('h-dom').value) || 0;
+            for(let i=1; i<=5; i++) db.h[i] = week;
+            db.h[6] = sab; db.h[0] = dom;
+            db.metaFixa = {}; save(); init(); alert("Carga Horária Atualizada!");
         }
+
+        function renderHInputs() {
+            document.getElementById('h-week').value = db.h[1];
+            document.getElementById('h-sab').value = db.h[6];
+            document.getElementById('h-dom').value = db.h[0];
+        }
+
+        function renderPesos() {
+            const mats = [...new Set(db.lista.map(x=>x.m))];
+            document.getElementById('lista-pesos').innerHTML = mats.map(m => `
+                <div class="stat-card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <b>${m}</b><select onchange="db.mPesos['${m}']=parseInt(this.value); db.metaFixa={}; save();">${[1,2,3,4,5].map(v => `<option value="${v}" ${db.mPesos[m]==v?'selected':''}>PESO ${v}</option>`).join('')}</select>
+                </div>`).join('');
+        }
+
+        function renderTree() {
+            const mats = [...new Set(db.lista.map(x=>x.m))];
+            document.getElementById('tree').innerHTML = mats.map(m => `
+                <div class="folder">
+                    <div class="folder-header" onclick="this.nextElementSibling.classList.toggle('active')"><span>${m}</span> <button class="btn btn-sm" onclick="event.stopPropagation(); markAll('${m}')">Marcar Tudo</button></div>
+                    <div class="folder-content active">
+                        ${db.lista.filter(x=>x.m===m).map(a => `<div class="sinal-row"><span>${a.a}</span><div class="check-group">
+                            <label>E <input type="checkbox" ${a.done.E?'checked':''} onclick="tItm('${a.m}','${a.a}','E')"></label>
+                            <label>R <input type="checkbox" ${a.done.Rev?'checked':''} onclick="tItm('${a.m}','${a.a}','Rev')"></label>
+                            <label>X <input type="checkbox" ${a.done.Ex?'checked':''} onclick="tItm('${a.m}','${a.a}','Ex')"></label>
+                        </div></div>`).join('')}
+                    </div>
+                </div>`).join('');
+        }
+
+        function tItm(m,a,s) { let it=db.lista.find(x=>x.m===m && x.a===a); it.done[s]=!it.done[s]; if(s==='Ex' && it.done.Ex) it.f=true; db.metaFixa={}; save(); updateProg(); }
+        function markAll(m) { db.lista.filter(x=>x.m===m).forEach(a => { a.done.E=true; a.done.Rev=true; a.done.Ex=true; a.f=true; }); db.metaFixa={}; save(); renderTree(); init(); }
+
+        function renderPerf() {
+            let html = `<table class="perf-table"><thead><tr><th>Matéria</th><th>Assunto</th><th>Horas</th><th>Questões</th><th>Rend.</th></tr></thead><tbody>`;
+            db.lista.forEach(it => {
+                let p = db.perf[it.m+'-'+it.a] || {q:0, a:0, h:0};
+                if(p.h > 0 || p.q > 0) {
+                    let r = p.q ? Math.round((p.a/p.q)*100) : 0;
+                    html += `<tr><td>${it.m}</td><td>${it.a}</td><td>${p.h.toFixed(1)}h</td><td>${p.q}</td><td>${r}%</td></tr>`;
+                }
+            });
+            document.getElementById('perf-content').innerHTML = html + "</tbody></table>";
+            let hTot = Object.values(db.perf).reduce((a,b)=>a+b.h, 0);
+            document.getElementById('d-h-total').innerText = hTot.toFixed(1) + "h";
+        }
+
+        function renderFluxo() {
+            document.getElementById('fluxo-content').innerHTML = db.lista.map((it, i) => `
+                <div class="stat-card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="width:40%;"><b>${it.m}</b><br><small>${it.a}</small></div>
+                    <div style="display:flex; gap:10px;">
+                        E: <input type="number" step="0.5" value="${it.h.E}" onchange="db.lista[${i}].h.E=parseFloat(this.value); db.metaFixa={}; save();" style="width:50px;">
+                        R: <input type="number" step="0.5" value="${it.h.Rev}" onchange="db.lista[${i}].h.Rev=parseFloat(this.value); db.metaFixa={}; save();" style="width:50px;">
+                        X: <input type="number" step="0.5" value="${it.h.Ex}" onchange="db.lista[${i}].h.Ex=parseFloat(this.value); db.metaFixa={}; save();" style="width:50px;">
+                    </div>
+                </div>`).join('');
+        }
+
+        function impEdital() {
+            const m = document.getElementById('add-mat').value, hE = parseFloat(document.getElementById('h-e').value), hR = parseFloat(document.getElementById('h-r').value), hX = parseFloat(document.getElementById('h-x').value);
+            const ass = document.getElementById('add-ass').value.split('\n').filter(l=>l.trim().length>1);
+            ass.forEach(a => { if(!db.lista.some(x=>x.m===m && x.a===a.trim())) db.lista.push({m, a:a.trim(), h:{E:hE, Rev:hR, Ex:hX}, done:{E:false, Rev:false, Ex:false}, f:false, hF:0}); });
+            document.getElementById('add-mat').value=""; document.getElementById('add-ass').value=""; save(); init(); alert("Importado!");
+        }
+
+        function renderCiclo() {
+            document.getElementById('check-c').innerHTML = [...new Set(db.lista.map(x=>x.m))].map(m => `<label style="display:flex; justify-content:space-between; margin-bottom:10px;"><span><input type="checkbox" class="ckc" value="${m}" ${db.ciclo.includes(m)?'checked':''}> ${m}</span> <button class="btn btn-sm btn-danger" onclick="delMat('${m}')"><i class="fas fa-trash"></i></button></label>`).join('');
+        }
+
+        function delMat(m) { if(confirm("Remover permanentemente?")) { db.lista = db.lista.filter(x=>x.m!==m); db.ciclo = db.ciclo.filter(x=>x!==m); db.metaFixa={}; save(); renderCiclo(); init(); } }
+        function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c=>c.value); db.metaFixa={}; save(); init(); }
+        function updateProg() { let at=db.lista.filter(x=>db.ciclo.includes(x.m)), tot=at.length*3, d=0; at.forEach(a=>{if(a.done.E)d++;if(a.done.Rev)d++;if(a.done.Ex)d++;}); let p=tot?Math.round((d/tot)*100):0; document.getElementById('p-ciclo-txt').innerText=p+'%'; document.getElementById('p-ciclo-bar').style.width=p+'%'; }
+        function getHit(m,a) { let d = db.perf[m+'-'+a]; return d && d.q ? Math.round((d.a/d.q)*100) : 0; }
+        function checkStreak() { /* Logica de streak ja no updateGamification */ }
+        function execReplan() { db.metaFixa = {}; save(); init(); }
         function loadExMats() { document.getElementById('ex-mat').innerHTML = '<option value="">--</option>' + [...new Set(db.lista.map(x=>x.m))].map(m=>`<option value="${m}">${m}</option>`).join(''); }
         function loadExAss() { let m = document.getElementById('ex-mat').value; document.getElementById('ex-ass').innerHTML = db.lista.filter(x=>x.m===m).map(x=>`<option value="${x.a}">${x.a}</option>`).join(''); }
-        function execReplan() { db.metaFixa = {}; save(); init(); }
+        function saveExtra() {
+            let m=document.getElementById('ex-mat').value, a=document.getElementById('ex-ass').value, h=parseFloat(document.getElementById('ex-h').value)||0, q=parseInt(document.getElementById('ex-q').value)||0, acc=parseInt(document.getElementById('ex-a').value)||0;
+            if(!m || !a) return; let k=m+'-'+a; if(!db.perf[k]) db.perf[k]={q:0, a:0, h:0}; db.perf[k].q+=q; db.perf[k].a+=acc; db.perf[k].h+=h; addXP(q*2 + h*10);
+            ["ex-h","ex-q","ex-a"].forEach(id=>document.getElementById(id).value=""); save(); init();
+        }
     </script>
 </body>
 </html>
-
