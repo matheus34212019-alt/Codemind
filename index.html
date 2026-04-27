@@ -3,729 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI COMMAND v.80 - ULTIMATE ARCHITECTURE</title>
+    <title>OMNI ANALYTICS v.85 - FULL ENGINE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #0f172a;
-            --accent: #3b82f6;
-            --bg: #f1f5f9;
-            --card-bg: #ffffff;
-            --border: #e2e8f0;
-            --text-main: #0f172a;
-            --text-sec: #64748b;
-            --color-e: #3b82f6; 
-            --color-rev: #f59e0b; 
-            --color-ex: #10b981;
-            --status-green: #10b981;
-            --status-yellow: #f59e0b;
-            --status-red: #ef4444;
-            --radius: 16px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --primary: #0f172a; --accent: #3b82f6; --bg: #f1f5f9;
+            --card-bg: #ffffff; --border: #e2e8f0; --text-main: #0f172a; --text-sec: #64748b;
+            --color-e: #3b82f6; --color-rev: #f59e0b; --color-ex: #10b981;
+            --status-green: #10b981; --status-yellow: #f59e0b; --status-red: #ef4444;
+            --radius: 20px; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg); 
-            color: var(--text-main);
-            display: flex; 
-            height: 100vh; 
-            overflow: hidden; 
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        /* --- SIDEBAR PREMIUM --- */
-        .sidebar { 
-            width: 280px; 
-            background: var(--primary); 
-            display: flex; 
-            flex-direction: column; 
-            flex-shrink: 0; 
-            height: 100vh; 
-            overflow-y: auto; 
-            padding: 20px;
-            border-right: 1px solid rgba(255,255,255,0.05);
-            z-index: 100;
-        }
+        /* --- SIDEBAR --- */
+        .sidebar { width: 280px; background: var(--primary); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; overflow-y: auto; padding: 25px; border-right: 1px solid rgba(255,255,255,0.05); }
+        .logo-box { padding: 10px 10px 30px 10px; color: white; display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.3rem; }
+        .nav-group { margin-bottom: 25px; }
+        .nav-label { color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; padding-left: 15px; letter-spacing: 1.2px; }
+        .nav-item { padding: 14px 16px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; border-radius: 14px; transition: 0.3s; margin-bottom: 6px; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.06); color: white; }
+        .nav-item.active { background: var(--accent); box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4); }
         
-        .logo-box { 
-            padding: 20px 10px 40px 10px; 
-            color: white; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            font-weight: 800; 
-            font-size: 1.2rem;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-group { margin-bottom: 30px; }
-        
-        .nav-label { 
-            color: #475569; 
-            font-size: 0.7rem; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            margin-bottom: 10px; 
-            padding-left: 15px;
-            letter-spacing: 1px;
-        }
-
-        .nav-item { 
-            padding: 12px 15px; 
-            color: #94a3b8; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            font-weight: 600; 
-            border-radius: 12px;
-            transition: all 0.2s ease;
-            margin-bottom: 4px;
-        }
-        
-        .nav-item i { width: 20px; text-align: center; }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
-        .nav-item.active { background: var(--accent); color: white; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3); }
-        
-        .submenu { 
-            margin-left: 10px; 
-            border-left: 1px solid rgba(255,255,255,0.1); 
-            display: none; 
-            flex-direction: column; 
-            margin-top: 5px;
-            margin-bottom: 10px;
-        }
+        .submenu { margin-left: 12px; border-left: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; }
         .submenu.show { display: flex; }
-        
-        .sub-link { 
-            padding: 10px 10px 10px 30px; 
-            color: #64748b; 
-            font-size: 0.85rem; 
-            cursor: pointer; 
-            font-weight: 500; 
-            transition: 0.2s;
-        }
+        .sub-link { padding: 10px 10px 10px 30px; color: #64748b; font-size: 0.85rem; cursor: pointer; font-weight: 500; transition: 0.2s; }
         .sub-link:hover { color: white; }
 
         /* --- MAIN CONTENT --- */
-        .main { flex: 1; height: 100vh; overflow-y: auto; padding: 40px; -webkit-overflow-scrolling: touch; }
+        .main { flex: 1; height: 100vh; overflow-y: auto; padding: 40px; scroll-behavior: smooth; }
         .container { max-width: 1100px; margin: 0 auto; }
+        .page-header { margin-bottom: 35px; }
+        .page-header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -1.2px; color: var(--primary); }
 
-        .page-header { margin-bottom: 32px; }
-        .page-header h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 5px; }
-        .page-header p { color: var(--text-sec); font-weight: 500; }
+        /* --- DASHBOARD IA --- */
+        .ai-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .ai-card { background: white; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+        .ai-card small { color: var(--text-sec); font-weight: 800; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; }
+        .ai-val { margin-top: 12px; font-weight: 800; font-size: 1.4rem; color: var(--primary); }
 
-        /* --- DASHBOARD CARDS --- */
-        .predictor-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
-        .stat-card small { color: var(--text-sec); font-weight: 800; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-val { margin-top: 10px; font-weight: 800; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        /* --- ANALYTICS TABLES --- */
+        .table-container { width: 100%; overflow-x: auto; background: white; border-radius: var(--radius); border: 1px solid var(--border); margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f8fafc; padding: 15px 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-sec); border-bottom: 1px solid var(--border); }
+        td { padding: 18px 20px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; font-weight: 600; }
+        .perc-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; }
 
-        /* --- TASK CARDS --- */
-        .card { background: var(--card-bg); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        /* --- CARDS & GRID --- */
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 25px; margin-bottom: 25px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .task-card { display: flex; justify-content: space-between; align-items: center; border-left: 10px solid #ccc; transition: 0.3s; }
+        .task-card:hover { transform: translateX(8px); }
+        .tag { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 6px 14px; border-radius: 30px; color: white; display: inline-block; margin-bottom: 12px; }
         
-        .task-card { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-left: 10px solid #ccc;
-            transition: transform 0.2s ease;
-        }
-        .task-card:hover { transform: translateX(5px); }
+        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; margin-top: 25px; }
+        .day-box { background: #fff; border-radius: var(--radius); border: 1px solid var(--border); min-height: 480px; display: flex; flex-direction: column; }
+        .day-label { background: #f8fafc; padding: 15px; text-align: center; font-weight: 800; font-size: 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-sec); text-transform: uppercase; }
+        .week-task { margin: 6px; padding: 10px; border-radius: 12px; font-size: 0.65rem; font-weight: 700; color: white; line-height: 1.3; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 
-        .tag { 
-            font-size: 0.6rem; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            padding: 6px 12px; 
-            border-radius: 20px; 
-            color: white;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-        
-        .type-e { background: var(--color-e); } 
-        .type-rev { background: var(--color-rev); } 
-        .type-ex { background: var(--color-ex); }
-
-        /* --- WEEKLY GRID --- */
-        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-top: 20px; }
-        .day-box { 
-            background: #fff; 
-            border-radius: var(--radius); 
-            border: 1px solid var(--border); 
-            min-height: 450px; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-        }
-        .day-label { 
-            background: #f8fafc; 
-            padding: 12px; 
-            text-align: center; 
-            font-weight: 800; 
-            font-size: 0.7rem; 
-            border-bottom: 1px solid var(--border); 
-            color: var(--text-sec);
-            text-transform: uppercase;
-        }
-        .week-task { 
-            margin: 5px; 
-            padding: 10px; 
-            border-radius: 10px; 
-            font-size: 0.6rem; 
-            font-weight: 700; 
-            color: white; 
-            line-height: 1.2;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            word-break: break-word;
-        }
-
-        /* --- FOLDERS & TREE --- */
-        .folder { background: white; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 12px; overflow: hidden; }
-        .folder-header { 
-            padding: 18px 24px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            cursor: pointer; 
-            background: #fff;
-            transition: background 0.2s;
-        }
+        /* --- GESTÃO --- */
+        .folder { background: white; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; }
+        .folder-header { padding: 20px 25px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; }
         .folder-header:hover { background: #f8fafc; }
-        .folder-content { display: none; padding-bottom: 8px; background: #fcfcfc; border-top: 1px solid var(--border); }
+        .folder-content { display: none; padding-bottom: 10px; background: #fcfcfc; border-top: 1px solid var(--border); }
         .folder-content.open { display: block; }
-        
-        .subject-row { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 12px 24px 12px 60px; 
-            cursor: pointer; 
-            border-bottom: 1px solid #f1f5f9; 
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: background 0.2s;
-        }
-        .subject-row:hover { background: #eff6ff; }
+        .subject-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 25px 14px 60px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; font-weight: 500; }
         .subject-row.done { color: var(--accent); font-weight: 700; background: #eff6ff; }
 
-        /* --- UI ELEMENTS --- */
-        .btn { 
-            padding: 14px 24px; 
-            background: var(--accent); 
-            color: white; 
-            border: none; 
-            border-radius: 12px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
-        
-        input, textarea, select { 
-            width: 100%; 
-            padding: 12px 16px; 
-            border: 1px solid var(--border); 
-            border-radius: 10px; 
-            margin-top: 8px; 
-            font-family: inherit;
-            background: #f8fafc;
-            transition: all 0.2s;
-        }
-        input:focus { border-color: var(--accent); background: white; }
+        .btn { padding: 16px 28px; background: var(--accent); color: white; border: none; border-radius: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+        input, textarea, select { width: 100%; padding: 14px 18px; border: 1px solid var(--border); border-radius: 14px; margin-top: 10px; font-family: inherit; background: #f8fafc; }
 
         #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: white; padding: 50px; border-radius: 30px; width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        
-        .page { display: none; animation: fadeIn 0.4s ease; }
-        .page.active { display: block; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: var(--accent); }
-        
-        .risk-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .login-card { background: white; padding: 60px; border-radius: 35px; width: 420px; text-align: center; }
+        .page { display: none; animation: fadeIn 0.4s ease; } .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        input[type="checkbox"] { width: 24px; height: 24px; cursor: pointer; accent-color: var(--accent); }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-card">
-            <i class="fas fa-brain" style="font-size: 3.5rem; color: var(--accent); margin-bottom: 25px;"></i>
-            <h2 style="margin-bottom: 10px; font-weight: 800;">OMNI PREDICTOR</h2>
-            <p style="margin-bottom: 30px; color: var(--text-sec); font-weight: 500;">Engenharia de Aprovação v.80</p>
-            <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; font-size: 1.1rem; letter-spacing: 5px;">
-            <button class="btn" style="width: 100%; margin-top: 25px; font-size: 1rem;" onclick="checkAccess()">INICIAR DASHBOARD</button>
+            <i class="fas fa-chart-line" style="font-size: 3.5rem; color: var(--accent); margin-bottom: 25px;"></i>
+            <h2 style="margin-bottom: 10px; font-weight: 800;">OMNI ENGINE</h2>
+            <p style="margin-bottom: 35px; color: gray; font-weight: 500;">Versão v.85 • Desempenho Ativo</p>
+            <input type="password" id="pass-input" placeholder="Sua Chave" style="text-align:center; letter-spacing: 8px;">
+            <button class="btn" style="width: 100%; margin-top: 30px;" onclick="checkAccess()">INICIAR ANALYTICS</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box"><i class="fas fa-shield-halved" style="color:var(--accent)"></i> OMNI COMMAND</div>
-        
+        <div class="logo-box"><i class="fas fa-brain" style="color:var(--accent)"></i> OMNI v.85</div>
         <div class="nav-group">
-            <div class="nav-label">Operacional</div>
-            <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-bolt"></i><span>Painel Diário</span></div>
-            <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-chart-line"></i><span>Grade Semanal</span></div>
+            <div class="nav-label">Monitoramento</div>
+            <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-bolt-lightning"></i><span>Painel de Hoje</span></div>
+            <div class="nav-item" onclick="showTab('performance', this)"><i class="fas fa-chart-pie"></i><span>Desempenho</span></div>
+            <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-microchip"></i><span>Simulação IA</span></div>
         </div>
-
         <div class="nav-group">
-            <div class="nav-label">Estratégia</div>
-            <div class="nav-item" onclick="toggleSub()"><i class="fas fa-layer-group"></i><span>Meu Plano</span><i class="fas fa-chevron-down" style="margin-left:auto; font-size:0.7rem;"></i></div>
+            <div class="nav-label">Configuração</div>
+            <div class="nav-item" onclick="toggleSub()"><i class="fas fa-sliders"></i><span>Meu Plano</span><i class="fas fa-chevron-down" style="margin-left:auto; font-size:0.7rem;"></i></div>
             <div id="sub-plano" class="submenu">
                 <div class="sub-link" onclick="showTab('edital')">Importar Edital</div>
-                <div class="sub-link" onclick="showTab('ciclo')">Ciclo de Matérias</div>
-                <div class="sub-link" onclick="showTab('config-h')">Carga Horária</div>
+                <div class="sub-link" onclick="showTab('ciclo')">Ciclo Ativo</div>
+                <div class="sub-link" onclick="showTab('config-h')">Horas Diárias</div>
                 <div class="sub-link" onclick="showTab('sinalizar')">Sinalizar Base</div>
                 <div class="sub-link" onclick="showTab('rever')">Rever Finalizados</div>
-                <div class="sub-link" onclick="showTab('fluxo')">Ajuste de Fluxo</div>
+                <div class="sub-link" onclick="showTab('fluxo')">Ajustar Fluxo</div>
             </div>
         </div>
     </aside>
 
     <main class="main">
         <div class="container">
-            
-            <div class="predictor-bar">
-                <div class="stat-card">
-                    <small>Análise de Risco</small>
-                    <div id="risk-status" class="stat-val">--</div>
+            <div class="ai-stats">
+                <div class="ai-card"><small>Carga Restante</small><div id="total-remaining-hrs" class="ai-val">0h</div></div>
+                <div class="ai-card"><small>Aproveitamento Global</small><div id="global-accuracy" class="ai-val">0%</div></div>
+                <div class="ai-card"><small>Previsão Término</small><div id="completion-date" class="ai-val">--/--/--</div></div>
+            </div>
+
+            <div id="performance" class="page">
+                <div class="page-header"><h1>Performance Analítica</h1><p>Métricas reais baseadas nos seus exercícios</p></div>
+                <div class="card">
+                    <h3 style="margin-bottom:20px;">Desempenho por Matéria</h3>
+                    <div class="table-container"><table id="table-mats"><thead><tr><th>Matéria</th><th>Tempo Gasto</th><th>Questões</th><th>Acertos</th><th>%</th></tr></thead><tbody></tbody></table></div>
                 </div>
-                <div class="stat-card">
-                    <small>Tempo Restante do Edital</small>
-                    <div id="total-remaining-hrs" class="stat-val">0h</div>
-                </div>
-                <div class="stat-card">
-                    <small>Projeção de Conclusão</small>
-                    <div id="completion-date" class="stat-val">--</div>
+                <div class="card">
+                    <h3 style="margin-bottom:20px;">Ranking de Assuntos</h3>
+                    <div class="table-container"><table id="table-assuntos"><thead><tr><th>Assunto</th><th>Matéria</th><th>Questões</th><th>Acertos</th><th>%</th></tr></thead><tbody></tbody></table></div>
                 </div>
             </div>
 
             <div id="diaria" class="page active">
                 <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
-                    <div>
-                        <h1>Foco do Plantão 🚓</h1>
-                        <p id="meta-status">Carregando sugestões...</p>
-                    </div>
-                    <button class="btn" onclick="regenerateDaily()"><i class="fas fa-sync"></i> Recalcular Tudo</button>
+                    <div><h1>Foco do Plantão 🚓</h1><p id="meta-status">Otimizando sua carga...</p></div>
+                    <button class="btn" onclick="regenerateDaily()"><i class="fas fa-rotate"></i> Recalcular Hoje</button>
                 </div>
                 <div id="lista-diaria"></div>
             </div>
 
-            <div id="semanal" class="page">
-                <div class="page-header">
-                    <h1>Projeção Semanal Inteligente</h1>
-                    <p>Simulação baseada no rito progressivo e repetição espaçada</p>
-                </div>
-                <div id="grid-semanal" class="grid-7"></div>
-            </div>
+            <div id="semanal" class="page"><div class="page-header"><h1>Simulação de 7 Dias</h1></div><div id="grid-semanal" class="grid-7"></div></div>
 
             <div id="edital" class="page">
-                <div class="page-header"><h1>Importar Conteúdo</h1></div>
+                <div class="page-header"><h1>Importar Disciplinas</h1></div>
                 <div class="card">
-                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:15px;">
-                        <div>
-                            <label style="font-weight:700;">Disciplina</label>
-                            <input type="text" id="add-mat" placeholder="Ex: Legislação de Trânsito">
-                        </div>
-                        <div>
-                            <label style="font-weight:700;">Dificuldade</label>
-                            <select id="add-diff">
-                                <option value="1.0">Fácil (Rápido)</option>
-                                <option value="1.5" selected>Média (Padrão)</option>
-                                <option value="2.5">Difícil (Lento)</option>
-                            </select>
-                        </div>
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
+                        <div><label>Matéria</label><input type="text" id="add-mat" placeholder="Ex: Informática"></div>
+                        <div><label>Dificuldade</label><select id="add-diff"><option value="1.0">Fácil</option><option value="1.5" selected>Média</option><option value="2.5">Difícil</option></select></div>
                     </div>
-                    
-                    <div style="margin-top:20px;">
-                        <label style="font-weight:700;">Prazo Limite (Data da Prova)</label>
-                        <input type="date" id="add-deadline">
-                    </div>
-
-                    <div style="margin-top:20px;">
-                        <label style="font-weight:700;">Assuntos (Um por linha)</label>
-                        <textarea id="add-ass" placeholder="Assunto 1&#10;Assunto 2&#10;Assunto 3" style="height:150px;"></textarea>
-                    </div>
-                    
-                    <button class="btn" style="width:100%; margin-top:25px;" onclick="saveEdital()">INTEGRAR AO CRONOGRAMA</button>
+                    <div style="margin-top:20px;"><label>Prazo Final (Data da Prova)</label><input type="date" id="add-deadline"></div>
+                    <textarea id="add-ass" placeholder="Assuntos (um por linha)" style="height:150px; margin-top:20px;"></textarea>
+                    <button class="btn" style="width:100%; margin-top:25px;" onclick="saveEdital()">SALVAR EDITAL</button>
                 </div>
             </div>
 
-            <div id="fluxo" class="page">
-                <div class="page-header"><h1>Controle Fino de Fluxo</h1></div>
-                <div id="corpo-fluxo"></div>
-            </div>
-
-            <div id="config-h" class="page">
-                <div class="page-header"><h1>Gestão de Carga Horária</h1></div>
-                <div class="card">
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom: 25px;">
-                        <div><label>Meta Seg-Sex</label><input type="number" id="q-util" onchange="applyQ('util', this.value)"></div>
-                        <div><label>Meta Sáb-Dom</label><input type="number" id="q-fds" onchange="applyQ('fds', this.value)"></div>
-                    </div>
-                    <div id="grid-horas-manual" style="display:grid; grid-template-columns:repeat(7,1fr); gap:10px; text-align:center;"></div>
-                    <button class="btn" style="width:100%; margin-top:25px;" onclick="saveH()">ATUALIZAR DISPONIBILIDADE</button>
-                </div>
-            </div>
-
-            <div id="sinalizar" class="page">
-                <div class="page-header"><h1>Sinalizar Matérias Estudadas</h1></div>
-                <div id="tree-container"></div>
-            </div>
-
-            <div id="rever" class="page">
-                <div class="page-header"><h1>Rever / Resetar Assuntos</h1></div>
-                <div id="rever-container"></div>
-            </div>
-
-            <div id="ciclo" class="page">
-                <div class="page-header"><h1>Ciclo de Matérias Ativo</h1></div>
-                <div id="checks-ciclo" class="card" style="columns:2; padding:30px;"></div>
-                <button class="btn" style="width:100%; margin-top:10px;" onclick="saveC()">SALVAR CICLO</button>
-            </div>
-
+            <div id="config-h" class="page"><div class="page-header"><h1>Carga Horária</h1></div><div class="card"><div id="grid-horas-manual" style="display:grid; grid-template-columns:repeat(7,1fr); gap:12px; text-align:center;"></div><button class="btn" style="width:100%; margin-top:25px;" onclick="saveH()">SALVAR</button></div></div>
+            <div id="ciclo" class="page"><div class="page-header"><h1>Ciclo Ativo</h1></div><div id="checks-ciclo" class="card" style="columns:2;"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveC()">SALVAR</button></div>
+            <div id="sinalizar" class="page"><div class="page-header"><h1>Sinalizar Base</h1></div><div id="tree-container"></div></div>
+            <div id="rever" class="page"><div class="page-header"><h1>Rever Finalizados</h1></div><div id="rever-container"></div></div>
+            <div id="fluxo" class="page"><div class="page-header"><h1>Fluxo</h1></div><div id="corpo-fluxo"></div></div>
         </div>
     </main>
 
 <script>
-    /* ==========================================================
-       ENGINE v.80 - CORE LOGIC (INTELLIGENT RECURSION)
-       ========================================================== */
-    
-    let db = JSON.parse(localStorage.getItem('prf_v80_ultimate')) || { 
+    /* ENGINE v.85 - CORE LOGIC */
+    let db = JSON.parse(localStorage.getItem('prf_v85_engine')) || { 
         lista: [], ciclo: [], h: {0:4,1:4,2:4,3:4,4:4,5:4,6:4}, history: [], metaFixa: {} 
     };
 
-    const save = () => localStorage.setItem('prf_v80_ultimate', JSON.stringify(db));
-    const formatTime = (h) => {
-        h = parseFloat(h);
-        if(h === 0.5) return "30m";
-        if(h === 1.0) return "60m";
-        if(h === 1.5) return "90m";
-        if(h === 2.0) return "2h";
-        return (h * 60) + "m";
-    };
-
+    const save = () => localStorage.setItem('prf_v85_engine', JSON.stringify(db));
+    const formatTime = (h) => { h = parseFloat(h); return h === 0.5 ? "30m" : h === 1.0 ? "60m" : h === 1.5 ? "90m" : h === 2.0 ? "2h" : (h*60)+"m"; };
     let openedFolders = new Set();
 
     function checkAccess() {
-        const pass = document.getElementById('pass-input').value;
-        if(pass === "123" || pass === db.pass) {
-            document.getElementById('login-screen').style.display = 'none';
-            init();
-        } else { alert("Acesso negado."); }
+        if(document.getElementById('pass-input').value === "123") { document.getElementById('login-screen').style.display='none'; init(); }
+        else alert("Acesso negado.");
     }
 
-    function init() {
-        renderH();
-        renderPredictorStats();
-        renderDiario();
-        renderTree();
-        renderCiclo();
-    }
-
+    function init() { renderH(); renderPredictor(); renderDiario(); renderTree(); renderCiclo(); renderPerformance(); }
     function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
 
     function showTab(id, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(m => m.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(el && el.classList.contains('nav-item')) el.classList.add('active');
-
-        if(id === 'semanal') renderSemanal();
-        if(id === 'diaria') renderDiario();
-        if(id === 'fluxo') renderFluxo();
-        if(id === 'sinalizar') renderTree();
-        if(id === 'rever') renderRever();
-        if(id === 'ciclo') renderCiclo();
+        document.getElementById(id).classList.add('active'); if(el) el.classList.add('active');
+        if(id === 'performance') renderPerformance();
+        if(id === 'semanal') renderSemanal(); if(id === 'diaria') renderDiario();
+        if(id === 'sinalizar') renderTree(); if(id === 'rever') renderRever(); if(id === 'ciclo') renderCiclo();
     }
 
-    /* --- MOTOR PREDITIVO v.80 --- */
-    function generateIntelligentPool(hoursLimit, baseDate = new Date()) {
-        let simulatedPool = [];
-        let accumulatedHours = 0;
-        let referenceDate = new Date(baseDate); referenceDate.setHours(0,0,0,0);
-        
-        // Clonagem para simulação segura
-        let simLista = JSON.parse(JSON.stringify(db.lista));
+    function generateNeuralPool(limit, baseDate = new Date()) {
+        let pool = []; let somaH = 0; let refD = new Date(baseDate); refD.setHours(0,0,0,0);
+        let simL = JSON.parse(JSON.stringify(db.lista));
+        if(!db.ciclo || db.ciclo.length === 0) return [];
 
-        while(accumulatedHours < hoursLimit) {
-            let taskAddedInThisPass = false;
-
-            for(let matName of db.ciclo) {
-                if(accumulatedHours >= hoursLimit) break;
-
-                // 1. Manutenção (3/7/21 Dias) - Prioridade Máxima
-                let subjectManut = simLista.filter(x => x.m === matName && x.agendas);
-                for(let ass of subjectManut) {
+        let safety = 0;
+        while(somaH < limit && safety < 60) {
+            safety++;
+            let added = false;
+            for(let m of db.ciclo) {
+                if(somaH >= limit) break;
+                let manut = simL.filter(x => x.m === m && x.agendas);
+                for(let ass of manut) {
                     for(let i=0; i<3; i++) {
-                        let agendaDate = new Date(ass.agendas[i]);
-                        if(referenceDate >= agendaDate) {
-                            if(!ass.doneAgendas[i*2]) { // Rito Revisão
-                                simulatedPool.push({ m: ass.m, a: ass.a, label: `Rev ${i==0?3:i==1?7:21}D`, key: 'RevAg', hrs: 1.0, agendaIdx: i*2 });
-                                ass.doneAgendas[i*2] = true; accumulatedHours += 1.0; taskAddedInThisPass = true; break;
-                            } else if(!ass.doneAgendas[i*2+1]) { // Rito Exercício
-                                simulatedPool.push({ m: ass.m, a: ass.a, label: `Ex ${i==0?3:i==1?7:21}D`, key: 'ExAg', hrs: 1.0, agendaIdx: i*2+1 });
-                                ass.doneAgendas[i*2+1] = true; accumulatedHours += 1.0; taskAddedInThisPass = true; break;
+                        let dAg = new Date(ass.agendas[i]);
+                        if(refD >= dAg) {
+                            if(!ass.doneAgendas[i*2]) {
+                                pool.push({ m: ass.m, a: ass.a, label: `Rev ${i==0?3:i==1?7:21}D`, key: 'RevAg', hrs: 1.0, agI: i*2 });
+                                ass.doneAgendas[i*2] = true; somaH += 1.0; added = true; break;
+                            } else if(!ass.doneAgendas[i*2+1]) {
+                                pool.push({ m: ass.m, a: ass.a, label: `Ex ${i==0?3:i==1?7:21}D`, key: 'ExAg', hrs: 1.0, agI: i*2+1 });
+                                ass.doneAgendas[i*2+1] = true; somaH += 1.0; added = true; break;
                             }
                         }
                     }
-                    if(taskAddedInThisPass) break;
+                    if(added) break;
                 }
-                if(taskAddedInThisPass) continue;
-
-                // 2. Fluxo de Assuntos Novos (E > Rev > Ex)
-                let availableSubjects = simLista.filter(x => x.m === matName && !x.f);
-                for(let ass of availableSubjects) {
-                    const steps = [{k:'E', l:'Estudo'}, {k:'Rev', l:'Revisão'}, {k:'Ex', l:'Exercícios'}];
-                    for(let step of steps) {
-                        if(!ass.done[step.k]) {
-                            let taskHr = (step.k === 'E' ? parseFloat(ass.h[step.k]) : 1.0);
-                            
-                            // Logica de Encaixe de Estudo vs Blindagem de Revisão
-                            if(step.k === 'E') {
-                                if(accumulatedHours + taskHr > hoursLimit) taskHr = Math.max(0, hoursLimit - accumulatedHours);
-                            } else {
-                                if(accumulatedHours + 1.0 > hoursLimit) continue; // Pula se não couber 1h de revisão/ex
-                            }
-
-                            if(taskHr > 0) {
-                                simulatedPool.push({ m: ass.m, a: ass.a, label: step.l, key: step.k, hrs: taskHr });
-                                ass.done[step.k] = true; accumulatedHours += taskHr; taskAddedInThisPass = true; break;
+                if(added) continue;
+                let disponiveis = simL.filter(x => x.m === m && !x.f);
+                for(let ass of disponiveis) {
+                    const rito = [{k:'E', l:'Estudo'}, {k:'Rev', l:'Revisão'}, {k:'Ex', l:'Exercícios'}];
+                    for(let s of rito) {
+                        if(!ass.done[s.k]) {
+                            let hT = (s.k === 'E' ? parseFloat(ass.h[s.k]) : 1.0);
+                            if(s.k === 'E') { if(somaH + hT > limit) hT = Math.max(0, limit - somaH); }
+                            else { if(somaH + 1.0 > limit) continue; }
+                            if(hT > 0) {
+                                pool.push({ m: ass.m, a: ass.a, label: s.l, key: s.k, hrs: hT });
+                                ass.done[s.k] = true; somaH += hT; added = true; break;
                             }
                         }
                     }
-                    if(taskAddedInThisPass) break;
+                    if(added) break;
                 }
             }
-            if(!taskAddedInThisPass) break; // Trava de segurança para loops infinitos
-        }
-        return simulatedPool;
+            if(!added) break;
+        } return pool;
     }
 
-    function renderPredictorStats() {
-        let remainingHrs = 0;
-        db.lista.filter(x => !x.f).forEach(a => {
-            if(!a.done.E) remainingHrs += parseFloat(a.h.E);
-            if(!a.done.Rev) remainingHrs += 1;
-            if(!a.done.Ex) remainingHrs += 1;
+    function renderPredictor() {
+        let hRest = 0; db.lista.filter(x => !x.f).forEach(a => {
+            if(!a.done.E) hRest += parseFloat(a.h.E); if(!a.done.Rev) hRest += 1; if(!a.done.Ex) hRest += 1;
         });
-
-        let weeklyCap = Object.values(db.h).reduce((a,b) => parseFloat(a) + parseFloat(b), 0);
-        let daysToFinish = Math.ceil(remainingHrs / (weeklyCap / 7 || 1));
-        
-        let finishDate = new Date();
-        finishDate.setDate(finishDate.getDate() + daysToFinish);
-
-        document.getElementById('total-remaining-hrs').innerText = remainingHrs.toFixed(1) + "h";
-        document.getElementById('completion-date').innerText = finishDate.toLocaleDateString();
-
-        // Cálculo de Risco
-        let minDeadline = db.lista.length > 0 ? new Date(Math.min(...db.lista.map(x => x.deadline ? new Date(x.deadline) : new Date(2099,0,1)))) : null;
-        let riskBox = document.getElementById('risk-status');
-
-        if(!minDeadline || minDeadline.getFullYear() === 2099) {
-            riskBox.innerHTML = `<span class="risk-dot" style="background:#cbd5e1"></span> SEM PRAZO`;
-        } else if(finishDate < minDeadline) {
-            riskBox.innerHTML = `<span class="risk-dot" style="background:var(--status-green)"></span> SEGURO`;
-            riskBox.style.color = "var(--status-green)";
-        } else {
-            riskBox.innerHTML = `<span class="risk-dot" style="background:var(--status-red)"></span> ATRASADO`;
-            riskBox.style.color = "var(--status-red)";
-        }
+        document.getElementById('total-remaining-hrs').innerText = hRest.toFixed(1) + "h";
+        let hSem = Object.values(db.h).reduce((a,b)=>parseFloat(a)+parseFloat(b), 0);
+        let dias = Math.ceil(hRest / (hSem/7 || 1));
+        let fin = new Date(); fin.setDate(fin.getDate() + dias);
+        document.getElementById('completion-date').innerText = fin.toLocaleDateString();
+        let qT = 0, aT = 0; db.lista.forEach(a => { qT += (a.qntQ || 0); aT += (a.qntA || 0); });
+        document.getElementById('global-accuracy').innerText = qT > 0 ? ((aT/qT)*100).toFixed(1) + "%" : "0%";
     }
 
     function renderDiario() {
-        const hj = new Date().toLocaleDateString();
-        const hMeta = parseFloat(db.h[new Date().getDay()] || 4);
-        
-        if(!db.metaFixa[hj] || db.metaFixa[hj].length === 0) {
-            db.metaFixa[hj] = generateIntelligentPool(hMeta);
-            save();
-        }
-
-        const tasks = db.metaFixa[hj];
-        const soma = tasks.reduce((a,b) => a + b.hrs, 0);
-        document.getElementById('meta-status').innerText = `${soma.toFixed(1)}h alocadas de ${hMeta}h meta hoje`;
-
-        document.getElementById('lista-diaria').innerHTML = tasks.map((t, i) => `
+        const hjK = new Date().toLocaleDateString(); const hM = parseFloat(db.h[new Date().getDay()] || 4);
+        if(!db.metaFixa[hjK]) { db.metaFixa[hjK] = generateNeuralPool(hM); save(); }
+        document.getElementById('meta-status').innerText = `${db.metaFixa[hjK].reduce((a,b)=>a+b.hrs,0).toFixed(1)}h / ${hM}h meta`;
+        document.getElementById('lista-diaria').innerHTML = db.metaFixa[hjK].map((t, i) => `
             <div class="card task-card" style="border-left-color:var(--color-${(t.key.includes('Rev')?'rev':t.key.includes('Ex')?'ex':'e').toLowerCase()})">
-                <div>
-                    <span class="tag type-${(t.key.includes('Rev')?'rev':t.key.includes('Ex')?'ex':'e')}">${t.label} (${formatTime(t.hrs)})</span>
-                    <div style="font-weight:800; font-size:1.1rem; margin-top:5px;">${t.m}: ${t.a}</div>
-                </div>
-                <input type="checkbox" ${t.completed?'checked':''} onclick="concluir(${i},'${t.m}','${t.a}','${t.key}', ${t.agendaIdx})">
-            </div>`).join('') || "<p style='padding:20px; color:gray;'>Edital vazio ou sem matérias no ciclo ativo.</p>";
+                <div><span class="tag type-${(t.key.includes('Rev')?'rev':t.key.includes('Ex')?'ex':'e')}">${t.label} (${formatTime(t.hrs)})</span><div style="font-weight:800; font-size:1.1rem;">${t.m}: ${t.a}</div></div>
+                <input type="checkbox" ${t.completed?'checked':''} onclick="concluir(${i},'${t.m}','${t.a}','${t.key}', ${t.agI})">
+            </div>`).join('') || "<p style='padding:20px;'>Verifique o Ciclo e Edital.</p>";
     }
 
-    function concluir(idx, m, a, k, agIdx) {
-        const hj = new Date().toLocaleDateString();
-        db.metaFixa[hj][idx].completed = !db.metaFixa[hj][idx].completed;
-        
+    function concluir(idx, m, a, k, agI) {
+        const hjK = new Date().toLocaleDateString(); db.metaFixa[hjK][idx].completed = !db.metaFixa[hjK][idx].completed;
         const it = db.lista.find(x => x.m === m && x.a === a);
-        if(k.includes('Ag')) {
-            it.doneAgendas[agIdx] = db.metaFixa[hj][idx].completed;
-        } else {
-            it.done[k] = db.metaFixa[hj][idx].completed;
+        if(db.metaFixa[hjK][idx].completed && k.includes('Ex')) {
+            let q = prompt("Questões feitas:"); let ac = prompt("Acertos:");
+            it.qntQ = (it.qntQ || 0) + parseInt(q || 0); it.qntA = (it.qntA || 0) + parseInt(ac || 0);
+        }
+        if(k.includes('Ag')) it.doneAgendas[agI] = db.metaFixa[hjK][idx].completed;
+        else {
+            it.done[k] = db.metaFixa[hjK][idx].completed;
             if(k === 'Ex' && it.done[k]) {
                 const add = (n) => { let r = new Date(); r.setHours(0,0,0,0); r.setDate(r.getDate()+n); return r.toISOString(); };
-                it.agendas = [add(3), add(7), add(21)];
-                it.doneAgendas = [false, false, false, false, false, false];
-                it.f = true;
+                it.agendas = [add(3), add(7), add(21)]; it.doneAgendas = [false, false, false, false, false, false]; it.f = true;
             }
         }
-        save(); renderDiario(); renderPredictorStats();
+        it.hrsIn = (it.hrsIn || 0) + db.metaFixa[hjK][idx].hrs;
+        save(); renderDiario(); renderPredictor();
     }
 
-    function regenerateDaily() {
-        delete db.metaFixa[new Date().toLocaleDateString()];
-        save();
-        renderDiario();
-        renderSemanal();
-        renderPredictorStats();
+    function renderPerformance() {
+        const mats = [...new Set(db.lista.map(x => x.m))];
+        const tbodyMat = document.querySelector('#table-mats tbody');
+        const tbodyAss = document.querySelector('#table-assuntos tbody');
+        tbodyMat.innerHTML = ""; tbodyAss.innerHTML = "";
+        mats.forEach(m => {
+            const ass = db.lista.filter(x => x.m === m);
+            let h = 0, q = 0, ac = 0; ass.forEach(a => { h += (a.hrsIn || 0); q += (a.qntQ || 0); ac += (a.qntA || 0); });
+            let p = q > 0 ? (ac/q)*100 : 0;
+            tbodyMat.innerHTML += `<tr><td>${m}</td><td>${h.toFixed(1)}h</td><td>${q}</td><td>${ac}</td><td><span class="perc-badge" style="background:${p>70?'#dcfce7':'#fee2e2'}">${p.toFixed(1)}%</span></td></tr>`;
+        });
+        db.lista.forEach(a => {
+            let p = a.qntQ > 0 ? (a.qntA/a.qntQ)*100 : 0;
+            tbodyAss.innerHTML += `<tr><td>${a.a}</td><td>${a.m}</td><td>${a.qntQ || 0}</td><td>${a.qntA || 0}</td><td>${p.toFixed(1)}%</td></tr>`;
+        });
     }
 
+    function regenerateDaily() { delete db.metaFixa[new Date().toLocaleDateString()]; db.metaFixa = {}; save(); init(); }
     function renderSemanal() {
         document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(dayIdx => {
-            let h = `<div class="day-box"><div class="day-label">${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][dayIdx]}</div>`;
-            const hDay = parseFloat(db.h[dayIdx]);
-            // Simulamos para cada dia da semana a partir de "hoje"
-            const simTasks = generateIntelligentPool(hDay);
-            simTasks.forEach(t => {
-                h += `<div class="week-task type-${(t.key.includes('Rev')?'rev':t.key.includes('Ex')?'ex':'e')}">${t.m}<br>${t.label}</div>`;
-            });
+            let h = `<div class="day-box"><div class="day-label">${["DOM","SEG","TER","QUA","QUI","SEX","SAB"][dayIdx]}</div>`;
+            const tasks = generateNeuralPool(parseFloat(db.h[dayIdx]), new Date(new Date().setDate(new Date().getDate() + dayIdx)));
+            tasks.forEach(t => h += `<div class="week-task type-${(t.key.includes('Rev')?'rev':t.key.includes('Ex')?'ex':'e')}">${t.m}<br>${t.label}</div>`);
             return h + "</div>";
         }).join('');
     }
 
-    /* --- GESTÃO DE CONTEÚDO --- */
+    function saveEdital() {
+        const m = document.getElementById('add-mat').value; const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
+        if(!m || ass.length === 0) return alert("Erro!");
+        ass.forEach(a => { if(!db.lista.some(x => x.m === m && x.a === a.trim())) db.lista.push({ m, a: a.trim(), f: false, deadline: document.getElementById('add-deadline').value, done: {E:false, Rev:false, Ex:false}, h: {E: (1.5 * parseFloat(document.getElementById('add-diff').value)).toFixed(1), Rev: 1.0, Ex: 1.0}, agendas: null, doneAgendas: [], qntQ: 0, qntA: 0, hrsIn: 0 }); });
+        save(); alert("Salvo!"); regenerateDaily();
+    }
+
+    function renderH() { const d = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]; document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `<div><small style="font-weight:800;">${x}</small><input type="number" id="h-in-${i}" value="${db.h[i]}" style="text-align:center;"></div>`).join(''); }
+    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); regenerateDaily(); }
+    function renderCiclo() { const m = [...new Set(db.lista.map(x => x.m))]; document.getElementById('checks-ciclo').innerHTML = m.map(x => `<label style="display:flex; align-items:center; gap:10px; margin-bottom:12px; font-weight:600;"><input type="checkbox" class="ckc" value="${x}" ${db.ciclo.includes(x)?'checked':''}> ${x}</label>`).join(''); }
+    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); regenerateDaily(); }
     function renderTree() {
         const mats = [...new Set(db.lista.map(x => x.m))];
         document.getElementById('tree-container').innerHTML = mats.map(m => {
-            const ass = db.lista.filter(x => x.m === m);
-            const isOpen = openedFolders.has(m) ? 'open' : '';
-            return `<div class="folder">
-                <div class="folder-header" onclick="toggleF('${m}')">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <input type="checkbox" onclick="event.stopPropagation(); toggleBulkSin('${m}', this.checked)" ${ass.every(a=>a.done.E)?'checked':''}>
-                        <b>${m}</b>
-                    </div>
-                    <i class="fas fa-chevron-down ${isOpen?'fa-rotate-180':''}"></i>
-                </div>
-                <div class="folder-content ${isOpen}">
-                    ${ass.map(a => `<div class="subject-row ${a.done.E?'done':''}" onclick="toggleVet('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-check"></i></div>`).join('')}
-                </div>
-            </div>`;
-        }).join('') || "<p style='padding:20px;'>Nenhuma matéria cadastrada.</p>";
+            const ass = db.lista.filter(x => x.m === m); const isOpen = openedFolders.has(m) ? 'open' : '';
+            return `<div class="folder"><div class="folder-header" onclick="toggleF('${m}')"><b>${m}</b><input type="checkbox" onclick="event.stopPropagation(); toggleBulkSin('${m}', this.checked)" ${ass.every(a=>a.done.E)?'checked':''}></div><div class="folder-content ${isOpen}">${ass.map(a => `<div class="subject-row ${a.done.E?'done':''}" onclick="toggleVet('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-check"></i></div>`).join('')}</div></div>`;
+        }).join('');
     }
-    
-    function toggleBulkSin(m, v) {
-        db.lista.filter(x => x.m === m).forEach(a => {
-            a.done.E = v;
-            if(v) { a.done.Rev = true; a.done.Ex = true; a.f = true; }
-        });
-        save(); renderTree(); regenerateDaily();
-    }
-
+    function toggleBulkSin(m, v) { db.lista.filter(x => x.m === m).forEach(a => { a.done.E = v; if(v){ a.done.Rev=true; a.done.Ex=true; a.f=true; } }); save(); renderTree(); regenerateDaily(); }
     function toggleF(m) { if(openedFolders.has(m)) openedFolders.delete(m); else openedFolders.add(m); renderTree(); }
-    
-    function toggleVet(m, a) {
-        const it = db.lista.find(x => x.m === m && x.a === a);
-        it.done.E = !it.done.E;
-        if(it.done.E) { it.done.Rev = true; it.done.Ex = true; it.f = true; }
-        save(); renderTree(); regenerateDaily();
-    }
-
+    function toggleVet(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.done.E = !it.done.E; if(it.done.E){ it.done.Rev=true; it.done.Ex=true; it.f=true; } save(); renderTree(); regenerateDaily(); }
     function renderRever() {
-        const fin = db.lista.filter(x => x.f || x.done.Ex);
-        const mats = [...new Set(fin.map(x => x.m))];
+        const fin = db.lista.filter(x => x.f || x.done.Ex); const mats = [...new Set(fin.map(x => x.m))];
         document.getElementById('rever-container').innerHTML = mats.map(m => {
             const ass = fin.filter(x => x.m === m);
-            return `<div class="folder">
-                <div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <input type="checkbox" onclick="event.stopPropagation(); toggleBulkRes('${m}')">
-                        <b>${m}</b>
-                    </div><i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="folder-content">
-                    ${ass.map(a => `<div class="subject-row done" onclick="resetA('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-undo"></i></div>`).join('')}
-                </div>
-            </div>`;
-        }).join('') || "<p style='padding:20px;'>Nada finalizado ainda.</p>";
+            return `<div class="folder"><div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b><input type="checkbox" onclick="event.stopPropagation(); toggleBulkRes('${m}')"></div><div class="folder-content">${ass.map(a => `<div class="subject-row done" onclick="resetA('${m}','${a.a}')"><span>${a.a}</span><i class="fas fa-undo"></i></div>`).join('')}</div></div>`;
+        }).join('') || "<p style='padding:20px;'>Vazio.</p>";
     }
-
-    function toggleBulkRes(m) {
-        if(confirm(`Deseja resetar todo o progresso de ${m}?`)) {
-            db.lista.filter(x => x.m === m).forEach(a => {
-                a.f = false; a.done = {E:false,Rev:false,Ex:false}; a.agendas = null;
-            });
-            save(); renderRever(); regenerateDaily();
-        }
-    }
-
-    function resetA(m, a) {
-        const it = db.lista.find(x => x.m === m && x.a === a);
-        it.f = false; it.done = {E:false,Rev:false,Ex:false}; it.agendas = null;
-        save(); renderRever(); regenerateDaily();
-    }
-
-    function renderFluxo() {
-        document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `
-            <div class="card">
-                <b>${it.m}: ${it.a}</b>
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:10px; text-align:center;">
-                    <div><small>Estudo</small><br><input type="number" step="0.5" value="${it.h.E}" onchange="db.lista[${i}].h.E=this.value;save()"></div>
-                    <div><small>Revisão</small><br><input type="text" value="1.0h" disabled></div>
-                    <div><small>Questões</small><br><input type="text" value="1.0h" disabled></div>
-                </div>
-            </div>`).join('');
-    }
-
-    function saveEdital() {
-        const m = document.getElementById('add-mat').value;
-        const diff = parseFloat(document.getElementById('add-diff').value);
-        const dead = document.getElementById('add-deadline').value;
-        const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim());
-        
-        if(!m || ass.length === 0) return alert("Preencha matéria e assuntos!");
-
-        ass.forEach(a => {
-            if(!db.lista.some(x => x.m === m && x.a === a.trim())) {
-                db.lista.push({
-                    m, a: a.trim(), f: false, deadline: dead,
-                    done: {E:false, Rev:false, Ex:false},
-                    h: {E: (1.5 * diff).toFixed(1), Rev: 1.0, Ex: 1.0},
-                    agendas: null, doneAgendas: []
-                });
-            }
-        });
-        document.getElementById('add-ass').value = "";
-        save(); alert("Matéria Importada!"); regenerateDaily();
-    }
-
-    function renderH() {
-        const d = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-        document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `
-            <div><small style="font-weight:800; font-size:0.6rem;">${x}</small><input type="number" id="h-in-${i}" value="${db.h[i]}" style="text-align:center;"></div>
-        `).join('');
-    }
-    function applyQ(m, v) { (m === 'util' ? [1,2,3,4,5] : [0,6]).forEach(i => document.getElementById(`h-in-${i}`).value = v); }
-    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); regenerateDaily(); alert("Horas Salvas!"); }
-    
-    function renderCiclo() {
-        const m = [...new Set(db.lista.map(x => x.m))];
-        document.getElementById('checks-ciclo').innerHTML = m.map(x => `<label style="display:flex; align-items:center; gap:10px; margin-bottom:12px; font-weight:600;"><input type="checkbox" class="ckc" value="${x}" ${db.ciclo.includes(x)?'checked':''}> ${x}</label>`).join('');
-    }
-    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); regenerateDaily(); alert("Ciclo Ativado!"); }
+    function toggleBulkRes(m) { if(confirm(`Resetar ${m}?`)) { db.lista.filter(x => x.m === m).forEach(a => { a.f=false; a.done={E:false,Rev:false,Ex:false}; a.agendas=null; }); save(); renderRever(); regenerateDaily(); } }
+    function resetA(m, a) { const it = db.lista.find(x => x.m === m && x.a === a); it.f=false; it.done={E:false,Rev:false,Ex:false}; it.agendas=null; save(); renderRever(); regenerateDaily(); }
+    function renderFluxo() { document.getElementById('corpo-fluxo').innerHTML = db.lista.map((it, i) => `<div class="card"><b>${it.m}: ${it.a}</b><div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:10px; text-align:center;"><div><small>Estudo</small><br><input type="number" step="0.5" value="${it.h.E}" onchange="db.lista[${i}].h.E=this.value;save()"></div><div><small>Revisão</small><br><input type="text" value="1.0h" disabled></div><div><small>Questões</small><br><input type="text" value="1.0h" disabled></div></div></div>`).join(''); }
 </script>
 </body>
 </html>
