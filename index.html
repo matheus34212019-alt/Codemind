@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI NEXUS v1.5.0 - STABLE EDITION</title>
+    <title>OMNI NEXUS v1.5.0 - ACTIVE DAY</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -39,40 +39,39 @@
         .container { max-width: 1100px; margin: 0 auto; }
         .page { display: none; } .page.active { display: block; }
 
-        /* DASHBOARD */
+        /* DASHBOARD NAV */
+        .day-nav { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 25px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 25px; }
+        .day-indicator { display: flex; flex-direction: column; }
+        .day-indicator b { font-size: 1.2rem; color: var(--primary); }
+        .day-indicator span { font-size: 0.8rem; color: var(--text-sec); font-weight: 700; }
+
         .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
         .stat-card { background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .stat-val { font-size: 1.5rem; font-weight: 800; color: var(--primary); display: block; }
         .stat-label { font-size: 0.7rem; font-weight: 800; color: var(--text-sec); text-transform: uppercase; }
 
-        /* PROBABILIDADE */
-        .prob-container { background: white; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 30px; }
-        .prob-bar-bg { background: #f1f5f9; height: 16px; border-radius: 20px; margin: 15px 0; overflow: hidden; }
-        .prob-bar-fill { height: 100%; transition: 1.5s; width: 0%; border-radius: 20px; }
+        .task-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); border-left: 10px solid #ccc; position: relative; transition: 0.3s; }
+        .tag-type { color: white; font-size: 0.65rem; padding: 5px 12px; border-radius: 50px; font-weight: 800; display: inline-block; margin: 8px 0; text-transform: uppercase; }
+        
+        .overdrive-card { background: #ecfdf5; border: 2px dashed #10b981; padding: 25px; border-radius: var(--radius); text-align: center; margin-bottom: 20px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
-        /* GRID CRONOGRAMA */
         .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; min-width: 900px; }
         .day-column { background: white; border-radius: var(--radius); border: 1px solid var(--border); min-height: 500px; display: flex; flex-direction: column; overflow: hidden; }
         .day-head { background: #f8fafc; padding: 15px 10px; text-align: center; border-bottom: 1px solid var(--border); font-weight: 800; font-size: 0.75rem; color: var(--primary); }
         .sim-task { margin: 5px; padding: 10px; border-radius: 8px; font-size: 0.65rem; color: white; font-weight: 700; line-height: 1.3; }
 
-        /* TAREFAS */
-        .task-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); border-left: 10px solid #ccc; position: relative; }
-        .tag-type { color: white; font-size: 0.65rem; padding: 5px 12px; border-radius: 50px; font-weight: 800; display: inline-block; margin: 8px 0; text-transform: uppercase; }
-        
-        .empty-state { text-align: center; padding: 40px; color: var(--text-sec); font-weight: 600; }
         .btn { padding: 12px 20px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
         .btn-success { background: var(--color-ex); color: white; }
         .btn-outline { background: white; border: 2px solid var(--border); }
         
-        /* DROPDOWN SINALIZAR */
+        /* FOLDERS */
         .folder { background: white; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; }
         .folder-header { padding: 18px 25px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; cursor: pointer; font-weight: 800; }
         .folder-content { display: none; padding: 15px 25px; border-top: 1px solid var(--border); }
         .folder-content.active { display: block; }
 
         input, select, textarea { padding: 12px; border-radius: 8px; border: 1px solid var(--border); width: 100%; background: #f8fafc; font-family: inherit; font-weight: 600; }
-        
         #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -80,23 +79,22 @@
     <div id="login-screen">
         <div style="background:white; padding:50px; border-radius:30px; text-align:center; width:400px;">
             <h2 style="margin-bottom:10px; font-weight: 800;">OMNI NEXUS v1.5.0</h2>
-            <p style="color: var(--text-sec); margin-bottom: 30px; font-weight: 600;">Comando Central de Estudo</p>
             <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; margin-bottom: 20px; font-size: 1.2rem; padding:15px;">
-            <button class="btn" style="width:100%; background:var(--accent); color:white; padding: 18px;" onclick="App.checkAccess()">ACESSAR PLATAFORMA</button>
+            <button class="btn" style="width:100%; background:var(--accent); color:white; padding: 18px;" onclick="App.checkAccess()">ENTRAR</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box"><i class="fas fa-shield-halved" style="color:var(--accent);"></i> OMNI STABLE</div>
+        <div class="logo-box"><i class="fas fa-shield-halved" style="color:var(--accent);"></i> OMNI v1.5</div>
         <div class="profile-card">
             <span class="lvl-badge" id="lvl-txt">Iniciante</span>
             <div style="color:white; font-weight:800; font-size:1.1rem;" id="xp-total">0 XP</div>
             <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-fill"></div></div>
         </div>
-        <div class="nav-item active" onclick="App.showTab('diaria', this)"><i class="fas fa-rocket"></i><span>Dashboard</span></div>
+        <div class="nav-item active" onclick="App.showTab('diaria', this)"><i class="fas fa-rocket"></i><span>Dia Ativo</span></div>
         <div class="nav-item" onclick="App.showTab('semanal', this)"><i class="fas fa-calendar-week"></i><span>Cronograma</span></div>
         <div class="nav-item" onclick="App.showTab('performance', this)"><i class="fas fa-chart-line"></i><span>Performance</span></div>
-        <div class="nav-item" onclick="App.toggleSub()"><i class="fas fa-gears"></i><span>Ajustes</span><i class="fas fa-chevron-down" style="margin-left:auto;"></i></div>
+        <div class="nav-item" onclick="App.toggleSub()"><i class="fas fa-gears"></i><span>Configurações</span><i class="fas fa-chevron-down" style="margin-left:auto;"></i></div>
         <div id="sub-plano" class="submenu">
             <div class="sub-link" onclick="App.showTab('edital')">Importar Edital</div>
             <div class="sub-link" onclick="App.showTab('ciclo')">Ciclo Ativo</div>
@@ -109,107 +107,72 @@
 
     <main class="main">
         <div class="container">
+            
             <div id="diaria" class="page active">
-                <div class="dash-grid">
-                    <div class="stat-card"><span class="stat-label">🔥 Streak</span><span class="stat-val" id="d-streak">0 Dias</span></div>
-                    <div class="stat-card"><span class="stat-label">🏆 XP Hoje</span><span class="stat-val" id="d-xp-hoje">0</span></div>
-                    <div class="stat-card"><span class="stat-label">⏳ Horas Totais</span><span class="stat-val" id="d-h-total">0h</span></div>
-                    <div class="stat-card"><span class="stat-label">🎯 Acerto Médio</span><span class="stat-val" id="d-acerto">0%</span></div>
-                </div>
-                <div class="prob-container">
-                    <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:10px;">
-                        <span>Probabilidade de Aprovação</span>
-                        <span id="prob-val" style="color:var(--accent);">0%</span>
+                <div class="day-nav">
+                    <button class="btn btn-outline" id="btn-prev-day" onclick="App.changeActiveDay(-1)">
+                        <i class="fas fa-chevron-left"></i> Voltar para Hoje
+                    </button>
+                    <div class="day-indicator">
+                        <span id="day-status-label">ESTADO ATUAL</span>
+                        <b id="active-day-display">--/--</b>
                     </div>
-                    <div class="prob-bar-bg"><div class="prob-bar-fill" id="prob-fill"></div></div>
-                    <p id="prob-msg" style="text-align:center; font-size:0.8rem; font-weight:700;"></p>
+                    <button class="btn btn-outline" id="btn-next-day" onclick="App.changeActiveDay(1)">
+                        Avançar <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
-                <h2 style="font-weight:800; margin-bottom:15px;">Missões de Hoje</h2>
+
+                <div id="overdrive-container"></div>
+
+                <div class="dash-grid">
+                    <div class="stat-card"><span class="stat-label">🔥 Streak</span><span class="stat-val" id="d-streak">0</span></div>
+                    <div class="stat-card"><span class="stat-label">🏆 XP do Dia</span><span class="stat-val" id="d-xp-hoje">0</span></div>
+                    <div class="stat-card"><span class="stat-label">⏳ Horas</span><span class="stat-val" id="d-h-total">0h</span></div>
+                    <div class="stat-card"><span class="stat-label">🎯 Acerto</span><span class="stat-val" id="d-acerto">0%</span></div>
+                </div>
+
                 <div id="lista-diaria"></div>
             </div>
 
-            <div id="semanal" class="page">
-                <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <button class="btn btn-outline" onclick="App.navWeek(-1)">Semana Anterior</button>
-                    <button class="btn btn-outline" onclick="App.navWeek(1)">Próxima Semana</button>
-                </div>
-                <div style="overflow-x:auto;"><div id="grid-semanal" class="grid-7"></div></div>
-            </div>
-
+            <div id="semanal" class="page"><div id="grid-semanal" class="grid-7"></div></div>
             <div id="performance" class="page">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-                    <div class="stat-card"><canvas id="chartProgresso"></canvas></div>
-                    <div class="stat-card"><canvas id="chartRendimento"></canvas></div>
-                </div>
-                <div class="stat-card" style="margin-top:20px;" id="perf-table-container">
-                    <table style="width:100%; border-collapse:collapse;" id="table-rendimento"></table>
-                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;"><canvas id="chartProgresso"></canvas><canvas id="chartRendimento"></canvas></div>
+                <div id="perf-table-container"></div>
             </div>
-
             <div id="config-h" class="page">
                 <div class="stat-card">
-                    <h3 style="margin-bottom:20px;">Configuração Master de Horas</h3>
-                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px;">
-                        <div><label class="stat-label">Segunda a Sexta</label><input type="number" id="h-week" placeholder="Ex: 4"></div>
-                        <div><label class="stat-label">Sábado</label><input type="number" id="h-sab" placeholder="Ex: 6"></div>
-                        <div><label class="stat-label">Domingo</label><input type="number" id="h-dom" placeholder="Ex: 2"></div>
+                    <h3>Editar Disponibilidade</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-top:20px;">
+                        <div><label class="stat-label">Segunda a Sexta</label><input type="number" id="h-week" placeholder="4"></div>
+                        <div><label class="stat-label">Sábado</label><input type="number" id="h-sab" placeholder="6"></div>
+                        <div><label class="stat-label">Domingo</label><input type="number" id="h-dom" placeholder="2"></div>
                     </div>
-                    <button class="btn btn-success" style="width:100%; margin-top:20px;" onclick="App.saveHMaster()">SALVAR CARGA HORÁRIA</button>
+                    <button class="btn btn-success" style="width:100%; margin-top:20px;" onclick="App.saveHMaster()">SALVAR CARGA</button>
                 </div>
             </div>
+            <div id="edital" class="page"><div class="stat-card"><h3>Importar Matéria</h3><input type="text" id="add-mat" placeholder="Matéria"><textarea id="add-ass" placeholder="Assuntos..."></textarea><button class="btn btn-success" onclick="App.impEdital()">IMPORTAR</button></div></div>
+            <div id="ciclo" class="page"><div id="check-c"></div><button class="btn btn-success" onclick="App.saveC()">SALVAR CICLO</button></div>
+            <div id="sinalizar" class="page"><div id="tree"></div></div>
+            <div id="fluxo" class="page"><div id="fluxo-content"></div></div>
+            <div id="replanejar" class="page"><div class="stat-card"><button class="btn btn-danger" onclick="App.execReplan()">ZERAR ATRASOS</button></div></div>
 
-            <div id="edital" class="page">
-                <div class="stat-card">
-                    <h3 style="margin-bottom:20px;">Importar Matéria</h3>
-                    <input type="text" id="add-mat" placeholder="Nome da Disciplina" style="margin-bottom:15px;">
-                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:15px;">
-                        <input type="number" id="h-e" value="1.5" title="Horas Estudo">
-                        <input type="number" id="h-r" value="1.0" title="Horas Revisão">
-                        <input type="number" id="h-x" value="1.0" title="Horas Exercício">
-                    </div>
-                    <textarea id="add-ass" placeholder="Cole os assuntos aqui, um por linha..." style="height:150px;"></textarea>
-                    <button class="btn btn-success" style="width:100%; margin-top:15px;" onclick="App.impEdital()">IMPORTAR</button>
-                </div>
-            </div>
-
-            <div id="sinalizar" class="page">
-                <div id="tree"></div>
-            </div>
-
-            <div id="ciclo" class="page"><div class="stat-card"><h3>Ciclo Ativo</h3><div id="check-c"></div><button class="btn btn-success" onclick="App.saveC()" style="width:100%; margin-top:20px;">SALVAR</button></div></div>
-            <div id="fluxo" class="page"><div class="stat-card"><h3>Ajuste de Fluxo</h3><div id="fluxo-content"></div></div></div>
-            <div id="replanejar" class="page"><div class="stat-card" style="text-align:center;"><h3>Zerar Atrasos?</h3><button class="btn btn-danger" onclick="App.execReplan()">CONFIRMAR ZERAGEM</button></div></div>
         </div>
     </main>
 
     <script>
-        /**
-         * OMNI NEXUS v1.5.0 - CORE ENGINE
-         * Single Source of Truth Architecture
-         */
         const App = {
             state: {
-                db: JSON.parse(localStorage.getItem('prf_v150_stable')) || {
+                db: JSON.parse(localStorage.getItem('prf_v150_active')) || {
                     lista: [], ciclo: [], h: {1:4, 2:4, 3:4, 4:4, 5:4, 6:4, 0:4},
                     metaFixa: {}, perf: {}, streak: 0, lastCheck: null, xp: 0, xpHistory: {}, mPesos: {}
                 },
-                weekOffset: 0,
-                charts: {}
-            },
-
-            // --- UTILITÁRIOS ---
-            toISODate(date) {
-                return date.toISOString().split('T')[0];
-            },
-
-            formatDisplayDate(isoStr) {
-                const [y, m, d] = isoStr.split('-');
-                return `${d}/${m}`;
+                activeDay: new Date().toISOString().split('T')[0],
+                today: new Date().toISOString().split('T')[0]
             },
 
             saveState() {
-                localStorage.setItem('prf_v150_stable', JSON.stringify(this.state.db));
-                console.log("[STATE] Banco de dados atualizado.");
+                localStorage.setItem('prf_v150_active', JSON.stringify(this.state.db));
+                console.log("[STATE] Persistido.");
             },
 
             checkAccess() {
@@ -219,12 +182,10 @@
                 } else alert("Acesso negado.");
             },
 
-            // --- CORE LOGIC ---
             init() {
-                console.log("[APP] Inicializando sistema...");
+                console.log("[APP] Dia Ativo:", this.state.activeDay);
+                this.renderDashboard();
                 this.updateGamification();
-                this.renderPage('diaria');
-                this.loadExMats();
             },
 
             showTab(id, el) {
@@ -232,87 +193,91 @@
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 document.getElementById(id).classList.add('active');
                 if(el) el.classList.add('active');
-                this.renderPage(id);
+                if(id === 'semanal') this.renderSemanal();
+                if(id === 'performance') this.renderPerformance();
+                if(id === 'sinalizar') this.renderSinalizar();
+                if(id === 'ciclo') this.renderCiclo();
+                if(id === 'fluxo') this.renderFluxo();
             },
 
-            renderPage(id) {
-                const controllers = {
-                    diaria: () => this.renderDashboard(),
-                    semanal: () => this.renderSemanal(),
-                    performance: () => this.renderPerformance(),
-                    config: () => this.renderHInputs(),
-                    sinalizar: () => this.renderSinalizar(),
-                    ciclo: () => this.renderCiclo(),
-                    fluxo: () => this.renderFluxo(),
-                    'config-h': () => this.renderHInputs()
-                };
-                if(controllers[id]) controllers[id]();
-            },
+            // --- NAVEGAÇÃO DE DIA ATIVO ---
+            changeActiveDay(direction) {
+                const current = new Date(this.state.activeDay + "T12:00:00");
+                current.setDate(current.getDate() + direction);
+                const target = current.toISOString().split('T')[0];
 
-            // --- ENGINE IA ---
-            getOrCreateDailyPlan(dateObj) {
-                const isoDate = this.toISODate(dateObj);
-                if (this.state.db.metaFixa[isoDate]) {
-                    console.log("[DASHBOARD] Carregando meta existente para:", isoDate);
-                    return this.state.db.metaFixa[isoDate];
+                // Limite: Não voltar antes de hoje e não avançar mais que 1 dia do planejado
+                if (target < this.state.today) {
+                    this.state.activeDay = this.state.today;
+                } else if (direction > 0) {
+                    const diff = (current - new Date(this.state.today + "T12:00:00")) / (1000 * 60 * 60 * 24);
+                    if (diff > 1) return alert("Você só pode adiantar 1 dia por vez!");
+                    this.state.activeDay = target;
+                } else {
+                    this.state.activeDay = target;
                 }
 
-                console.log("[DASHBOARD] Meta não encontrada. Gerando para:", isoDate);
+                console.log("[NAV] Transição de Dia para:", this.state.activeDay);
+                this.renderDashboard();
+            },
+
+            getOrCreateDailyPlan(isoDate) {
+                if (this.state.db.metaFixa[isoDate]) return this.state.db.metaFixa[isoDate];
+
+                const dateObj = new Date(isoDate + "T12:00:00");
                 const limit = this.state.db.h[dateObj.getDay()];
                 const simList = JSON.parse(JSON.stringify(this.state.db.lista));
-                const plan = this.getNeuralPool(limit, simList, {index:0}, isoDate);
                 
+                // Motor Neural de Alocação
+                const plan = this.getNeuralPool(limit, simList, isoDate);
                 this.state.db.metaFixa[isoDate] = plan;
                 this.saveState();
                 return plan;
             },
 
-            getNeuralPool(limit, simList, cState, isoDate) {
+            getNeuralPool(limit, simList, isoDate) {
                 let pool = []; let somaH = 0;
                 if(!this.state.db.ciclo.length) return pool;
                 
-                let safety = 0;
-                while(somaH < limit && safety < 100) {
-                    safety++; let added = false;
-                    for(let mName of this.state.db.ciclo) {
-                        let peso = this.state.db.mPesos[mName] || 1;
-                        for(let p=0; p<peso; p++) {
-                            if(somaH >= limit) break;
-                            let item = simList.find(x => x.m === mName && !x.f);
-                            if(item) {
-                                const rito = [
-                                    {k:'E', l:'Estudo', h:parseFloat(item.h.E)},
-                                    {k:'Rev', l:'Revisão', h:parseFloat(item.h.Rev)},
-                                    {k:'Ex', l:'Exercícios', h:parseFloat(item.h.Ex)}
-                                ];
-                                for(let s of rito) {
-                                    if(!item.done[s.k]) {
-                                        if(somaH + s.h <= limit + 0.1) {
-                                            pool.push({m:item.m, a:item.a, l:s.l, k:s.k, h:s.h, c: false});
-                                            item.done[s.k] = true; somaH += s.h; added = true;
-                                            if(s.k === 'Ex') item.f = true;
-                                        }
-                                        break;
-                                    }
-                                }
+                for(let mName of this.state.db.ciclo) {
+                    if(somaH >= limit) break;
+                    let item = simList.find(x => x.m === mName && !x.f);
+                    if(item) {
+                        const rito = [{k:'E', l:'Estudo', h:parseFloat(item.h.E)}, {k:'Rev', l:'Revisão', h:parseFloat(item.h.Rev)}, {k:'Ex', l:'Exercícios', h:parseFloat(item.h.Ex)}];
+                        for(let s of rito) {
+                            if(!item.done[s.k] && somaH + s.h <= limit + 0.1) {
+                                pool.push({m:item.m, a:item.a, l:s.l, k:s.k, h:s.h, c: false});
+                                item.done[s.k] = true; somaH += s.h;
+                                if(s.k === 'Ex') item.f = true;
+                                break;
                             }
                         }
                     }
-                    if(!added) break;
                 }
                 return pool;
             },
 
-            // --- RENDERERS ---
             renderDashboard() {
-                const hj = new Date();
-                const tasks = this.getOrCreateDailyPlan(hj);
+                const tasks = this.getOrCreateDailyPlan(this.state.activeDay);
                 const container = document.getElementById('lista-diaria');
-                container.innerHTML = "";
+                const overdrive = document.getElementById('overdrive-container');
+                const [y, m, d] = this.state.activeDay.split('-');
 
-                if(tasks.length === 0) {
-                    container.innerHTML = "<div class='empty-state'>Nenhuma missão pendente. Importe matérias ou ajuste o ciclo!</div>";
-                    return;
+                document.getElementById('active-day-display').innerText = `${d}/${m}`;
+                document.getElementById('day-status-label').innerText = this.state.activeDay === this.state.today ? "HOJE" : "AMANHÃ (ADIANTADO)";
+                
+                container.innerHTML = "";
+                overdrive.innerHTML = "";
+
+                // Verifica se tudo está concluído
+                const allDone = tasks.length > 0 && tasks.every(t => t.c);
+                if (allDone && this.state.activeDay === this.state.today) {
+                    overdrive.innerHTML = `
+                        <div class="overdrive-card">
+                            <h3>🚀 TODAS AS METAS BATIDAS!</h3>
+                            <p>Você concluiu o dia de hoje. Deseja adiantar as matérias de amanhã?</p>
+                            <button class="btn btn-success" style="margin-top:15px;" onclick="App.changeActiveDay(1)">SIM, ADIANTAR AMANHÃ</button>
+                        </div>`;
                 }
 
                 tasks.forEach((t, i) => {
@@ -321,15 +286,15 @@
                         <div class="task-card" style="border-left-color:var(--color-${col})">
                             <div style="display:flex; justify-content:space-between;">
                                 <b>${t.m}</b>
-                                <span style="font-size:0.7rem; font-weight:800;">XP +50</span>
+                                <span style="font-size:0.7rem; font-weight:800; color:var(--text-sec);">XP +50</span>
                             </div>
-                            <p style="margin:5px 0; font-size:0.9rem; font-weight:600;">${t.a}</p>
+                            <p style="margin:5px 0; font-weight:600;">${t.a}</p>
                             <span class="tag-type" style="background:var(--color-${col})">${t.l} | ${t.h}h</span>
-                            <div style="float:right; margin-top:10px;">
-                                <input type="checkbox" ${t.c ? 'checked' : ''} onclick="App.concluirTask('${this.toISODate(hj)}', ${i})">
-                            </div>
+                            <input type="checkbox" style="float:right; width:22px; height:22px;" ${t.c ? 'checked' : ''} 
+                                onclick="App.concluirTask('${this.state.activeDay}', ${i})">
                         </div>`;
                 });
+                
                 this.updateGamification();
             },
 
@@ -345,14 +310,13 @@
                         if(q > 0) {
                             let k = t.m + '-' + t.a;
                             if(!this.state.db.perf[k]) this.state.db.perf[k] = {q:0, a:0, h:0};
-                            this.state.db.perf[k].q += q;
-                            this.state.db.perf[k].a += a;
+                            this.state.db.perf[k].q += q; this.state.db.perf[k].a += a;
                             this.addXP(q * 2);
                         }
                     }
                 }
                 
-                // Sincronizar com a lista global
+                // Sincronização global
                 let it = this.state.db.lista.find(x => x.m === t.m && x.a === t.a);
                 if(it) {
                     if(t.k==='E') it.done.E = t.c;
@@ -360,229 +324,76 @@
                     else if(t.k==='Ex') { it.done.Ex = t.c; it.f = t.c; }
                 }
 
-                this.state.db.lastCheck = this.toISODate(new Date());
+                if(t.c) {
+                    this.state.db.lastCheck = this.state.today;
+                    this.state.db.streak++;
+                }
+
                 this.saveState();
                 this.renderDashboard();
             },
 
-            renderSemanal() {
-                const grid = document.getElementById('grid-semanal');
-                grid.innerHTML = "";
-                console.log("[CRONOGRAMA] Renderizando grade de 7 dias...");
-
-                const simL = JSON.parse(JSON.stringify(this.state.db.lista));
-                const cS = { index: 0 };
-
-                for(let i=0; i<7; i++) {
-                    const d = new Date();
-                    d.setDate(d.getDate() + (this.state.weekOffset * 7) + i);
-                    const iso = this.toISODate(d);
-                    const tasks = this.getNeuralPool(this.state.db.h[d.getDay()], simL, cS, iso);
-
-                    grid.innerHTML += `
-                        <div class="day-column">
-                            <div class="day-head">${this.formatDisplayDate(iso)}</div>
-                            <div style="padding:5px;">
-                                ${tasks.map(x => `<div class="sim-task" style="background:var(--color-${x.k==='Ex'?'ex':(x.k==='Rev'?'rev':'e')})">${x.m}<br>${x.a}</div>`).join('')}
-                            </div>
-                        </div>`;
-                }
-            },
-
-            renderPerformance() {
-                console.log("[PERFORMANCE] Analisando dados reais...");
-                const container = document.getElementById('perf-table-container');
-                const labels = [...new Set(this.state.db.lista.map(x=>x.m))];
-
-                if(labels.length === 0) {
-                    container.innerHTML = "<div class='empty-state'>Nenhum dado para exibir. Comece a estudar!</div>";
-                    return;
-                }
-
-                let html = `<table style="width:100%; text-align:left;">
-                    <tr style="border-bottom:2px solid #eee;"><th>Matéria</th><th>Tempo</th><th>Acerto</th></tr>`;
-                
-                labels.forEach(m => {
-                    let q=0, a=0, h=0;
-                    Object.keys(this.state.db.perf).forEach(k => {
-                        if(k.startsWith(m)) {
-                            q += this.state.db.perf[k].q;
-                            a += this.state.db.perf[k].a;
-                            h += this.state.db.perf[k].h;
-                        }
-                    });
-                    html += `<tr style="border-bottom:1px solid #f8fafc; height:45px;">
-                        <td>${m}</td><td>${h.toFixed(1)}h</td><td>${q ? Math.round((a/q)*100) : 0}%</td>
-                    </tr>`;
-                });
-                container.innerHTML = html + "</table>";
-                this.initCharts(labels);
-            },
-
-            initCharts(labels) {
-                const ctx1 = document.getElementById('chartProgresso');
-                if(!ctx1) return;
-
-                if(this.state.charts.c1) this.state.charts.c1.destroy();
-
-                const dataP = labels.map(m => {
-                    const items = this.state.db.lista.filter(x => x.m === m);
-                    const done = items.filter(x => x.f).length;
-                    return Math.round((done / (items.length || 1)) * 100);
-                });
-
-                this.state.charts.c1 = new Chart(ctx1, {
-                    type: 'bar',
-                    data: { labels, datasets: [{ label: '% Conclusão', data: dataP, backgroundColor: '#0ea5e9' }] }
-                });
-            },
-
-            // --- UX ACTIONS ---
-            saveHMaster() {
-                const w = parseFloat(document.getElementById('h-week').value) || 4;
-                const s = parseFloat(document.getElementById('h-sab').value) || 6;
-                const d = parseFloat(document.getElementById('h-dom').value) || 2;
-                
-                for(let i=1; i<=5; i++) this.state.db.h[i] = w;
-                this.state.db.h[6] = s;
-                this.state.db.h[0] = d;
-                
-                this.state.db.metaFixa = {}; // Invalida metas futuras para recalcular
-                this.saveState();
-                alert("Carga horária atualizada!");
-            },
-
-            renderSinalizar() {
-                const tree = document.getElementById('tree');
-                tree.innerHTML = "";
-                const mats = [...new Set(this.state.db.lista.map(x=>x.m))];
-
-                mats.forEach(m => {
-                    const div = document.createElement('div');
-                    div.className = 'folder';
-                    div.innerHTML = `
-                        <div class="folder-header" onclick="this.nextElementSibling.classList.toggle('active')">
-                            ${m} <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="folder-content">
-                            ${this.state.db.lista.filter(x => x.m === m).map(a => `
-                                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee;">
-                                    <span>${a.a}</span>
-                                    <div>
-                                        E <input type="checkbox" ${a.done.E?'checked':''} onclick="App.tItm('${a.m}','${a.a}','E')">
-                                        R <input type="checkbox" ${a.done.Rev?'checked':''} onclick="App.tItm('${a.m}','${a.a}','Rev')">
-                                        X <input type="checkbox" ${a.done.Ex?'checked':''} onclick="App.tItm('${a.m}','${a.a}','Ex')">
-                                    </div>
-                                </div>`).join('')}
-                        </div>`;
-                    tree.appendChild(div);
-                });
-            },
-
-            tItm(m, a, rito) {
-                const item = this.state.db.lista.find(x => x.m === m && x.a === a);
-                item.done[rito] = !item.done[rito];
-                if(rito === 'Ex' && item.done.Ex) item.f = true;
-                this.state.db.metaFixa = {}; 
-                this.saveState();
-            },
-
-            impEdital() {
-                const m = document.getElementById('add-mat').value;
-                const h = { E: parseFloat(document.getElementById('h-e').value), R: parseFloat(document.getElementById('h-r').value), X: parseFloat(document.getElementById('h-x').value) };
-                const assuntos = document.getElementById('add-ass').value.split('\n').filter(l => l.trim().length > 0);
-                
-                assuntos.forEach(a => {
-                    this.state.db.lista.push({ m, a: a.trim(), h: {E: h.E, Rev: h.R, Ex: h.X}, done: {E:false, Rev:false, Ex:false}, f: false });
-                });
-                
-                document.getElementById('add-mat').value = "";
-                document.getElementById('add-ass').value = "";
-                this.saveState();
-                alert("Matéria importada com sucesso!");
-            },
-
             updateGamification() {
                 const xp = this.state.db.xp;
-                let lvl = "Iniciante";
-                if(xp > 5000) lvl = "Elite";
-                else if(xp > 2500) lvl = "Focado";
-                else if(xp > 1000) lvl = "Consistente";
-
-                document.getElementById('lvl-txt').innerText = lvl;
-                document.getElementById('xp-total').innerText = xp + " XP";
-                document.getElementById('xp-fill').style.width = Math.min((xp/5000)*100, 100) + "%";
+                const hjXP = this.state.db.xpHistory[this.state.activeDay] || 0;
                 
-                // Probabilidade simples
-                const concluidos = this.state.db.lista.filter(x => x.f).length;
-                const total = this.state.db.lista.length || 1;
-                const prob = Math.round((concluidos / total) * 100);
-                document.getElementById('prob-val').innerText = prob + "%";
-                document.getElementById('prob-fill').style.width = prob + "%";
-                document.getElementById('prob-fill').style.background = prob > 50 ? '#10b981' : '#ef4444';
+                document.getElementById('xp-total').innerText = xp + " XP";
+                document.getElementById('d-xp-hoje').innerText = hjXP;
+                document.getElementById('xp-fill').style.width = Math.min((xp/5000)*100, 100) + "%";
+                document.getElementById('d-streak').innerText = this.state.db.streak;
+
+                // Cálculo de rendimento do dia ativo
+                const tasks = this.state.db.metaFixa[this.state.activeDay] || [];
+                const hTot = tasks.filter(t=>t.c).reduce((a,b)=>a+b.h, 0);
+                document.getElementById('d-h-total').innerText = hTot.toFixed(1) + "h";
             },
 
             addXP(val) {
                 this.state.db.xp += val;
-                const hj = this.toISODate(new Date());
-                this.state.db.xpHistory[hj] = (this.state.db.xpHistory[hj] || 0) + val;
+                this.state.db.xpHistory[this.state.activeDay] = (this.state.db.xpHistory[this.state.activeDay] || 0) + val;
                 this.updateGamification();
             },
 
-            // --- HELPERS RESTANTES ---
-            toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); },
-            navWeek(dir) { this.state.weekOffset += dir; this.renderSemanal(); },
-            execReplan() { this.state.db.metaFixa = {}; this.saveState(); this.init(); alert("Atrasos zerados!"); },
-            loadExMats() { /* Load selects if page active */ },
-            renderCiclo() {
-                const container = document.getElementById('check-c');
-                const mats = [...new Set(this.state.db.lista.map(x=>x.m))];
-                container.innerHTML = mats.map(m => `
-                    <label style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <span><input type="checkbox" class="ckc" value="${m}" ${this.state.db.ciclo.includes(m)?'checked':''}> ${m}</span>
-                        <button class="btn" style="padding:4px 8px; font-size:0.6rem; background:#fee2e2; color:#b91c1c;" onclick="App.delMat('${m}')">REMOVER</button>
-                    </label>`).join('');
-            },
-            delMat(m) {
-                if(confirm(`Remover ${m} permanentemente?`)) {
-                    this.state.db.lista = this.state.db.lista.filter(x => x.m !== m);
-                    this.state.db.ciclo = this.state.db.ciclo.filter(x => x !== m);
-                    this.saveState(); this.renderCiclo();
+            // --- AUX RENDERERS ---
+            renderSemanal() {
+                const grid = document.getElementById('grid-semanal');
+                grid.innerHTML = "";
+                const simL = JSON.parse(JSON.stringify(this.state.db.lista));
+                for(let i=0; i<7; i++) {
+                    const d = new Date(this.state.today + "T12:00:00");
+                    d.setDate(d.getDate() + i);
+                    const iso = d.toISOString().split('T')[0];
+                    const tasks = this.getOrCreateDailyPlan(iso);
+                    grid.innerHTML += `<div class="day-column"><div class="day-head">${iso.split('-')[2]}/${iso.split('-')[1]}</div>
+                        <div style="padding:5px;">${tasks.map(x=>`<div class="sim-task" style="background:var(--color-${x.k==='Ex'?'ex':(x.k==='Rev'?'rev':'e')})">${x.m}<br>${x.a}</div>`).join('')}</div></div>`;
                 }
             },
-            saveC() {
-                this.state.db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value);
-                this.saveState(); alert("Ciclo salvo!");
+
+            renderSinalizar() {
+                const tree = document.getElementById('tree'); tree.innerHTML = "";
+                [...new Set(this.state.db.lista.map(x=>x.m))].forEach(m => {
+                    tree.innerHTML += `<div class="folder"><div class="folder-header" onclick="this.nextElementSibling.classList.toggle('active')">${m}</div>
+                        <div class="folder-content">${this.state.db.lista.filter(x=>x.m===m).map(a => `
+                        <div style="display:flex; justify-content:space-between; padding:8px 0;"><span>${a.a}</span>
+                        <div>E<input type="checkbox" ${a.done.E?'checked':''} onclick="App.tItm('${a.m}','${a.a}','E')">
+                             R<input type="checkbox" ${a.done.Rev?'checked':''} onclick="App.tItm('${a.m}','${a.a}','Rev')">
+                             X<input type="checkbox" ${a.done.Ex?'checked':''} onclick="App.tItm('${a.m}','${a.a}','Ex')"></div></div>`).join('')}</div></div>`;
+                });
             },
-            renderFluxo() {
-                const content = document.getElementById('fluxo-content');
-                content.innerHTML = this.state.db.lista.map((it, i) => `
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;">
-                        <span style="font-size:0.8rem;"><b>${it.m}</b><br>${it.a}</span>
-                        <div style="display:flex; gap:5px;">
-                            <input type="number" step="0.5" value="${it.h.E}" onchange="App.updateFluxo(${i}, 'E', this.value)" style="width:50px;">
-                            <input type="number" step="0.5" value="${it.h.Rev}" onchange="App.updateFluxo(${i}, 'R', this.value)" style="width:50px;">
-                            <input type="number" step="0.5" value="${it.h.Ex}" onchange="App.updateFluxo(${i}, 'X', this.value)" style="width:50px;">
-                        </div>
-                    </div>`).join('');
+
+            saveHMaster() {
+                const w = parseFloat(document.getElementById('h-week').value) || 4;
+                const s = parseFloat(document.getElementById('h-sab').value) || 6;
+                const d = parseFloat(document.getElementById('h-dom').value) || 2;
+                for(let i=1; i<=5; i++) this.state.db.h[i] = w; this.state.db.h[6] = s; this.state.db.h[0] = d;
+                this.state.db.metaFixa = {}; this.saveState(); this.init(); alert("Carga Salva!");
             },
-            updateFluxo(idx, rito, val) {
-                const it = this.state.db.lista[idx];
-                if(rito === 'E') it.h.E = parseFloat(val);
-                if(rito === 'R') it.h.Rev = parseFloat(val);
-                if(rito === 'X') it.h.Ex = parseFloat(val);
-                this.state.db.metaFixa = {}; this.saveState();
-            },
-            renderHInputs() {
-                document.getElementById('h-week').value = this.state.db.h[1];
-                document.getElementById('h-sab').value = this.state.db.h[6];
-                document.getElementById('h-dom').value = this.state.db.h[0];
-            }
+
+            toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); },
+            execReplan() { this.state.db.metaFixa = {}; this.saveState(); window.location.reload(); }
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log("[SYSTEM] DOM Pronto. Aguardando login.");
-        });
+        document.addEventListener('DOMContentLoaded', () => console.log("[SYSTEM] Pronto."));
     </script>
 </body>
 </html>
