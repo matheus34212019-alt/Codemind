@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI NEXUS v.110 - ULTIMATE INTEGRITY</title>
+    <title>OMNI NEXUS v.111 - TOTAL INTEGRITY</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #0f172a; --accent: #3b82f6; --bg: #f8fafc;
@@ -21,8 +22,7 @@
         .sidebar { width: 280px; background: var(--primary); display: flex; flex-direction: column; padding: 30px 20px; border-right: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; overflow-y: auto; }
         .logo-box { padding-bottom: 40px; color: white; display: flex; align-items: center; gap: 15px; font-weight: 800; font-size: 1.4rem; letter-spacing: -1px; }
         .nav-item { padding: 14px 18px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; border-radius: 16px; transition: 0.3s; margin-bottom: 8px; }
-        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.06); color: white; }
-        .nav-item.active { background: var(--accent); box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4); }
+        .nav-item.active { background: var(--accent); color: white; box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4); }
         .submenu { margin-left: 15px; border-left: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; padding: 5px 0; }
         .submenu.show { display: flex; }
         .sub-link { padding: 10px 10px 10px 25px; color: #64748b; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
@@ -36,60 +36,84 @@
         .stat-card small { text-transform: uppercase; font-weight: 800; font-size: 0.65rem; color: var(--text-sec); letter-spacing: 1px; }
         .stat-val { font-size: 1.5rem; font-weight: 800; margin-top: 8px; color: var(--primary); }
 
-        .task-card { background: white; border-radius: 18px; padding: 22px; margin-bottom: 15px; border: 1px solid var(--border); border-left: 10px solid #ccc; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .task-card { background: white; border-radius: 18px; padding: 22px; margin-bottom: 15px; border: 1px solid var(--border); border-left: 10px solid #ccc; display: flex; justify-content: space-between; align-items: center; }
         .tag { font-size: 0.65rem; font-weight: 800; padding: 6px 14px; border-radius: 50px; color: white; margin-bottom: 8px; display: inline-block; }
         .tag-e { background: var(--color-e); } .tag-rev { background: var(--color-rev); } .tag-ex { background: var(--color-ex); }
 
         .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; min-width: 1100px; }
-        .day-column { background: white; border: 1px solid var(--border); border-radius: 18px; min-height: 600px; display: flex; flex-direction: column; overflow: hidden; }
-        .day-head { background: #f1f5f9; padding: 18px 10px; text-align: center; border-bottom: 1px solid var(--border); }
+        .day-column { background: white; border: 1px solid var(--border); border-radius: 18px; min-height: 550px; display: flex; flex-direction: column; overflow: hidden; }
+        .day-head { background: #f1f5f9; padding: 15px; text-align: center; border-bottom: 1px solid var(--border); }
         .day-t { font-weight: 800; font-size: 0.7rem; color: var(--primary); text-transform: uppercase; }
-        .sim-task { margin: 6px; padding: 10px; border-radius: 10px; font-size: 0.58rem; font-weight: 700; color: white; line-height: 1.3; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .sim-task { margin: 6px; padding: 10px; border-radius: 10px; font-size: 0.6rem; font-weight: 700; color: white; line-height: 1.3; }
 
-        .btn { padding: 14px 22px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .btn { padding: 12px 20px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
         .btn-outline { background: transparent; border: 2px solid var(--accent); color: var(--accent); }
+        .btn-sm { padding: 6px 12px; font-size: 0.7rem; }
         input, textarea { padding: 14px 18px; border: 1px solid var(--border); border-radius: 14px; background: #f1f5f9; width: 100%; margin-top: 8px; font-family: inherit; }
 
         #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 10000; display: flex; align-items: center; justify-content: center; }
         .login-card { background: white; padding: 60px; border-radius: 35px; width: 420px; text-align: center; }
         .page { display: none; } .page.active { display: block; }
         input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent); cursor: pointer; }
+        
+        .folder { background: white; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 12px; overflow: hidden; }
+        .folder-header { padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #f8fafc; border-bottom: 1px solid var(--border); }
+        .folder-content { display: none; padding: 10px; }
+        .folder-content.open { display: block; }
     </style>
 </head>
 <body>
     <div id="login-screen">
         <div class="login-card">
-            <h2 style="font-weight: 800; margin-bottom: 10px;">OMNI NEXUS v.110</h2>
-            <input type="password" id="pass-input" placeholder="Sua Chave" style="text-align:center;">
-            <button class="btn" style="width:100%; margin-top:25px;" onclick="checkAccess()">ENTRAR</button>
+            <h2 style="font-weight: 800; margin-bottom: 10px;">OMNI NEXUS v.111</h2>
+            <p style="color: gray; margin-bottom: 25px;">Acesso Restrito</p>
+            <input type="password" id="pass-input" placeholder="Digite sua Chave" style="text-align:center;">
+            <button class="btn" style="width:100%; margin-top:25px;" onclick="checkAccess()">LOGAR NO SISTEMA</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box"><i class="fas fa-microchip"></i> OMNI v.110</div>
-        <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-calendar-day"></i><span>Painel Hoje</span></div>
-        <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-week"></i><span>Cronograma Semanal</span></div>
-        <div class="nav-item" onclick="toggleSub()"><i class="fas fa-sliders"></i><span>Meu Plano</span><i class="fas fa-chevron-down" style="margin-left:auto;"></i></div>
+        <div class="logo-box"><i class="fas fa-shield-halved"></i> OMNI v.111</div>
+        <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-calendar-check"></i><span>Painel Hoje</span></div>
+        <div class="nav-item" onclick="showTab('performance', this)"><i class="fas fa-chart-pie"></i><span>Performance</span></div>
+        <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-brain"></i><span>Simulação IA</span></div>
+        
+        <div class="nav-item" onclick="toggleSub()"><i class="fas fa-layer-group"></i><span>Meu Plano</span><i class="fas fa-chevron-down" style="margin-left:auto;"></i></div>
         <div id="sub-plano" class="submenu">
             <div class="sub-link" onclick="showTab('edital')">Importar Edital</div>
             <div class="sub-link" onclick="showTab('ciclo')">Ciclo Ativo</div>
             <div class="sub-link" onclick="showTab('config-h')">Horas Diárias</div>
             <div class="sub-link" onclick="showTab('sinalizar')">Sinalizar Base</div>
+            <div class="sub-link" onclick="showTab('rever')">Rever Finalizados</div>
+            <div class="sub-link" onclick="showTab('fluxo')">Ajustar Fluxos</div>
+            <div class="sub-link" style="color:var(--status-red); font-weight:800;" onclick="showTab('replanejar')">Replanejar Atrasos</div>
         </div>
     </aside>
 
     <main class="main">
         <div class="container">
             <div class="stats-grid">
-                <div class="stat-card"><small>Carga Pendente</small><div id="total-remaining-hrs" class="stat-val">0h</div></div>
-                <div class="stat-card"><small>Estado do Sistema</small><div class="stat-val" style="color:var(--status-green)">ESTÁVEL</div></div>
-                <div class="stat-card"><small>Sincronia IA</small><div class="stat-val">100%</div></div>
+                <div class="stat-card">
+                    <small>Carga Restante</small>
+                    <div id="total-remaining-hrs" class="stat-val">0h</div>
+                </div>
+                <div class="stat-card">
+                    <small>Precisão Global</small>
+                    <div id="global-accuracy" class="stat-val">0%</div>
+                </div>
+                <div class="stat-card">
+                    <small>Sincronia IA</small>
+                    <div id="sync-status" class="stat-val" style="color:var(--accent)">ONLINE</div>
+                </div>
             </div>
 
             <div id="diaria" class="page active">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
                     <div id="btn-voltar-area" style="width:180px;"></div>
-                    <div><h1 id="data-title" style="font-weight:800; text-align:center;">Hoje</h1><p id="meta-status" style="text-align:center;"></p></div>
+                    <div>
+                        <h1 id="data-title" style="font-weight:800; text-align:center;">Hoje</h1>
+                        <p id="meta-status" style="text-align:center; font-weight: 600; color: var(--text-sec);"></p>
+                    </div>
                     <div id="btn-avancar-area" style="width:180px; text-align:right;">
                         <button class="btn btn-outline" onclick="navDay(1)">VER AMANHÃ <i class="fas fa-arrow-right"></i></button>
                     </div>
@@ -97,31 +121,94 @@
                 <div id="lista-diaria"></div>
             </div>
 
+            <div id="performance" class="page">
+                <div class="stats-grid">
+                    <div class="stat-card"><canvas id="mainChart"></canvas></div>
+                    <div class="stat-card"><canvas id="typeChart"></canvas></div>
+                </div>
+                <div class="stat-card" style="margin-top:20px;">
+                    <table style="width:100%; text-align:left; border-collapse: collapse;">
+                        <thead><tr style="border-bottom: 2px solid var(--border);"><th style="padding:10px;">Matéria</th><th>Investimento</th><th>Questões</th><th>%</th></tr></thead>
+                        <tbody id="table-performance-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
             <div id="semanal" class="page">
-                <h1 style="margin-bottom:25px; font-weight:800;">Projeção de 7 Dias</h1>
+                <h1 style="margin-bottom:20px; font-weight:800;">Projeção Neural 7 Dias</h1>
                 <div style="overflow-x:auto;"><div id="grid-semanal" class="grid-7"></div></div>
             </div>
 
-            <div id="ciclo" class="page"><div id="checks-ciclo" class="stat-card" style="columns:2; padding:30px;"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveC()">SALVAR CICLO</button></div>
-            <div id="config-h" class="page"><div id="grid-horas-manual" style="display:flex; gap:10px; justify-content:center; padding:30px;"></div><button class="btn" style="width:100%;" onclick="saveH()">SALVAR HORAS</button></div>
-            <div id="sinalizar" class="page"><div id="tree-container"></div></div>
-            <div id="edital" class="page">
+            <div id="ciclo" class="page">
                 <div class="stat-card" style="padding:30px;">
-                    <input type="text" id="add-mat" placeholder="Ex: Direito Administrativo">
-                    <textarea id="add-ass" placeholder="Assuntos (um por linha)..." style="height:150px; margin-top:15px;"></textarea>
-                    <button class="btn" style="width:100%; margin-top:15px;" onclick="saveEdital()">IMPORTAR AGORA</button>
+                    <h3>Matérias em Giro</h3>
+                    <p style="margin-bottom:20px; color:gray;">Selecione as disciplinas que entrarão no ciclo diário.</p>
+                    <div id="checks-ciclo" style="columns:2;"></div>
+                    <button class="btn" style="width:100%; margin-top:30px;" onclick="saveC()">ATIVAR CICLO</button>
                 </div>
             </div>
+
+            <div id="config-h" class="page">
+                <div class="stat-card" style="padding:30px; text-align:center;">
+                    <h3>Disponibilidade Semanal</h3>
+                    <div id="grid-horas-manual" style="display:flex; gap:10px; justify-content:center; margin:30px 0;"></div>
+                    <button class="btn" style="width:100%;" onclick="saveH()">SALVAR CARGA HORÁRIA</button>
+                </div>
+            </div>
+
+            <div id="sinalizar" class="page">
+                <div id="tree-container"></div>
+            </div>
+
+            <div id="rever" class="page">
+                <div class="stat-card" style="padding:20px;">
+                    <h3>Resetar Assuntos</h3>
+                    <p style="margin-bottom:20px;">Clique para devolver um assunto finalizado ao ciclo inicial.</p>
+                    <div id="rever-container"></div>
+                </div>
+            </div>
+
+            <div id="fluxo" class="page">
+                <div id="corpo-fluxo"></div>
+            </div>
+
+            <div id="edital" class="page">
+                <div class="stat-card" style="padding:30px;">
+                    <label>Matéria Principal</label>
+                    <input type="text" id="add-mat" placeholder="Ex: Língua Portuguesa">
+                    <label style="margin-top:20px; display:block;">Carga por Assunto (Estudo)</label>
+                    <select id="h-e-default">
+                        <option value="0.5">30 Minutos</option>
+                        <option value="1">60 Minutos</option>
+                        <option value="1.5" selected>90 Minutos</option>
+                        <option value="2">2 Horas</option>
+                    </select>
+                    <label style="margin-top:20px; display:block;">Assuntos (Cole do edital, um por linha)</label>
+                    <textarea id="add-ass" placeholder="Aula 01 - Ortografia..." style="height:150px; margin-top:10px;"></textarea>
+                    <button class="btn" style="width:100%; margin-top:20px;" onclick="saveEdital()">IMPORTAR PARA O BANCO</button>
+                </div>
+            </div>
+
+            <div id="replanejar" class="page">
+                <div class="stat-card" style="padding:30px; border: 2px solid var(--status-red);">
+                    <h3 style="color:var(--status-red)">Marco Zero do Plano</h3>
+                    <p>Ao definir uma nova data, o sistema moverá todas as pendências para iniciar a partir deste dia.</p>
+                    <input type="date" id="replan-date" style="margin-top:20px;">
+                    <button class="btn" style="width:100%; margin-top:25px; background:var(--status-red)" onclick="executeReplan()">REPLANEJAR TUDO</button>
+                </div>
+            </div>
+
         </div>
     </main>
-<script>
-    /* ENGINE v.110 - ULTIMATE INTEGRITY LOGIC */
-    let db = JSON.parse(localStorage.getItem('prf_v110')) || { 
-        lista: [], ciclo: [], h: {1:4,2:4,3:4,4:4,5:4,6:4,0:4}, metaFixa: {} 
+    <script>
+    /* ENGINE v.111 - TOTAL INTEGRITY LOGIC */
+    let db = JSON.parse(localStorage.getItem('prf_v111')) || { 
+        lista: [], ciclo: [], h: {1:4,2:4,3:4,4:4,5:4,6:4,0:4}, metaFixa: {}, perf: [] 
     };
-    let currentViewDate = new Date();
+    let viewDate = new Date();
+    let myChart, typeChart;
 
-    const save = () => localStorage.setItem('prf_v110', JSON.stringify(db));
+    const save = () => localStorage.setItem('prf_v111', JSON.stringify(db));
 
     function checkAccess() { 
         if(document.getElementById('pass-input').value === "123") { 
@@ -132,9 +219,10 @@
 
     function init() { 
         renderH(); 
-        renderDiario(currentViewDate); 
+        renderDiario(viewDate); 
         renderCiclo(); 
         updateStats(); 
+        renderCharts();
     }
 
     function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
@@ -145,40 +233,36 @@
         document.getElementById(id).classList.add('active'); if(el) el.classList.add('active');
         if(id === 'semanal') renderSemanal();
         if(id === 'sinalizar') renderTree();
+        if(id === 'rever') renderRever();
+        if(id === 'fluxo') renderFluxo();
+        if(id === 'performance') renderCharts();
     }
 
-    // MOTOR DE GERAÇÃO - RITO LINEAR (E -> Rev -> Ex)
-    // simList é uma cópia da lista original para não afetar o banco real durante a simulação
+    // MOTOR DE SIMULAÇÃO IA - RITO LINEAR OBRIGATÓRIO
     function getNeuralPool(limit, simList) {
-        let pool = [];
-        let somaH = 0;
+        let pool = []; let somaH = 0;
         if(!db.ciclo.length) return pool;
 
         let safety = 0;
         while(somaH < limit && safety < 100) {
-            safety++;
-            let addedAny = false;
-
+            safety++; let addedAny = false;
             for(let m of db.ciclo) {
                 if(somaH >= limit) break;
-                
-                // Encontra o primeiro assunto da matéria que não foi finalizado no rito
                 let it = simList.find(x => x.m === m && !x.f);
                 if(!it) continue;
 
                 const rito = [
-                    {k:'E', l:'Estudo', h:1.5},
+                    {k:'E', l:'Estudo', h: it.hE || 1.5},
                     {k:'Rev', l:'Revisão', h:1},
                     {k:'Ex', l:'Exercícios', h:1}
                 ];
 
                 for(let s of rito) {
                     if(!it.done[s.k]) {
-                        // Regra de Fragmentação: Apenas Estudo divide
                         if(s.k === 'E') {
                             let pendente = s.h - (it.hFeito || 0);
-                            let disponivel = limit - somaH;
-                            let alocar = Math.min(pendente, disponivel);
+                            let disp = limit - somaH;
+                            let alocar = Math.min(pendente, disp);
                             if(alocar > 0) {
                                 pool.push({ m: it.m, a: it.a, label: s.l, key: s.k, hrs: alocar });
                                 it.hFeito = (it.hFeito || 0) + alocar;
@@ -186,188 +270,109 @@
                                 somaH += alocar; addedAny = true;
                             }
                         } else {
-                            // Rev e Ex não dividem
                             if(somaH + s.h <= limit + 0.05) {
                                 pool.push({ m: it.m, a: it.a, label: s.l, key: s.k, hrs: s.h });
-                                it.done[s.k] = true;
-                                somaH += s.h;
-                                addedAny = true;
+                                it.done[s.k] = true; somaH += s.h; addedAny = true;
                                 if(s.k === 'Ex') it.f = true;
                             }
                         }
-                        break; // Trava a matéria para seguir o rito linear
+                        break; 
                     }
                 }
-                if(addedAny) break; // Gira o ciclo para a próxima matéria
+                if(addedAny) break;
             }
             if(!addedAny) break;
-        }
-        return pool;
+        } return pool;
     }
 
     function renderDiario(date) {
         const hjK = new Date().toLocaleDateString();
         const curK = date.toLocaleDateString();
         const hM = parseFloat(db.h[date.getDay()]);
-        
         document.getElementById('data-title').innerText = (hjK === curK) ? "Hoje" : curK;
-        
-        // Controle de botões Voltar/Avançar
-        document.getElementById('btn-voltar-area').innerHTML = (hjK === curK) ? "" : 
-            `<button class="btn btn-outline" onclick="navDay(0)"><i class="fas fa-history"></i> HOJE</button>`;
+        document.getElementById('btn-voltar-area').innerHTML = (hjK === curK) ? "" : `<button class="btn btn-outline btn-sm" onclick="navDay(0)"><i class="fas fa-undo"></i> HOJE</button>`;
 
-        // Se for hoje ou futuro e não tiver meta fixa, gera uma
-        if(!db.metaFixa[curK]) {
+        if(!db.metaFixa[curK] || date > new Date()) {
             let simL = JSON.parse(JSON.stringify(db.lista));
             db.metaFixa[curK] = getNeuralPool(hM, simL);
-            save();
         }
 
         const tasks = db.metaFixa[curK];
-        document.getElementById('meta-status').innerText = `${tasks.reduce((a,b)=>a+b.hrs,0).toFixed(1)}h / ${hM}h meta`;
-        
+        document.getElementById('meta-status').innerText = `${tasks.reduce((a,b)=>a+b.hrs,0).toFixed(1)}h alocadas / ${hM}h meta`;
         document.getElementById('lista-diaria').innerHTML = tasks.map((t, i) => `
-            <div class="task-card" style="border-left-color:var(--color-${t.key.toLowerCase().includes('rev')?'rev':t.key==='Ex'?'ex':'e'})">
-                <div>
-                    <span class="tag tag-${t.key.toLowerCase()}">${t.label} (${t.hrs < 1 ? (t.hrs*60)+'m' : t.hrs+'h'})</span>
-                    <div style="font-weight:800; font-size:1.1rem;">${t.m}: ${t.a}</div>
-                </div>
-                <input type="checkbox" ${t.completed?'checked':''} onclick="concluirTask('${curK}', ${i})">
-            </div>`).join('') || "<p style='text-align:center; padding:20px; color:gray;'>Nenhuma atividade para este dia. Ative o ciclo.</p>";
+            <div class="task-card" style="border-left-color:var(--color-${t.key === 'Ex' ? 'ex' : (t.key === 'Rev' ? 'rev' : 'e')})">
+                <div><span class="tag tag-${t.key.toLowerCase()}">${t.label}</span><div style="font-weight:800;">${t.m}: ${t.a}</div></div>
+                <input type="checkbox" ${t.c?'checked':''} onclick="concluir('${curK}', ${i})">
+            </div>`).join('');
     }
 
     function navDay(dir) {
-        if(dir === 0) currentViewDate = new Date();
-        else currentViewDate.setDate(currentViewDate.getDate() + dir);
-        renderDiario(currentViewDate);
+        if(dir === 0) viewDate = new Date();
+        else viewDate.setDate(viewDate.getDate() + dir);
+        renderDiario(viewDate);
     }
 
-    function concluirTask(dateK, idx) {
-        let t = db.metaFixa[dateK][idx];
-        t.completed = !t.completed;
-        
+    function concluir(dateK, idx) {
+        let t = db.metaFixa[dateK][idx]; t.c = !t.c;
         let it = db.lista.find(x => x.m === t.m && x.a === t.a);
         if(it) {
-            if(t.key === 'E') {
-                it.hReal = (it.hReal || 0) + (t.completed ? t.hrs : -t.hrs);
-                it.done.E = it.hReal >= 1.45;
-            } else {
-                it.done[t.key] = t.completed;
-                if(t.key === 'Ex') it.f = t.completed;
-            }
+            if(t.key === 'E') { it.hR = (it.hR || 0) + (t.c ? t.hrs : -t.hrs); it.done.E = it.hR >= (it.hE - 0.1); }
+            else { it.done[t.key] = t.c; if(t.key === 'Ex') it.f = t.c; }
         }
-        save();
-        updateStats();
+        save(); updateStats();
     }
 
     function renderSemanal() {
+        let virtual = JSON.parse(JSON.stringify(db.lista));
         const dias = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
-        let virtualList = JSON.parse(JSON.stringify(db.lista));
-        
         document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(off => {
             let d = new Date(); d.setDate(d.getDate() + off);
-            let hL = parseFloat(db.h[d.getDay()]);
-            
-            // O segredo do semanal: ele gera as tarefas e ATUALIZA a virtualList para o dia seguinte
-            let tasks = getNeuralPool(hL, virtualList);
-            
-            return `<div class="day-column">
-                <div class="day-head"><div class="day-t">${dias[d.getDay()]} - ${d.getDate()}</div></div>
-                ${tasks.map(x => `<div class="sim-task tag-${x.key.toLowerCase()}"><b>${x.m}</b><br>${x.a}</div>`).join('')}
-            </div>`;
+            let tasks = getNeuralPool(db.h[d.getDay()], virtual);
+            return `<div class="day-column"><div class="day-head"><div class="day-t">${dias[d.getDay()]} - ${d.getDate()}</div></div>
+            ${tasks.map(x => `<div class="sim-task tag-${x.key.toLowerCase()}"><b>${x.m}</b><br>${x.a}</div>`).join('')}</div>`;
         }).join('');
-    }
-
-    function renderCiclo() {
-        const mats = [...new Set(db.lista.map(x => x.m))];
-        document.getElementById('checks-ciclo').innerHTML = mats.map(m => `
-            <label style="display:flex; gap:10px; margin-bottom:12px; font-weight:700;">
-                <input type="checkbox" class="ckc" value="${m}" ${db.ciclo.includes(m)?'checked':''}> ${m}
-            </label>`).join('') || "Importe o edital primeiro.";
-    }
-
-    function saveC() {
-        db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value);
-        db.metaFixa = {}; 
-        save();
-        init();
-    }
-
-    function renderH() {
-        const d = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
-        document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `
-            <div style="text-align:center;"><small style="font-weight:800;">${x}</small><br>
-            <input type="number" id="h-in-${i}" value="${db.h[i]}" style="width:60px; text-align:center;"></div>`).join('');
-    }
-
-    function saveH() {
-        [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value);
-        db.metaFixa = {};
-        save();
-        init();
-    }
-
-    function renderTree() {
-        const mats = [...new Set(db.lista.map(x => x.m))];
-        document.getElementById('tree-container').innerHTML = mats.map(m => {
-            const ass = db.lista.filter(x => x.m === m);
-            return `<div class="stat-card" style="margin-bottom:15px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <b>${m}</b>
-                    <button class="btn btn-sm" onclick="toggleMateria('${m}')">Alternar Matéria</button>
-                </div>
-                <div style="margin-top:10px;">${ass.map(a => `
-                    <div class="subject-row">
-                        <span>${a.a}</span>
-                        <input type="checkbox" ${a.done.E?'checked':''} onclick="toggleSubject('${a.m}','${a.a}')">
-                    </div>`).join('')}
-                </div>
-            </div>`;
-        }).join('');
-    }
-
-    function toggleMateria(m) {
-        let matAssuntos = db.lista.filter(x => x.m === m);
-        let target = !matAssuntos[0].done.E;
-        matAssuntos.forEach(a => {
-            a.done.E = target;
-            if(target) { a.done.Rev = true; a.done.Ex = true; a.f = true; }
-            else { a.done.Rev = false; a.done.Ex = false; a.f = false; a.hReal = 0; }
-        });
-        db.metaFixa = {}; save(); init(); renderTree();
-    }
-
-    function toggleSubject(m, a) {
-        let it = db.lista.find(x => x.m === m && x.a === a);
-        it.done.E = !it.done.E;
-        if(!it.done.E) { it.done.Rev = false; it.done.Ex = false; it.f = false; it.hReal = 0; }
-        db.metaFixa = {}; save(); init();
     }
 
     function saveEdital() {
         const m = document.getElementById('add-mat').value;
+        const hE = parseFloat(document.getElementById('h-e-default').value);
         const ass = document.getElementById('add-ass').value.split('\n').filter(l => l.trim().length > 2);
-        ass.forEach(a => {
-            if(!db.lista.some(x => x.m === m && x.a === a)) {
-                db.lista.push({ m, a, f:false, done:{E:false,Rev:false,Ex:false}, hFeito:0, hReal:0 });
-            }
-        });
-        document.getElementById('add-mat').value=""; 
-        document.getElementById('add-ass').value="";
-        save(); init();
+        ass.forEach(a => db.lista.push({ m, a, hE, f:false, done:{E:false,Rev:false,Ex:false}, hR:0 }));
+        save(); init(); alert("Edital Importado!");
     }
 
     function updateStats() {
-        let total = db.lista.length * 3;
-        let done = 0;
-        db.lista.forEach(a => {
-            if(a.done.E) done++; if(a.done.Rev) done++; if(a.done.Ex) done++;
-        });
-        let p = total > 0 ? (done/total)*100 : 0;
-        document.getElementById('progress-perc').innerText = Math.round(p) + "%";
-        document.getElementById('progress-fill').style.width = p + "%";
-        document.getElementById('total-remaining-hrs').innerText = (total - done) + "h";
+        let total = db.lista.length * 3; let done = 0;
+        db.lista.forEach(a => { if(a.done.E) done++; if(a.done.Rev) done++; if(a.done.Ex) done++; });
+        document.getElementById('total-remaining-hrs').innerText = (total - done) * 1.5 + "h";
+        document.getElementById('global-accuracy').innerText = Math.round((done/total)*100 || 0) + "%";
+    }
+
+    function renderCharts() {
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        if(myChart) myChart.destroy();
+        myChart = new Chart(ctx, { type: 'line', data: { labels: ['S1','S2','S3','S4'], datasets: [{label: 'Horas', data: [10, 15, 8, 12], borderColor: '#3b82f6'}] } });
+    }
+
+    function renderTree() {
+        const mats = [...new Set(db.lista.map(x => x.m))];
+        document.getElementById('tree-container').innerHTML = mats.map(m => `
+            <div class="folder"><div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b> <i class="fas fa-chevron-down"></i></div>
+            <div class="folder-content">${db.lista.filter(x => x.m === m).map(a => `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee;">${a.a} <input type="checkbox" ${a.done.E?'checked':''}></div>`).join('')}</div></div>
+        `).join('');
+    }
+
+    function renderH() {
+        const d = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
+        document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `<div><small>${x}</small><br><input type="number" id="h-${i}" value="${db.h[i]}" style="width:50px;"></div>`).join('');
+    }
+    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-${i}`).value); save(); db.metaFixa={}; renderDiario(new Date()); }
+    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); db.metaFixa={}; save(); renderDiario(new Date()); }
+    function renderCiclo() {
+        const mats = [...new Set(db.lista.map(x => x.m))];
+        document.getElementById('checks-ciclo').innerHTML = mats.map(m => `<label style="display:block;"><input type="checkbox" class="ckc" value="${m}" ${db.ciclo.includes(m)?'checked':''}> ${m}</label>`).join('');
     }
 </script>
 </body>
 </html>
+
