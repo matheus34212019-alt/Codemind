@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI NEXUS v.97 - STABLE VIEW</title>
+    <title>OMNI NEXUS v.98 - TOTAL ARCHITECT</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,86 +14,86 @@
             --color-e: linear-gradient(135deg, #3b82f6, #2563eb); 
             --color-rev: linear-gradient(135deg, #f59e0b, #d97706); 
             --color-ex: linear-gradient(135deg, #10b981, #059669);
-            --status-green: #10b981; --status-red: #ef4444;
-            --radius-md: 18px; --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+            --radius-md: 20px; --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR */
-        .sidebar { width: 280px; background: var(--primary); display: flex; flex-direction: column; padding: 30px 20px; border-right: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; }
+        /* --- SIDEBAR --- */
+        .sidebar { width: 280px; background: var(--primary); display: flex; flex-direction: column; padding: 30px 20px; border-right: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; overflow-y: auto; }
         .logo-box { padding-bottom: 40px; color: white; display: flex; align-items: center; gap: 15px; font-weight: 800; font-size: 1.4rem; }
-        .nav-item { padding: 14px 18px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; border-radius: 14px; transition: 0.3s; margin-bottom: 8px; }
-        .nav-item.active { background: var(--accent); color: white; box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4); }
-        .submenu { margin-left: 15px; border-left: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; }
+        .nav-item { padding: 14px 18px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; border-radius: 16px; transition: 0.3s; margin-bottom: 8px; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.06); color: white; }
+        .nav-item.active { background: var(--accent); box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4); }
+        .submenu { margin-left: 15px; border-left: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; padding: 5px 0; }
         .submenu.show { display: flex; }
         .sub-link { padding: 10px 10px 10px 25px; color: #64748b; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
         .sub-link:hover { color: white; }
 
-        /* MAIN */
+        /* --- MAIN --- */
         .main { flex: 1; overflow-y: auto; padding: 40px; scroll-behavior: smooth; }
-        .container { max-width: 1100px; margin: 0 auto; }
-        .page-header { margin-bottom: 35px; }
-        .page-header h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1.5px; }
-
-        /* PROGRESS BAR */
-        .progress-section { background: white; padding: 25px; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 35px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* --- DASHBOARD --- */
+        .progress-section { background: white; padding: 25px; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 30px; box-shadow: var(--shadow); }
         .progress-bar-bg { width: 100%; height: 12px; background: #e2e8f0; border-radius: 10px; overflow: hidden; margin: 10px 0; }
         .progress-bar-fill { height: 100%; background: var(--accent); transition: 1s ease; width: 0%; }
-
-        /* STATS */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 35px; }
         .stat-card { background: white; padding: 22px; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow); }
-        .stat-card small { text-transform: uppercase; font-weight: 800; font-size: 0.65rem; color: var(--text-sec); }
-        .stat-val { font-size: 1.5rem; font-weight: 800; margin-top: 8px; }
+        .stat-card small { text-transform: uppercase; font-weight: 800; font-size: 0.65rem; color: var(--text-sec); letter-spacing: 1px; }
+        .stat-val { font-size: 1.5rem; font-weight: 800; margin-top: 8px; color: var(--primary); }
 
-        /* TASKS */
-        .task-card { background: white; border-radius: 18px; padding: 22px; margin-bottom: 15px; border: 1px solid var(--border); border-left: 12px solid #ccc; display: flex; justify-content: space-between; align-items: center; }
+        /* --- TASKS --- */
+        .task-card { background: white; border-radius: 18px; padding: 22px; margin-bottom: 15px; border: 1px solid var(--border); border-left: 10px solid #ccc; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
         .tag { font-size: 0.65rem; font-weight: 800; padding: 6px 14px; border-radius: 50px; color: white; margin-bottom: 8px; display: inline-block; }
         .tag-e { background: var(--color-e); } .tag-rev { background: var(--color-rev); } .tag-ex { background: var(--color-ex); }
 
-        /* SEMANAL */
-        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; min-width: 1000px; }
-        .day-column { background: white; border: 1px solid var(--border); border-radius: 18px; min-height: 550px; display: flex; flex-direction: column; overflow: hidden; }
-        .day-head { background: #f1f5f9; padding: 15px; text-align: center; border-bottom: 1px solid var(--border); }
-        .day-t { font-weight: 800; font-size: 0.75rem; text-transform: uppercase; }
-        .sim-task { margin: 6px; padding: 10px; border-radius: 12px; font-size: 0.58rem; font-weight: 700; color: white; line-height: 1.3; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        /* --- SEMANAL (FULL NAMES) --- */
+        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; min-width: 1100px; }
+        .day-column { background: white; border: 1px solid var(--border); border-radius: 18px; min-height: 600px; display: flex; flex-direction: column; overflow: hidden; }
+        .day-head { background: #f1f5f9; padding: 18px 10px; text-align: center; border-bottom: 1px solid var(--border); }
+        .day-t { font-weight: 800; font-size: 0.7rem; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .sim-task { margin: 6px; padding: 12px; border-radius: 12px; font-size: 0.58rem; font-weight: 700; color: white; line-height: 1.3; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 
-        /* FOLDERS & BATCH */
+        /* --- FOLDERS & BATCH --- */
         .folder { background: white; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 12px; overflow: hidden; }
         .folder-header { padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #f8fafc; }
-        .folder-content { display: none; padding: 10px; }
+        .folder-content { display: none; padding: 10px; border-top: 1px solid var(--border); }
         .folder-content.open { display: block; }
-        .subject-row { display: flex; align-items: center; gap: 15px; padding: 14px 15px; border-radius: 10px; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
-        .batch-bar { position: sticky; top: 0; background: var(--bg); padding: 15px 0; z-index: 100; display: none; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+        .subject-row { display: flex; align-items: center; gap: 15px; padding: 14px 15px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.9rem; border-bottom: 1px solid #f1f5f9; }
+        .subject-row:hover { background: #f1f5f9; }
+        .subject-row.done { color: var(--accent); background: #eff6ff; }
 
-        /* UI ELEMENTS */
-        .btn { padding: 14px 22px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; z-index: 10; }
-        .btn:hover { transform: translateY(-2px); opacity: 0.9; box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3); }
+        /* --- UI ELEMENTS --- */
+        .btn { padding: 14px 22px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+        .btn-outline { background: transparent; border: 2px solid var(--accent); color: var(--accent); }
+        .btn-extra { background: #1e293b; width: 100%; margin-top: 20px; justify-content: center; }
+        
         input, select, textarea { padding: 14px 18px; border: 1px solid var(--border); border-radius: 14px; background: #f1f5f9; font-family: inherit; width: 100%; margin-top: 8px; }
+
+        .page { display: none; } .page.active { display: block; }
+        input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent); cursor: pointer; }
 
         #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 10000; display: flex; align-items: center; justify-content: center; }
         .login-card { background: white; padding: 60px; border-radius: 35px; width: 420px; text-align: center; }
-        .page { display: none; } .page.active { display: block; }
-        input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-card">
-            <i class="fas fa-shield-halved" style="font-size: 3rem; color: var(--accent); margin-bottom: 25px;"></i>
-            <h2 style="margin-bottom: 10px; font-weight: 800;">OMNI NEXUS v.97</h2>
-            <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; letter-spacing: 5px;">
+            <h2 style="margin-bottom: 10px; font-weight: 800;">OMNI NEXUS v.98</h2>
+            <input type="password" id="pass-input" placeholder="Sua Chave" style="text-align:center; letter-spacing: 5px;">
             <button class="btn" style="width:100%; margin-top:25px;" onclick="checkAccess()">ENTRAR</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box"><i class="fas fa-brain"></i> OMNI v.97</div>
-        <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-calendar-day"></i><span>Painel</span></div>
+        <div class="logo-box"><i class="fas fa-brain"></i> OMNI v.98</div>
+        <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-bolt"></i><span>Painel Hoje</span></div>
         <div class="nav-item" onclick="showTab('performance', this)"><i class="fas fa-chart-line"></i><span>Performance</span></div>
-        <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-microchip"></i><span>Simulador IA</span></div>
+        <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-microchip"></i><span>Simulação IA</span></div>
         <div class="nav-item" onclick="toggleSub()"><i class="fas fa-sliders"></i><span>Meu Plano</span><i class="fas fa-chevron-down" style="margin-left:auto;"></i></div>
         <div id="sub-plano" class="submenu">
             <div class="sub-link" onclick="showTab('edital')">Importar Edital</div>
@@ -101,169 +101,159 @@
             <div class="sub-link" onclick="showTab('config-h')">Horas Diárias</div>
             <div class="sub-link" onclick="showTab('sinalizar')">Sinalizar Base</div>
             <div class="sub-link" onclick="showTab('rever')">Rever Finalizados</div>
+            <div class="sub-link" onclick="showTab('fluxo')">Ajustar Fluxos</div>
+            <div class="sub-link" style="color:var(--status-red); font-weight:800;" onclick="showTab('replanejar')">Replanejar Atrasos</div>
         </div>
     </aside>
 
     <main class="main">
         <div class="container">
             <div class="progress-section">
-                <div style="display:flex; justify-content:space-between; font-weight:800;"><span>Conclusão Total do Edital</span><span id="progress-perc">0%</span></div>
+                <div style="display:flex; justify-content:space-between; font-weight:800;"><span>Conclusão do Edital</span><span id="progress-perc">0%</span></div>
                 <div class="progress-bar-bg"><div id="progress-fill" class="progress-bar-fill"></div></div>
                 <div style="margin-top:10px; font-size:0.8rem; font-weight:700; color:var(--text-sec); display:flex; justify-content:space-between;">
-                    <span id="days-to-exam">Prova: --/--/--</span>
-                    <span id="time-left-stat">Restam -- dias</span>
+                    <span id="exam-stat">Prova: --/--/--</span>
+                    <span id="countdown-stat">-- dias restantes</span>
                 </div>
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card"><small>Carga Pendente</small><div id="total-remaining-hrs" class="stat-val">0h</div></div>
+                <div class="stat-card"><small>Pendência Real</small><div id="total-remaining-hrs" class="stat-val">0h</div></div>
                 <div class="stat-card"><small>Precisão Geral</small><div id="global-accuracy" class="stat-val">0%</div></div>
-                <div class="stat-card"><small>Risco</small><div id="risk-status" class="stat-val">--</div></div>
-            </div>
-
-            <div id="edital" class="page">
-                <div class="page-header"><h1>Importar Disciplina</h1></div>
-                <div class="folder" style="padding:30px; background:white;">
-                    <label style="font-weight:800;">Nome da Matéria</label>
-                    <input type="text" id="add-mat" placeholder="Ex: Direito Administrativo">
-                    
-                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px; margin-top:20px;">
-                        <div><label>Estudo (h)</label><input type="number" id="h-e" value="1.5"></div>
-                        <div><label>Revisão (h)</label><input type="number" id="h-r" value="1.0"></div>
-                        <div><label>Exercício (h)</label><input type="number" id="h-x" value="1.0"></div>
-                    </div>
-
-                    <div style="margin-top:20px;">
-                        <label style="font-weight:800;">Data da Prova</label>
-                        <input type="date" id="exam-date-input">
-                    </div>
-
-                    <div style="margin-top:20px;">
-                        <label style="font-weight:800;">Assuntos</label>
-                        <textarea id="add-ass" placeholder="Cole aqui os assuntos. Se estiverem colados, eu separo sozinho..." style="height:120px;"></textarea>
-                    </div>
-
-                    <button class="btn" style="width:100%; margin-top:30px; background:#1e293b; height:60px;" onclick="saveEdital()">
-                        <i class="fas fa-save"></i> SALVAR NO BANCO DE DADOS
-                    </button>
-                </div>
+                <div class="stat-card"><small>Status</small><div id="risk-status" class="stat-val">CALCULANDO</div></div>
             </div>
 
             <div id="diaria" class="page active">
-                <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
-                    <div><h1 style="font-weight:800;">Missão de Hoje</h1><p id="meta-status"></p></div>
-                    <button class="btn" onclick="regenerateDaily()">RECALCULAR</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+                    <div><h1 style="font-weight:800;">Missão de Hoje 🚓</h1><p id="meta-status"></p></div>
+                    <button class="btn btn-outline" onclick="previewNextDay()">VER AMANHÃ</button>
                 </div>
                 <div id="lista-diaria"></div>
+                <button class="btn btn-extra" onclick="openExtraModal()">Estudou algo fora do planejado hoje?</button>
             </div>
 
-            <div id="semanal" class="page">
-                <div class="page-header"><h1>Simulação 7 Dias</h1></div>
-                <div style="overflow-x:auto;"><div id="grid-semanal" class="grid-7"></div></div>
-            </div>
-
-            <div id="performance" class="page">
-                <div class="page-header"><h1>Gráficos e Performance</h1></div>
-                <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
-                    <div class="stat-card"><canvas id="mainChart"></canvas></div>
-                    <div class="stat-card"><canvas id="typeChart"></canvas></div>
+            <div id="replanejar" class="page">
+                <div class="page-header"><h1>Replanejar Cronograma</h1></div>
+                <div class="stat-card">
+                    <label style="font-weight:800;">A partir de qual data quer reiniciar o plano?</label>
+                    <input type="date" id="replan-date">
+                    <button class="btn" style="margin-top:20px; width:100%;" onclick="executeReplan()">REPLANEJAR TUDO</button>
                 </div>
-                <div class="table-res" style="margin-top:30px;"><table id="table-mats"><thead><tr><th>Matéria</th><th>H. Gastas</th><th>Questões</th><th>%</th></tr></thead><tbody></tbody></table></div>
+            </div>
+
+            <div id="edital" class="page">
+                <div class="folder" style="padding:30px;">
+                    <label>Matéria</label><input type="text" id="add-mat">
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:15px;">
+                        <div><label>Estudo(h)</label><input type="number" id="h-e" value="1.5"></div>
+                        <div><label>Rev(h)</label><input type="number" id="h-r" value="1.0"></div>
+                        <div><label>Ex(h)</label><input type="number" id="h-x" value="1.0"></div>
+                    </div>
+                    <label style="margin-top:15px; display:block;">Data da Prova</label><input type="date" id="exam-date-input">
+                    <textarea id="add-ass" placeholder="Cole os assuntos aqui..." style="height:120px; margin-top:15px;"></textarea>
+                    <button class="btn" style="width:100%; margin-top:20px; background:var(--primary);" onclick="saveEdital()">SALVAR E LIMPAR</button>
+                </div>
             </div>
 
             <div id="sinalizar" class="page">
-                <div class="batch-bar" id="batch-bar">
-                    <span id="batch-count" style="font-weight:800;">0 selecionados</span>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn" style="padding:8px 15px;" onclick="applyBatch('E')">Sinalizar Estudo</button>
-                        <button class="btn" style="padding:8px 15px; background:#1e293b;" onclick="clearBatch()">Cancelar</button>
-                    </div>
-                </div>
+                <div class="page-header"><h1>Sinalizar Base</h1><p>Marque por matéria ou assunto individual</p></div>
                 <div id="tree-container"></div>
             </div>
 
-            <div id="config-h" class="page">
-                <div class="card" id="grid-horas-manual"></div>
-                <button class="btn" style="width:100%;" onclick="saveH()">SALVAR CONFIGURAÇÃO</button>
-            </div>
-            
-            <div id="ciclo" class="page">
-                <div id="checks-ciclo" class="card" style="columns:2;"></div>
-                <button class="btn" style="width:100%;" onclick="saveC()">SALVAR CICLO</button>
+            <div id="performance" class="page">
+                <div class="stats-grid">
+                    <div class="stat-card"><canvas id="mainChart"></canvas></div>
+                    <div class="stat-card"><canvas id="typeChart"></canvas></div>
+                </div>
+                <div class="table-res" style="margin-top:20px;"><table id="table-mats"><thead><tr><th>Matéria</th><th>H. Investidas</th><th>Questões</th><th>%</th></tr></thead><tbody></tbody></table></div>
             </div>
 
+            <div id="semanal" class="page">
+                <div style="overflow-x:auto;"><div id="grid-semanal" class="grid-7"></div></div>
+            </div>
+
+            <div id="config-h" class="page"><div class="stat-card" id="grid-horas-manual"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveH()">SALVAR HORAS</button></div>
+            <div id="ciclo" class="page"><div id="checks-ciclo" class="stat-card" style="columns:2;"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveC()">SALVAR CICLO</button></div>
             <div id="rever" class="page"><div id="rever-container"></div></div>
         </div>
     </main>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('prf_v97_stable')) || { 
-        lista: [], ciclo: [], h: {0:4,1:4,2:4,3:4,4:4,5:4,6:4}, history: [], metaFixa: {}, examDate: ""
+    /* ENGINE v.98 CORE */
+    let db = JSON.parse(localStorage.getItem('prf_v98_nexus')) || { 
+        lista: [], ciclo: [], h: {1:4,2:4,3:4,4:4,5:4,6:4,0:4}, history: [], metaFixa: {}, examDate: ""
     };
-    let batchSelection = new Set();
-    const save = () => localStorage.setItem('prf_v97_stable', JSON.stringify(db));
+
+    const save = () => localStorage.setItem('prf_v98_nexus', JSON.stringify(db));
 
     function checkAccess() { if(document.getElementById('pass-input').value === "123") { document.getElementById('login-screen').style.display='none'; init(); } }
-    function init() { renderH(); renderPredictor(); renderDiario(); renderTree(); renderCiclo(); renderPerformance(); updateProgress(); }
+
+    function init() { 
+        renderH(); renderPredictor(); renderDiario(); renderTree(); renderCiclo(); renderPerformance(); updateProgress();
+    }
+
     function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
 
     function showTab(id, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(m => m.classList.remove('active'));
         document.getElementById(id).classList.add('active'); if(el) el.classList.add('active');
-        if(id === 'performance') renderPerformance(); if(id === 'semanal') renderSemanal(); if(id === 'sinalizar') renderTree();
+        if(id === 'performance') renderPerformance();
+        if(id === 'semanal') renderSemanal();
+        if(id === 'sinalizar') renderTree();
     }
 
-    // MOTOR NEURAL v.97
-    function generateNeuralPool(limit, baseDate = new Date()) {
-        let pool = []; let somaH = 0; let simL = JSON.parse(JSON.stringify(db.lista));
+    // MOTOR DE PRIORIDADE v.98 - GIRO DE CICLO OBRIGATÓRIO
+    function generateNeuralPool(limit, dataSimulada = new Date()) {
+        let pool = []; let somaH = 0; 
+        let simL = JSON.parse(JSON.stringify(db.lista)); 
         if(!db.ciclo.length) return [];
+
         let safety = 0;
-        while(somaH < limit && safety < 80) {
-            safety++; let added = false;
+        while(somaH < limit && safety < 100) {
+            safety++; let addedAny = false;
             for(let m of db.ciclo) {
                 if(somaH >= limit) break;
-                let item = simL.find(x => x.m === m && !x.f);
-                if(!item) continue;
-                const rito = [{k:'E', l:'Estudo', h:parseFloat(item.h.E)}, {k:'Rev', l:'Revisão', h:1}, {k:'Ex', l:'Exercícios', h:1}];
-                for(let s of rito) {
-                    if(!item.done[s.k]) {
-                        let actualH = s.h;
-                        if(s.k === 'E') { if(somaH + actualH > limit) actualH = Math.max(0, limit - somaH); }
-                        else { if(somaH + 1.0 > limit) continue; }
-                        if(actualH > 0) {
-                            pool.push({ m: item.m, a: item.a, label: s.l, key: s.k, hrs: actualH });
-                            item.done[s.k] = true; somaH += actualH; added = true;
-                            if(s.k === 'Ex') item.f = true;
-                        } break;
+                
+                // PRIORIDADE 1: Acha assunto da matéria que nem começou o estudo
+                let itemNovo = simL.find(x => x.m === m && !x.done.E);
+                if(itemNovo) {
+                    let hT = parseFloat(itemNovo.h.E);
+                    if(somaH + hT <= limit + 0.5) {
+                        pool.push({ m: itemNovo.m, a: itemNovo.a, label: 'Estudo', key: 'E', hrs: hT });
+                        itemNovo.done.E = true; somaH += hT; addedAny = true;
+                    }
+                } else {
+                    // PRIORIDADE 2: Acha o assunto que está no meio do rito (Estudo feito, mas Rev ou Ex não)
+                    let itemEmAndamento = simL.find(x => x.m === m && !x.f);
+                    if(itemEmAndamento) {
+                        const rito = [{k:'Rev', l:'Revisão', h:1}, {k:'Ex', l:'Exercícios', h:1}];
+                        for(let s of rito) {
+                            if(!itemEmAndamento.done[s.k]) {
+                                if(somaH + s.h <= limit) {
+                                    pool.push({ m: itemEmAndamento.m, a: itemEmAndamento.a, label: s.l, key: s.k, hrs: s.h });
+                                    itemEmAndamento.done[s.k] = true; somaH += s.h; addedAny = true;
+                                    if(s.k === 'Ex') itemEmAndamento.f = true;
+                                }
+                                break; 
+                            }
+                        }
                     }
                 }
-                if(added) break;
-            } if(!added) break;
+                if(addedAny) break; // Cicla as matérias
+            }
+            if(!addedAny) break;
         } return pool;
     }
 
-    function updateProgress() {
-        let total = db.lista.length * 3; let done = 0;
-        db.lista.forEach(a => { if(a.done.E) done++; if(a.done.Rev) done++; if(a.done.Ex) done++; });
-        let p = total > 0 ? (done/total)*100 : 0;
-        document.getElementById('progress-perc').innerText = Math.round(p) + "%";
-        document.getElementById('progress-fill').style.width = p + "%";
-        if(db.examDate) {
-            let dias = Math.ceil((new Date(db.examDate) - new Date()) / (1000*60*60*24));
-            document.getElementById('days-to-exam').innerText = "Prova: " + new Date(db.examDate).toLocaleDateString();
-            document.getElementById('time-left-stat').innerText = dias + " dias restantes";
-        }
-    }
-
-    function renderDiario() {
-        const hj = new Date().toLocaleDateString(); const hM = parseFloat(db.h[new Date().getDay()]);
-        if(!db.metaFixa[hj]) { db.metaFixa[hj] = generateNeuralPool(hM); save(); }
+    function renderDiario(data = new Date()) {
+        const hj = data.toLocaleDateString(); const hM = parseFloat(db.h[data.getDay()]);
+        if(!db.metaFixa[hj]) { db.metaFixa[hj] = generateNeuralPool(hM, data); save(); }
         const tasks = db.metaFixa[hj];
         document.getElementById('meta-status').innerText = `${tasks.reduce((a,b)=>a+b.hrs,0).toFixed(1)}h / ${hM}h meta`;
         document.getElementById('lista-diaria').innerHTML = tasks.map((t, i) => `
             <div class="task-card" style="border-left-color:var(--color-${(t.key==='Rev'?'rev':t.key==='Ex'?'ex':'e').toLowerCase()})">
-                <div><span class="tag tag-${t.key.toLowerCase()}">${t.label}</span><div style="font-weight:800;">${t.m}: ${t.a}</div></div>
+                <div><span class="tag tag-${t.key.toLowerCase()}">${t.label} (${t.hrs}h)</span><div style="font-weight:800; font-size:1.1rem;">${t.m}: ${t.a}</div></div>
                 <input type="checkbox" ${t.completed?'checked':''} onclick="concluir(${i}, '${hj}')">
             </div>`).join('');
     }
@@ -273,70 +263,106 @@
         let it = db.lista.find(x => x.m === t.m && x.a === t.a);
         it.done[t.key] = t.completed;
         if(t.key === 'Ex' && t.completed) {
-            it.f = true; let q = prompt("Questões:"); let a = prompt("Acertos:");
-            it.qntQ = (it.qntQ||0) + parseInt(q||0); it.qntA = (it.qntA||0) + parseInt(a||0);
+            it.f = true; let q = prompt("Questões feitas:"); let ac = prompt("Acertos:");
+            it.qntQ = (it.qntQ||0) + parseInt(q||0); it.qntA = (it.qntA||0) + parseInt(ac||0);
         }
-        it.hrsIn = (it.hrsIn||0) + t.hrs; save(); init();
-    }
-
-    function saveEdital() {
-        const m = document.getElementById('add-mat').value; const hE = document.getElementById('h-e').value;
-        const raw = document.getElementById('add-ass').value;
-        if(document.getElementById('exam-date-input').value) db.examDate = document.getElementById('exam-date-input').value;
-        let assList = raw.includes('\n') ? raw.split('\n') : raw.split(/(?=Aula|Módulo|Capítulo|\d+\.)/);
-        assList = assList.map(l => l.trim()).filter(l => l.length > 2);
-        assList.forEach(a => { if(!db.lista.some(x => x.m === m && x.a === a)) db.lista.push({ m, a, f:false, done:{E:false,Rev:false,Ex:false}, h:{E:hE}, hrsIn:0, qntQ:0, qntA:0 }); });
-        document.getElementById('add-mat').value=""; document.getElementById('add-ass').value=""; save(); init(); alert("Salvo!");
+        it.hrsIn = (it.hrsIn || 0) + t.hrs; save(); init();
     }
 
     function renderSemanal() {
-        const dias = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
+        const dias = ["DOMINGO", "SEGUNDA-FEIRA", "TERÇA-FEIRA", "QUARTA-FEIRA", "QUINTA-FEIRA", "SEXTA-FEIRA", "SÁBADO"];
+        let simL = JSON.parse(JSON.stringify(db.lista)); 
         document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(off => {
             let d = new Date(); d.setDate(d.getDate() + off);
-            let pool = generateNeuralPool(parseFloat(db.h[d.getDay()]), d);
-            return `<div class="day-column"><div class="day-head"><div class="day-t">${dias[d.getDay()]}</div><div class="day-d">${d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</div></div>
-            ${pool.map(p => `<div class="sim-task tag-${p.key.toLowerCase()}">${p.m}<br><b>${p.a}</b><br>${p.label}</div>`).join('')}</div>`;
+            let hLimit = parseFloat(db.h[d.getDay()]);
+            let pool = []; let somaH = 0;
+            // Simulação simplificada para exibição
+            for(let i=0; i<8; i++){
+                for(let m of db.ciclo){
+                    let item = simL.find(x => x.m === m && !x.f);
+                    if(!item) continue;
+                    const r = [{k:'E',l:'Estudo',h:parseFloat(item.h.E)},{k:'Rev',l:'Revisão',h:1},{k:'Ex',l:'Exercícios',h:1}];
+                    for(let s of r){
+                        if(!item.done[s.k] && somaH + s.h <= hLimit){
+                            pool.push({m:item.m, a:item.a, l:s.l, k:s.k, h:s.h});
+                            item.done[s.k] = true; somaH += s.h; if(s.k==='Ex')item.f=true; break;
+                        }
+                    }
+                }
+            }
+            return `<div class="day-column"><div class="day-head"><div class="day-t">${dias[d.getDay()]}</div></div>
+            ${pool.map(p => `<div class="sim-task tag-${p.k.toLowerCase()}"><b>${p.m}</b><br>${p.a}<br>${p.l} (${p.h}h)</div>`).join('')}</div>`;
         }).join('');
     }
-
-    function renderPredictor() {
-        let hR = 0; db.lista.filter(x => !x.f).forEach(a => { if(!a.done.E) hR += parseFloat(a.h.E); if(!a.done.Rev) hR += 1; if(!a.done.Ex) hR += 1; });
-        document.getElementById('total-remaining-hrs').innerText = hR.toFixed(1) + "h";
-        let qT = 0, aT = 0; db.lista.forEach(a => { qT += (a.qntQ || 0); aT += (a.qntA || 0); });
-        document.getElementById('global-accuracy').innerText = qT > 0 ? Math.round((aT/qT)*100) + "%" : "0%";
-    }
-
-    function toggleBatch(id) {
-        if(batchSelection.has(id)) batchSelection.delete(id); else batchSelection.add(id);
-        document.getElementById('batch-bar').style.display = batchSelection.size > 0 ? 'flex' : 'none';
-        document.getElementById('batch-count').innerText = batchSelection.size + " selecionados";
-    }
-
-    function applyBatch(tipo) {
-        db.lista.forEach(item => { if(batchSelection.has(item.m + item.a)) { item.done.E = true; if(tipo==='R'||tipo==='X') item.done.Rev=true; if(tipo==='X'){item.done.Ex=true; item.f=true;}}});
-        clearBatch(); save(); init();
-    }
-
-    function clearBatch() { batchSelection.clear(); document.getElementById('batch-bar').style.display='none'; renderTree(); }
 
     function renderTree() {
         const mats = [...new Set(db.lista.map(x => x.m))];
         document.getElementById('tree-container').innerHTML = mats.map(m => {
             const ass = db.lista.filter(x => x.m === m);
-            return `<div class="folder"><div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b><i class="fas fa-chevron-down"></i></div>
-            <div class="folder-content">${ass.map(a => `<div class="subject-row"><input type="checkbox" onchange="toggleBatch('${a.m + a.a}')"> <span>${a.a}</span></div>`).join('')}</div></div>`;
+            return `<div class="folder">
+                <div class="folder-header">
+                    <b>${m}</b>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn btn-sm" style="padding:5px 10px; font-size:0.7rem;" onclick="event.stopPropagation(); batchMat('${m}')">Marcar Estudado</button>
+                        <i class="fas fa-chevron-down" onclick="this.parentElement.parentElement.nextElementSibling.classList.toggle('open')"></i>
+                    </div>
+                </div>
+                <div class="folder-content">${ass.map(a => `<div class="subject-row"><span>${a.a}</span><input type="checkbox" ${a.done.E?'checked':''} onclick="toggleSin('${a.m}','${a.a}')"></div>`).join('')}</div>
+            </div>`;
         }).join('');
     }
 
-    function renderH() { const d = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"]; document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `<div style="display:inline-block; margin-right:10px;"><small>${x}</small><br><input type="number" id="h-in-${i}" value="${db.h[i]}" style="width:60px;"></div>`).join(''); }
-    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); regenerateDaily(); }
-    function renderCiclo() { const m = [...new Set(db.lista.map(x => x.m))]; document.getElementById('checks-ciclo').innerHTML = m.map(x => `<label style="display:flex; gap:10px;"><input type="checkbox" class="ckc" value="${x}" ${db.ciclo.includes(x)?'checked':''}> ${x}</label>`).join(''); }
-    function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); save(); regenerateDaily(); }
-    function renderPerformance() { 
-        const tbody = document.querySelector('#table-mats tbody'); tbody.innerHTML = "";
-        db.lista.forEach(a => { let p = a.qntQ > 0 ? Math.round((a.qntA/a.qntQ)*100) : 0; tbody.innerHTML += `<tr><td>${a.m} - ${a.a}</td><td>${a.hrsIn.toFixed(1)}h</td><td>${a.qntQ}</td><td>${p}%</td></tr>`; });
+    function batchMat(m) {
+        db.lista.filter(x => x.m === m).forEach(a => a.done.E = true);
+        save(); init(); alert("Matéria sinalizada!");
     }
+
+    function toggleSin(m, a) { let it = db.lista.find(x => x.m === m && x.a === a); it.done.E = !it.done.E; save(); init(); }
+
+    function saveEdital() {
+        const m = document.getElementById('add-mat').value;
+        const raw = document.getElementById('add-ass').value.split('\n').filter(l => l.trim().length > 2);
+        if(document.getElementById('exam-date-input').value) db.examDate = document.getElementById('exam-date-input').value;
+        raw.forEach(a => { if(!db.lista.some(x => x.m === m && x.a === a)) db.lista.push({ m, a, f:false, done:{E:false,Rev:false,Ex:false}, h:{E:document.getElementById('h-e').value}, hrsIn:0, qntQ:0, qntA:0 }); });
+        document.getElementById('add-mat').value=""; document.getElementById('add-ass').value=""; save(); init();
+    }
+
+    function renderH() {
+        const d = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
+        document.getElementById('grid-horas-manual').innerHTML = d.map((x,i) => `<div style="display:inline-block; margin:10px;"><small>${x}</small><br><input type="number" id="h-in-${i}" value="${db.h[i]}" style="width:60px; text-align:center;"></div>`).join('');
+    }
+    function saveH() { [0,1,2,3,4,5,6].forEach(i => db.h[i] = document.getElementById(`h-in-${i}`).value); save(); regenerateDaily(); }
+
+    function updateProgress() {
+        let total = db.lista.length * 3; let done = 0;
+        db.lista.forEach(a => { if(a.done.E) done++; if(a.done.Rev) done++; if(a.done.Ex) done++; });
+        let p = total > 0 ? (done/total)*100 : 0;
+        document.getElementById('progress-perc').innerText = Math.round(p) + "%";
+        document.getElementById('progress-fill').style.width = p + "%";
+        if(db.examDate){
+            let dias = Math.ceil((new Date(db.examDate) - new Date()) / (1000*60*60*24));
+            document.getElementById('exam-stat').innerText = "Prova: " + new Date(db.examDate).toLocaleDateString();
+            document.getElementById('countdown-stat').innerText = dias + " dias restantes";
+        }
+    }
+
+    function renderPredictor() {
+        let hR = 0; db.lista.filter(x => !x.f).forEach(a => { if(!a.done.E) hR += parseFloat(a.h.E); if(!a.done.Rev) hR += 1; if(!a.done.Ex) hR += 1; });
+        document.getElementById('total-remaining-hrs').innerText = hR.toFixed(1) + "h";
+    }
+
+    function executeReplan() {
+        const dt = document.getElementById('replan-date').value;
+        if(!dt) return;
+        db.metaFixa = {}; save(); init(); alert("Cronograma replanejado para iniciar em " + dt);
+    }
+
     function regenerateDaily() { db.metaFixa = {}; save(); init(); }
+    function previewNextDay() { let am = new Date(); am.setDate(am.getDate()+1); renderDiario(am); }
+    function openExtraModal() {
+        let m = prompt("Matéria:"); let a = prompt("Assunto:");
+        if(m && a) { db.lista.push({ m, a, f:true, done:{E:true,Rev:true,Ex:true}, h:{E:1}, hrsIn:1, qntQ:0, qntA:0 }); save(); init(); }
+    }
 </script>
 </body>
 </html>
