@@ -1,68 +1,118 @@
-<div id="semanal" class="page">
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>OMNI NEXUS v1.5 FIX</title>
 
-    <!-- 🔥 LEGENDA (BULA) -->
-    <div style="display:flex; gap:15px; margin-bottom:15px; flex-wrap:wrap; background:white; padding:12px; border-radius:12px; border:1px solid var(--border);">
-        <div><span style="background:var(--color-e); width:10px; height:10px; display:inline-block; border-radius:50%;"></span> Estudo</div>
-        <div><span style="background:var(--color-rev); width:10px; height:10px; display:inline-block; border-radius:50%;"></span> Revisão</div>
-        <div><span style="background:var(--color-ex); width:10px; height:10px; display:inline-block; border-radius:50%;"></span> Exercícios</div>
-    </div>
+<style>
+body { font-family: Arial; margin:0; background:#f1f5f9; }
+.container { padding:20px; }
+.grid-7 { display:grid; grid-template-columns:repeat(7,1fr); gap:10px; }
+.day-column { background:white; border-radius:10px; padding:10px; min-height:200px; }
+.day-head { font-weight:bold; text-align:center; margin-bottom:10px; }
+.sim-task { padding:5px; margin:5px 0; border-radius:6px; color:white; font-size:12px; }
+button { margin:5px; padding:8px; }
+</style>
+</head>
 
-    <!-- 🔥 NAVEGAÇÃO -->
-    <div style="display:flex; gap:10px; margin-bottom:15px;">
-        <button class="btn btn-outline" onclick="App.weekOffset--; App.renderSemanal()">Semana Anterior</button>
-        <button class="btn btn-outline" onclick="App.weekOffset++; App.renderSemanal()">Próxima Semana</button>
-    </div>
+<body>
 
-    <!-- 🔥 GRID -->
-    <div style="overflow-x:auto;">
-        <div id="grid-semanal" class="grid-7"></div>
-    </div>
+<div class="container">
+
+<h2>📅 Cronograma</h2>
+
+<button onclick="App.weekOffset--; App.renderSemanal()">⬅ Semana</button>
+<button onclick="App.weekOffset++; App.renderSemanal()">Semana ➡</button>
+
+<div id="grid-semanal" class="grid-7"></div>
 
 </div>
-renderSemanal() {
-    const grid = document.getElementById('grid-semanal');
-    if (!grid) return;
 
+<script>
+
+const App = {
+
+state: {
+    db: JSON.parse(localStorage.getItem('db_test')) || {
+        lista: [
+            {m:"Matemática", a:"Funções", done:{E:false,Rev:false,Ex:false}, h:{E:1,Rev:0.5,Ex:1}, f:false}
+        ],
+        ciclo:["Matemática"],
+        h:{1:4,2:4,3:4,4:4,5:4,6:4,0:4},
+        metaFixa:{}
+    },
+    today: new Date().toISOString().split('T')[0],
+    weekOffset: 0
+},
+
+save() {
+    localStorage.setItem('db_test', JSON.stringify(this.state.db));
+},
+
+getOrCreateDailyPlan(iso) {
+
+    if (this.state.db.metaFixa[iso]) return this.state.db.metaFixa[iso];
+
+    let plan = [];
+
+    this.state.db.ciclo.forEach(m => {
+        let item = this.state.db.lista.find(x => x.m === m);
+
+        if(item){
+            plan.push({m:item.m, a:item.a, k:"E"});
+        }
+    });
+
+    this.state.db.metaFixa[iso] = plan;
+    this.save();
+
+    return plan;
+},
+
+renderSemanal() {
+
+    const grid = document.getElementById('grid-semanal');
     grid.innerHTML = "";
 
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(this.state.today + "T12:00:00");
+    for(let i=0;i<7;i++){
 
-        // 🔥 agora respeita navegação de semana
+        const d = new Date(this.state.today + "T12:00:00");
         d.setDate(d.getDate() + (this.state.weekOffset * 7) + i);
 
         const iso = d.toISOString().split('T')[0];
 
         let tasks;
 
-        // ✅ PASSADO = histórico real
-        if (iso < this.state.today) {
+        if(iso < this.state.today){
             tasks = this.state.db.metaFixa[iso] || [];
         } else {
-            // ✅ HOJE + FUTURO = dinâmico
             tasks = this.getOrCreateDailyPlan(iso);
         }
 
-        const tasksHTML = tasks.map(x => {
-            const col = x.k === 'Ex' ? 'ex' : (x.k === 'Rev' ? 'rev' : 'e');
-            return `
-                <div class="sim-task" style="background:var(--color-${col})">
-                    <div style="font-weight:900; font-size:0.6rem;">${x.l}</div>
-                    <b>${x.m}</b><br>
-                    <span style="font-size:0.55rem;">${x.a}</span>
-                </div>
-            `;
+        const htmlTasks = tasks.map(t=>{
+            return `<div class="sim-task" style="background:#0ea5e9">
+                        ${t.m}<br>${t.a}
+                    </div>`;
         }).join('');
 
         grid.innerHTML += `
             <div class="day-column">
-                <div class="day-head" style="border-bottom:2px solid ${iso === this.state.today ? 'var(--accent)' : 'var(--border)'}">
-                    ${iso === this.state.today ? 'HOJE' : iso.split('-')[2] + '/' + iso.split('-')[1]}
+                <div class="day-head">
+                    ${iso === this.state.today ? "HOJE" : iso}
                 </div>
-                <div style="padding:5px; flex:1;">
-                    ${tasksHTML || '<div style="opacity:0.3; text-align:center; padding-top:20px;">LIVRE</div>'}
-                </div>
+                ${htmlTasks || "Livre"}
             </div>
         `;
     }
 }
+
+};
+
+document.addEventListener("DOMContentLoaded", ()=>{
+    App.renderSemanal();
+});
+
+</script>
+
+</body>
+</html>
