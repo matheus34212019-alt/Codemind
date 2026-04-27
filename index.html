@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI NEXUS v.127 - PRF DEFINITIVE</title>
+    <title>OMNI NEXUS v.129 - PRF DEFINITIVE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -96,7 +96,7 @@
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box"><i class="fas fa-shield-halved"></i> OMNI v.127</div>
+        <div class="logo-box"><i class="fas fa-shield-halved"></i> OMNI v.129</div>
         <div class="streak-sidebar">🔥 <span id="streak-val">0</span> Dias Seguidos</div>
         
         <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-calendar-day"></i><span>Painel Hoje</span></div>
@@ -125,15 +125,15 @@
                 
                 <div id="adiantar-box">
                     <h3 style="color:#065f46; font-weight:800;">🚀 Missão Cumprida!</h3>
-                    <p style="color:#065f46; margin: 10px 0;">Você finalizou tudo por hoje. Deseja adiantar as atividades de amanhã?</p>
-                    <button class="btn btn-success" onclick="adiantarAmanha()">SIM, ADIANTAR METAS</button>
+                    <p style="color:#065f46; margin: 10px 0;">Você finalizou tudo por hoje. Deseja ir para o próximo dia?</p>
+                    <button class="btn btn-success" onclick="navDay(1)">IR PARA O PRÓXIMO DIA</button>
                 </div>
 
                 <div class="header-panel" id="header-diario">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                         <div>
                             <div style="font-weight:800; font-size:1.3rem; margin-bottom:5px; color:var(--primary);"><i class="fas fa-calendar-alt"></i> Metas Diárias</div>
-                            <div style="color:var(--text-sec); font-size:0.85rem;">Oi, João. Continue firme até <strong>01/02/2027</strong></div>
+                            <div style="color:var(--text-sec); font-size:0.85rem;">Oi, Matheus. Continue firme até <strong>01/02/2027</strong></div>
                         </div>
                         <div style="display:flex; gap:10px;">
                             <button class="btn btn-outline" style="padding:6px 12px; font-size:0.8rem;" onclick="navDay(0)"><i class="fas fa-undo"></i> Hoje</button>
@@ -275,7 +275,7 @@
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('prf_v127')) || { 
+        let db = JSON.parse(localStorage.getItem('prf_v129')) || { 
             lista: [], 
             ciclo: [], 
             h: {1:4, 2:4, 3:4, 4:4, 5:4, 6:4, 0:4}, 
@@ -291,7 +291,7 @@
         let timers = {};
 
         function save() {
-            localStorage.setItem('prf_v127', JSON.stringify(db));
+            localStorage.setItem('prf_v129', JSON.stringify(db));
         }
         
         function checkAccess() { 
@@ -338,7 +338,7 @@
             renderSemanal();
         }
 
-        // --- MOTOR IA (ROUND-ROBIN + LOOP + TRAVA 24H) ---
+        // --- MOTOR IA ---
         function getNeuralPool(limit, simList, cState, dayContext) {
             let pool = []; 
             let somaH = 0;
@@ -364,7 +364,6 @@
                         
                         for(let s of rito) {
                             if(!pending.done[s.k]) {
-                                // Trava: Exercício não entra no mesmo dia que a Revisão
                                 if(s.k === 'Ex' && pending.lockedDay === dayContext) continue;
 
                                 if(s.k === 'E') {
@@ -390,7 +389,6 @@
                             }
                         }
                     } else {
-                        // Loop Manutenção
                         let conc = simList.filter(x => x.m === m && x.f);
                         if(conc.length > 0) {
                             let mItem = conc.find(x => !x.mEx);
@@ -429,13 +427,11 @@
             const curStr = date.toLocaleDateString('pt-BR');
             const hM = db.h[date.getDay()];
             
-            // Verifica Bloqueio de Simulado
             const isSimuladoDay = db.sims.some(s => {
                 let sDate = new Date(s.d + 'T00:00:00').toLocaleDateString('pt-BR');
                 return sDate === curStr;
             });
 
-            // Reseta exibições
             document.getElementById('simulado-banner').style.display = 'none';
             document.getElementById('lista-diaria').style.display = 'block';
             document.getElementById('header-diario').style.display = 'block';
@@ -447,10 +443,9 @@
                 document.getElementById('header-diario').style.display = 'none';
                 document.getElementById('atraso-banner').innerHTML = '';
                 document.getElementById('adiantar-box').style.display = 'none';
-                return; // Interrompe a renderização de tarefas
+                return; 
             }
 
-            // Atrasos
             let atrasos = [];
             let hjData = new Date(hjStr.split('/').reverse().join('-'));
             Object.keys(db.metaFixa).forEach(d => {
@@ -460,7 +455,6 @@
                 }
             });
 
-            // Banner
             let uniqAtrasos = [...new Set(atrasos.map(a => a.dO))].length;
             document.getElementById('atraso-banner').innerHTML = uniqAtrasos > 0 ? `
                 <div class="atraso-banner">
@@ -468,7 +462,6 @@
                     <button class="btn-replan" onclick="showTab('replanejar')">Resolver</button>
                 </div>` : '';
 
-            // Gerar dia
             if(!db.metaFixa[curStr] || curStr !== hjStr) {
                 let simL = JSON.parse(JSON.stringify(db.lista));
                 db.metaFixa[curStr] = getNeuralPool(hM, simL, { index: 0 }, curStr);
@@ -481,12 +474,11 @@
             document.getElementById('d-meta').innerText = tasks.reduce((a,b)=>a+b.h,0).toFixed(1) + "h";
             document.getElementById('d-estudo').innerText = tasks.filter(t=>t.k==='E').reduce((a,b)=>a+b.h,0).toFixed(1) + "h";
 
-            // Overdrive Check
+            // Card Avançar Dia
             let curMeta = db.metaFixa[curStr] || [];
             const isDone = curMeta.length > 0 && curMeta.every(t => t.c);
-            document.getElementById('adiantar-box').style.display = (isDone && curStr === hjStr && atrasos.length === 0) ? 'block' : 'none';
+            document.getElementById('adiantar-box').style.display = (isDone && atrasos.length === 0) ? 'block' : 'none';
 
-            // Cards
             document.getElementById('lista-diaria').innerHTML = tasks.map((t, i) => {
                 let hit = getHit(t.m, t.a);
                 let col = t.k === 'Ex'||t.k === 'mEx' ? 'ex' : (t.k === 'Rev'||t.k === 'mRev' ? 'rev' : 'e');
@@ -516,9 +508,49 @@
             updateProg();
         }
 
+        // --- SISTEMA DE FEEDBACK EM EXERCÍCIOS E REGISTRO DE HORAS ---
         function concluirTask(dK, idx) {
             let t = db.metaFixa[dK][idx]; 
+            let k = t.m + '-' + t.a; 
+
+            // Feedback Inteligente de Acertos
+            if (!t.c && (t.k === 'Ex' || t.k === 'mEx')) {
+                let qtdStr = prompt("Quantas questões você resolveu do assunto " + t.a + "?");
+                if (qtdStr !== null && qtdStr !== "") {
+                    let hitStr = prompt("E quantas você acertou?");
+                    if (hitStr !== null && hitStr !== "") {
+                        let q = parseInt(qtdStr);
+                        let a = parseInt(hitStr);
+                        
+                        if (!isNaN(q) && !isNaN(a) && q > 0) {
+                            let perc = Math.round((a / q) * 100);
+                            let msg = "";
+                            
+                            if (perc < 50) msg = "Péssimo. Retorne à teoria e analise seus erros urgentes.";
+                            else if (perc >= 50 && perc < 60) msg = "Mediano. Requer mais atenção aos detalhes da banca.";
+                            else if (perc >= 60 && perc < 75) msg = "Bom, mas pode melhorar. Continue treinando as lacunas.";
+                            else if (perc >= 75 && perc < 90) msg = "Legal! Você está no caminho da aprovação.";
+                            else msg = "Ótimo! Desempenho de Elite!";
+
+                            alert("Sua taxa foi de " + perc + "% de acerto.\n\n" + msg);
+
+                            if(!db.perf[k]) db.perf[k] = {q:0, a:0, h:0};
+                            db.perf[k].q += q;
+                            db.perf[k].a += a;
+                        }
+                    }
+                }
+            }
+
             t.c = !t.c;
+            
+            // INTEGRAÇÃO: Lança as horas estudadas (de qualquer tarefa) no painel Performance
+            if(!db.perf[k]) db.perf[k] = {q:0, a:0, h:0};
+            if(t.c) {
+                db.perf[k].h += parseFloat(t.h);
+            } else {
+                db.perf[k].h = Math.max(0, db.perf[k].h - parseFloat(t.h));
+            }
             
             let it = db.lista.find(x => x.m === t.m && x.a === t.a);
             if(it) {
@@ -544,29 +576,6 @@
             init();
         }
 
-        function adiantarAmanha() {
-            let am = new Date(); 
-            am.setDate(am.getDate() + 1);
-            let aStr = am.toLocaleDateString('pt-BR');
-            let hj = new Date().toLocaleDateString('pt-BR');
-            
-            let simL = JSON.parse(JSON.stringify(db.lista));
-            let pAm = getNeuralPool(db.h[am.getDay()], simL, { index: 0 }, aStr);
-            
-            if(!pAm.length) {
-                alert("Não há matérias para adiantar amanhã.");
-                return;
-            }
-            
-            pAm.forEach(t => { 
-                t.dO = aStr.substring(0,5); 
-                db.metaFixa[hj].push(t); 
-            });
-            
-            save(); 
-            init();
-        }
-
         function execReplan() {
             if(confirm("Você irá perdoar todos os atrasos e recomeçar a fila a partir de hoje. Continuar?")) {
                 db.metaFixa = {}; 
@@ -586,7 +595,6 @@
                 d.setDate(d.getDate() + (weekOffset * 7) + off);
                 let dStr = d.toLocaleDateString('pt-BR');
                 
-                // Checa simulado
                 let isSim = db.sims.some(s => new Date(s.d + 'T00:00:00').toLocaleDateString('pt-BR') === dStr);
                 
                 let htmlTasks = "";
@@ -724,7 +732,7 @@
             document.getElementById('perf-stats').innerHTML = `
                 <div class="stat-card"><small>Questões Totais</small><div class="stat-val">${tQ}</div></div>
                 <div class="stat-card"><small>Média Acertos</small><div class="stat-val">${tQ ? Math.round((tA/tQ)*100) : 0}%</div></div>
-                <div class="stat-card"><small>Horas Extras</small><div class="stat-val">${tH.toFixed(1)}h</div></div>`; 
+                <div class="stat-card"><small>Horas de Estudo (Total)</small><div class="stat-val">${tH.toFixed(1)}h</div></div>`; 
                 
             let labels = [...new Set(db.lista.map(x=>x.m))]; 
             let data = labels.map(l => { 
@@ -752,10 +760,10 @@
             let n = document.getElementById('sim-n').value; 
             if(!d) return alert("Selecione uma data válida."); 
             db.sims.push({d,n}); 
-            db.metaFixa = {}; // Força recalculation
+            db.metaFixa = {}; 
             save(); 
             renderSims(); 
-            init(); // Atualiza painel caso hoje seja o dia marcado
+            init(); 
         }
 
         // --- UTILIDADES ---
