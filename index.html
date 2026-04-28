@@ -92,7 +92,7 @@
         </div>
     </aside>
 
-    <main class="main">
+    <main class="flex-1 p-4 overflow-y-auto">
         <div class="container">
             <div class="stats-grid">
                 <div class="stat-card">
@@ -112,79 +112,42 @@
                 </div>
             </div>
 
-            <div id="diaria" class="page active">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-                    <div id="nav-l" style="width: 150px;"></div>
-                    <div>
-                        <h1 id="view-title" style="font-weight:800; letter-spacing:-1px; text-align:center;">Missão Diária 🚓</h1>
-                        <p id="meta-status" style="text-align:center; color:var(--text-sec); font-weight:600; font-size:0.9rem; margin-top:5px;"></p>
-                    </div>
-                    <div id="nav-r" style="width: 150px; text-align:right;">
-                        <button class="btn btn-outline btn-sm" onclick="navDay(1)">VER AMANHÃ <i class="fas fa-arrow-right"></i></button>
+            <div id="hoje" class="page active">
+                <div style="margin-bottom: 20px;">
+                    <h2 id="view-title">Missão de Hoje 🚓</h2>
+                    <p style="font-size: 0.9rem; color: var(--text-sec); font-style: italic;">
+                        "O treinamento é duro, mas a glória é eterna. Para cima, futuro Policial!"
+                    </p>
+                </div>
+
+                <div id="painel-progresso-ciclo"></div>
+
+                <div class="nav-days" style="display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center;">
+                    <div id="nav-l"></div>
+                    <div id="nav-r">
+                        <button class="btn btn-sm btn-outline" onclick="navDay(1)">
+                            VER AMANHÃ <i class="fas fa-arrow-right"></i>
+                        </button>
                     </div>
                 </div>
+
                 <div id="lista-diaria"></div>
-            </div>
 
-            <div id="semanal" class="page">
-                <h1 style="margin-bottom:25px; font-weight:800; letter-spacing:-1px;">Projeção Neural 7 Dias</h1>
-                <div style="overflow-x:auto;"><div id="grid-semanal" class="grid-7"></div></div>
-            </div>
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-outline" style="width: 100%; padding: 15px; border: 2px dashed var(--accent); color: var(--accent); font-weight: bold;" onclick="abrirModalExtra()">
+                        <i class="fas fa-plus"></i> ESTUDOU ALGO FORA DO PLANEJADO?
+                    </button>
+                </div>
 
-            <div id="edital" class="page">
-                <div class="stat-card">
-                    <h3 style="margin-bottom:15px;">Adicionar Matéria ao Banco</h3>
-                    <input type="text" id="add-mat" placeholder="Ex: Legislação de Trânsito">
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:15px; margin-top:15px;">
-                        <div><small style="font-weight:700; color:var(--text-sec);">T. Estudo (h)</small><input type="number" id="h-e" value="1.5" step="0.5"></div>
-                        <div><small style="font-weight:700; color:var(--text-sec);">T. Revisão (h)</small><input type="number" id="h-r" value="1.0" step="0.5"></div>
-                        <div><small style="font-weight:700; color:var(--text-sec);">T. Exercício (h)</small><input type="number" id="h-x" value="1.0" step="0.5"></div>
-                    </div>
-                    <textarea id="add-ass" placeholder="Cole os assuntos aqui (um por linha)..." style="height:150px; margin-top:15px;"></textarea>
-                    <button class="btn" style="width:100%; margin-top:20px;" onclick="impEdital()">IMPORTAR ASSUNTOS</button>
+                <div class="stat-card" style="margin-top: 25px; font-size: 0.8rem;">
+                    <b>CÓDIGO DE CORES:</b> <br>
+                    <span style="color: var(--color-e)">● Teoria</span> | 
+                    <span style="color: var(--color-rev)">● Revisão</span> | 
+                    <span style="color: var(--color-ex)">● Exercícios</span> |
+                    <span style="color: #a855f7">● Atividade Extra</span>
                 </div>
             </div>
-
-            <div id="ciclo" class="page">
-                <div class="stat-card">
-                    <h3 style="margin-bottom:15px;">Matérias em Giro</h3>
-                    <div id="check-c" style="columns:2;"></div>
-                    <button class="btn" style="width:100%; margin-top:25px;" onclick="saveC()">SALVAR CICLO</button>
-                </div>
-            </div>
-
-            <div id="config-h" class="page">
-                <div class="stat-card">
-                    <h3 style="margin-bottom:15px; text-align:center;">Disponibilidade Semanal</h3>
-                    <div id="grid-h-in" style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap; margin-bottom:20px;"></div>
-                    <button class="btn" style="width:100%;" onclick="saveH()">SALVAR HORAS</button>
-                </div>
-            </div>
-
-            <div id="sinalizar" class="page">
-                <h2 style="margin-bottom:20px; font-weight:800;">Sinalizar Progresso Base</h2>
-                <div id="tree"></div>
-            </div>
-
-            <div id="fluxo" class="page">
-                <h2 style="margin-bottom:20px; font-weight:800;">Ajuste Fino (Horas Teoria)</h2>
-                <div id="fluxo-content"></div>
-            </div>
-
-            <div id="performance" class="page">
-                <div class="stats-grid"><div class="stat-card"><canvas id="c1"></canvas></div><div class="stat-card"><canvas id="c2"></canvas></div></div>
-            </div>
-
-            <div id="replanejar" class="page">
-                <div class="stat-card" style="border-color:#ef4444;">
-                    <h3 style="color:#ef4444; margin-bottom:10px;">Marco Zero</h3>
-                    <p style="font-size:0.85rem; color:var(--text-sec); margin-bottom:15px;">Recalcula toda a simulação a partir de uma nova data.</p>
-                    <input type="date" id="r-date">
-                    <button class="btn" style="width:100%; background:#ef4444; margin-top:15px;" onclick="db.metaFixa={}; save(); init(); alert('Sincronizado!')">EXECUTAR REPLANEJAMENTO</button>
-                </div>
-            </div>
-        </div>
-    </main>
+            
 
     <script>
         let db = JSON.parse(localStorage.getItem('prf_v120')) || { 
@@ -274,9 +237,23 @@ function renderDiario(date) {
     
     let concluidas = 0;
     db.lista.forEach(it => { if(it.done.E) concluidas++; if(it.done.Rev) concluidas++; if(it.done.Ex) concluidas++; });
-    let progCiclo = (db.lista.length * 3) > 0 ? (concluidas / (db.lista.length * 3) * 100) : 0;
 
-    // --- MONTAGEM DO HTML COM SCROLL ---
+/// 1. CALCULOS (Sempre antes do HTML)
+    let totalEtapas = db.lista.length * 3;
+    let concluidasCiclo = 0;
+    db.lista.forEach(it => { 
+        if(it.done.E) concluidasCiclo++; 
+        if(it.done.Rev) concluidasCiclo++; 
+        if(it.done.Ex) concluidasCiclo++; 
+    });
+    let progCiclo = totalEtapas > 0 ? (concluidasCiclo / totalEtapas * 100) : 0;
+
+    let hFaltam = 0;
+    db.lista.forEach(it => { hFaltam += (it.h.E - (it.hF||0)) + it.h.Rev + it.h.Ex; });
+    let mediaH = Object.values(db.h).reduce((a,b)=>a+b,0)/7;
+    let dataFim = new Date(); dataFim.setDate(dataFim.getDate() + Math.ceil(hFaltam/(mediaH||1)));
+
+    // 2. MONTAGEM DO HTML
     let html = `
         <div class="stat-card" style="margin-bottom:20px; border-bottom: 4px solid var(--accent);">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -286,21 +263,143 @@ function renderDiario(date) {
             <div style="width:100%; height:8px; background:#eee; border-radius:10px; margin:10px 0;">
                 <div style="width:${progCiclo}%; height:100%; background:var(--accent); border-radius:10px;"></div>
             </div>
-            <small style="font-size:0.65rem; font-weight:700;">Finalização estimada do edital: ${dataFinal.toLocaleDateString()}</small>
+            <small style="font-size:0.65rem;">Finalização estimada: <b>${dataFim.toLocaleDateString()}</b></small>
         </div>
-        <div id="scroll-list" style="max-height: 420px; overflow-y: auto; padding-right: 10px;">
+        <div id="scroll-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
     `;
 
     html += tasks.map((t, i) => {
         let colorKey = (t.k === 'Ex') ? 'ex' : ((t.k === 'Rev') ? 'rev' : 'e');
+        let corBorda = t.extra ? "#a855f7" : `var(--color-${colorKey})`;
         return `
-        <div class="task-card" style="border-left-color:var(--color-${colorKey}); margin-bottom:12px;">
+        <div class="task-card" style="border-left: 5px solid ${corBorda}; margin-bottom:12px;">
             <div style="flex:1;">
                 <div style="display:flex; justify-content:space-between;">
-                    <span class="tag tag-${colorKey}">${t.l} (${formatT(t.h)})</span>
+                    <span class="tag" style="background:${corBorda}; color:white;">${t.l}</span>
                     <small style="color:var(--text-sec); font-weight:700;">${curStr}</small>
                 </div>
-                <div style="font-weight:800; font-size:1rem;">${t.m}</div>
+                <div style="font-weight:800; font-size:1rem; margin-top:5px;">${t.m}</div>
+                <div style="font-size:0.75rem; color:var(--text-sec);">${t.a}</div>
+                <div style="margin-top:10px; display:flex; align-items:center; gap:10px;">
+                    <button class="btn btn-sm btn-outline" onclick="toggleTimer(${i})"><i class="fas fa-play"></i></button>
+                    <span id="time-${i}" style="font-family:monospace; font-weight:800;">00:00</span>
+                </div>
+            </div>
+            <input type="checkbox" ${t.c ? 'checked' : ''} onclick="concluirTask('${curStr}', ${i})">
+        </div>`;
+    }).join('');
+
+    document.getElementById('lista-diaria').innerHTML = html + "</div>";
+}
+    `;
+
+    html += tasks.map((t, i) => {
+        let colorKey = (t.k === 'Ex') ? 'ex' : ((t.k === 'Rev') ? 'rev' : 'e');
+        let corBorda = t.extra ? "#a855f7" : `var(--color-${colorKey})`;
+        return `
+        <div class="task-card" style="border-left: 5px solid ${corBorda}; margin-bottom:12px;">
+            <div style="flex:1;">
+                <div style="display:flex; justify-content:space-between;">
+                    <span class="tag" style="background:${corBorda}; color:white;">${t.l}</span>
+                    <small style="color:var(--text-sec); font-weight:700;">${curStr}</small>
+                </div>
+                <div style="font-weight:800; font-size:1rem; margin-top:5px;">${t.m}</div>
+                <div style="font-size:0.75rem; color:var(--text-sec);">${t.a}</div>
+                <div style="margin-top:10px; display:flex; align-items:center; gap:10px;">
+                    <button class="btn btn-sm btn-outline" onclick="toggleTimer(${i})"><i class="fas fa-play"></i></button>
+                    <span id="time-${i}" style="font-family:monospace; font-weight:800;">00:00</span>
+                </div>
+            </div>
+            <input type="checkbox" ${t.c ? 'checked' : ''} onclick="concluirTask('${curStr}', ${i})">
+        </div>`;
+    }).join('');
+
+    document.getElementById('lista-diaria').innerHTML = html + "</div>";
+};
+
+    // 2. MONTAGEM DO PAINEL
+    let html = `
+        <div class="stat-card" style="margin-bottom:20px; border-bottom: 4px solid var(--accent);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <small>Progresso Total do Ciclo</small>
+                <b style="color:var(--accent)">${Math.round(progCiclo)}%</b>
+            </div>
+            <div style="width:100%; height:8px; background:#eee; border-radius:10px; margin:10px 0;">
+                <div style="width:${progCiclo}%; height:100%; background:var(--accent); border-radius:10px;"></div>
+            </div>
+            <small style="font-size:0.65rem;">Finalização estimada: <b>${dataFim.toLocaleDateString()}</b></small>
+        </div>
+        <div id="scroll-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+    `;
+
+    // 3. MAP DOS CARDS
+    html += tasks.map((t, i) => {
+        let colorKey = (t.k === 'Ex') ? 'ex' : ((t.k === 'Rev') ? 'rev' : 'e');
+        let corBorda = t.extra ? "#a855f7" : `var(--color-${colorKey})`;
+        return `
+        <div class="task-card" style="border-left: 5px solid ${corBorda}; margin-bottom:12px;">
+            <div style="flex:1;">
+                <div style="display:flex; justify-content:space-between;">
+                    <span class="tag" style="background:${corBorda}; color:white;">${t.l}</span>
+                    <small style="color:var(--text-sec); font-weight:700;">${curStr}</small>
+                </div>
+                <div style="font-weight:800; font-size:1rem; margin-top:5px;">${t.m}</div>
+                <div style="font-size:0.75rem; color:var(--text-sec);">${t.a}</div>
+                <div style="margin-top:10px; display:flex; align-items:center; gap:10px;">
+                    <button class="btn btn-sm btn-outline" onclick="toggleTimer(${i})"><i class="fas fa-play"></i></button>
+                    <span id="time-${i}" style="font-family:monospace; font-weight:800;">00:00</span>
+                </div>
+            </div>
+            <input type="checkbox" ${t.c ? 'checked' : ''} onclick="concluirTask('${curStr}', ${i})">
+        </div>`;
+    }).join('');
+
+    document.getElementById('lista-diaria').innerHTML = html + "</div>";
+}
+    
+
+    html += tasks.map((t, i) => {
+        let colorKey = (t.k === 'Ex') ? 'ex' : ((t.k === 'Rev') ? 'rev' : 'e');
+        let corBorda = t.extra ? "#a855f7" : `var(--color-${colorKey})`;
+        return `
+        <div class="task-card" style="border-left: 5px solid ${corBorda}; margin-bottom:12px;">
+            <div style="flex:1;">
+                <div style="display:flex; justify-content:space-between;">
+                    <span class="tag" style="background:${corBorda}; color:white;">${t.l}</span>
+                    <small style="color:var(--text-sec); font-weight:700;">${curStr}</small>
+                </div>
+                <div style="font-weight:800; font-size:1rem; margin-top:5px;">${t.m}</div>
+                <div style="font-size:0.75rem; color:var(--text-sec);">${t.a}</div>
+                <div style="margin-top:10px; display:flex; align-items:center; gap:10px;">
+                    <button class="btn btn-sm btn-outline" onclick="toggleTimer(${i})"><i class="fas fa-play"></i></button>
+                    <span id="time-${i}" style="font-family:monospace; font-weight:800;">00:00</span>
+                </div>
+            </div>
+            <input type="checkbox" ${t.c ? 'checked' : ''} onclick="concluirTask('${curStr}', ${i})">
+        </div>`;
+    }).join('');
+
+    document.getElementById('lista-diaria').innerHTML = html + "</div>";
+    }
+                <small style="font-size: 0.7rem;">Previsão de conclusão: <b>${dataFim.toLocaleDateString()}</b></small>
+            </div>
+        `;
+    }
+
+    // --- RENDERIZAÇÃO DOS CARDS COM SCROLL ---
+    let html = `<div style="max-height: 400px; overflow-y: auto; padding-right: 8px;">`;
+    
+    html += tasks.map((t, i) => {
+        // Define a cor: Roxo para extra, ou as cores padrão
+        let corCard = t.extra ? "#a855f7" : `var(--color-${(t.k === 'Ex' ? 'ex' : (t.k === 'Rev' ? 'rev' : 'e'))})`;
+        return `
+        <div class="task-card" style="border-left: 5px solid ${corCard}; margin-bottom:12px;">
+            <div style="flex:1;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="tag" style="background:${corCard}; color:white;">${t.l} (${formatT(t.h)})</span>
+                    <small style="color:var(--text-sec); font-weight:700;">${curStr}</small>
+                </div>
+                <div style="font-weight:800; font-size:1rem; margin-top:5px;">${t.m}</div>
                 <div style="font-size:0.75rem; color:var(--text-sec);">${t.a}</div>
                 <div style="margin-top:10px; display:flex; align-items:center; gap:10px;">
                     <button class="btn btn-sm btn-outline" onclick="toggleTimer(${i})"><i class="fas fa-play"></i></button>
@@ -314,9 +413,10 @@ function renderDiario(date) {
     // Card de Parabéns
     if(tasks.length > 0 && tasks.every(x => x.c)) {
         html += `
-        <div class="stat-card" style="text-align:center; border:2px dashed var(--accent); background:#eff6ff;">
-            <h3 style="color:var(--accent);">🚀 Missão Cumprida!</h3>
-            <button class="btn btn-sm" style="margin-top:10px;" onclick="navDay(1)">ANTECIPAR AMANHÃ</button>
+        <div class="stat-card" style="text-align:center; border:2px dashed var(--accent); background:#eff6ff; margin-top:10px;">
+            <h3 style="color:var(--accent); margin:0;">🚀 Missão Cumprida!</h3>
+            <p style="font-size:0.8rem; margin:5px 0;">Todas as metas de hoje foram finalizadas.</p>
+            <button class="btn btn-sm" style="margin-top:5px;" onclick="navDay(1)">ANTECIPAR AMANHÃ</button>
         </div>`;
     }
 
@@ -569,6 +669,30 @@ function renderDiario(date) {
             let t = db.lista.length * 3; let d = 0;
             db.lista.forEach(a => { if(a.done.E) d++; if(a.done.Rev) d++; if(a.done.Ex) d++; });
             // Stats globais podem ser usados para gráficos futuros
+            function atualizarOfensiva() {
+    let ofensiva = 0;
+    let hoje = new Date();
+    hoje.setHours(0,0,0,0);
+    
+    // Percorre os dias para trás para ver quantos você completou
+    for (let i = 0; i < 365; i++) {
+        let dataAnalise = new Date();
+        dataAnalise.setDate(hoje.getDate() - i);
+        let dataStr = dataAnalise.toLocaleDateString();
+        
+        let metasDoDia = db.metaFixa[dataStr] || [];
+        if (metasDoDia.length > 0 && metasDoDia.every(t => t.c)) {
+            ofensiva++;
+        } else if (i > 0) {
+            // Se falhou um dia anterior, para de contar
+            break;
+        }
+    }
+    
+    // Exibe no Dashboard (se você quiser adicionar um card para isso)
+    const el = document.getElementById('ofensiva-dias');
+    if (el) el.innerText = ofensiva + " dias";
+            }
         }
     </script>
 </body>
