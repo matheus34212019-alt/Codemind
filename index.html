@@ -206,13 +206,119 @@
                 init(); 
             } 
         }
+function init() { 
+    renderDiario(vDate); 
+    updateDashboard(); 
+}
 
-        function init() { 
-            renderDiario(vDate); 
-            updateDashboard();
+function navDay(dir) {
+    let hoje = new Date();
+    hoje.setHours(0,0,0,0);
+    
+    if(dir === 0) {
+        vDate = new Date(); // Volta para o dia real
+    } else {
+        let novaData = new Date(vDate);
+        novaData.setDate(vDate.getDate() + dir);
+        let diff = Math.round((novaData - hoje) / (1000 * 60 * 60 * 24));
+        
+        // LIMITADOR: Só deixa ver até Amanhã (1 dia de diferença)
+        if(diff <= 1) {
+            vDate = novaData;
+        } else {
+            alert("Limite da Projeção: Você só pode adiantar até o dia de amanhã.");
+            return;
         }
+    }
+    renderDiario(vDate);
+    updateDashboard();
+}
 
-        function showTab(id, el) {
+function renderDiario(date) {
+    const hjStr = new Date().toLocaleDateString();
+    const curStr = date.toLocaleDateString();
+    const hMeta = parseFloat(db.h[date.getDay()]);
+    
+    // Título Dinâmico
+    document.getElementById('view-title').innerText = (hjStr === curStr) ? "Missão de Hoje 🚓" : "Missão de Amanhã 🗓️";
+    
+    // Botão Voltar (Só aparece se não estivermos no dia de hoje)
+    document.getElementById('nav-l').innerHTML = (hjStr === curStr) ? "" : `<button class="btn btn-outline btn-sm" onclick="navDay(0)"><i class="fas fa-undo"></i> VOLTAR PARA HOJE</button>`;
+    
+    // Esconder "Ver Amanhã" se já estivermos visualizando o amanhã
+    let amanha = new Date(); amanha.setDate(amanha.getDate() + 1);
+    document.getElementById('nav-r').style.visibility = (curStr === amanha.toLocaleDateString()) ? "hidden" : "visible";
+
+    if(!db.metaFixa[curStr]) {
+        let simL = JSON.parse(JSON.stringify(db.lista));
+        db.metaFixa[curStr] = getNeuralPool(hMeta, simL);
+    }
+
+    const tasks = db.metaFixa[curStr];
+    
+    // --- CÁLCULO DE PROGRESSO DO CICLO ---
+    let horasPendentesTotal = 0;
+    db.lista.forEach(it => {
+        if(!it.done.E) horasPendentesTotal += (it.h.E - (it.hF || 0));
+        if(!it.done.Rev) horasPendentesTotal += it.h.Rev;
+        if(!it.done.Ex) horasPendentesTotal += it.h.Ex;
+    });
+
+    let mediaH = Object.values(db.h).reduce((a,b)=>a+b,0) / 7;
+    let diasFaltam = Math.ceil(horasPendentesTotal / (mediaH || 1));
+    let dataFinal = new Date(); 
+    dataFinal.setDate(dataFinal.getDate() + diasFaltam);
+    
+    let concluidas = 0;
+    db.lista.forEach(it => { if(it.done.E) concluidas++; if(it.done.Rev) concluidas++; if(it.done.Ex) concluidas++; });
+    let progCiclo = (db.lista.length * 3) > 0 ? (concluidas / (db.lista.length * 3) * 100) : 0;
+
+    // --- MONTAGEM DO HTML COM SCROLL ---
+    let html = `
+        <div class="stat-card" style="margin-bottom:20px; border-bottom: 4px solid var(--accent);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <small>Progresso Total do Ciclo</small>
+                <b style="color:var(--accent)">${Math.round(progCiclo)}%</b>
+            </div>
+            <div style="width:100%; height:8px; background:#eee; border-radius:10px; margin:10px 0;">
+                <div style="width:${progCiclo}%; height:100%; background:var(--accent); border-radius:10px;"></div>
+            </div>
+            <small style="font-size:0.65rem; font-weight:700;">Finalização estimada do edital: ${dataFinal.toLocaleDateString()}</small>
+        </div>
+        <div id="scroll-list" style="max-height: 420px; overflow-y: auto; padding-right: 10px;">
+    `;
+
+    html += tasks.map((t, i) => {
+        let colorKey = (t.k === 'Ex') ? 'ex' : ((t.k === 'Rev') ? 'rev' : 'e');
+        return `
+        <div class="task-card" style="border-left-color:var(--color-${colorKey}); margin-bottom:12px;">
+            <div style="flex:1;">
+                <div style="display:flex; justify-content:space-between;">
+                    <span class="tag tag-${colorKey}">${t.l} (${formatT(t.h)})</span>
+                    <small style="color:var(--text-sec); font-weight:700;">${curStr}</small>
+                </div>
+                <div style="font-weight:800; font-size:1rem;">${t.m}</div>
+                <div style="font-size:0.75rem; color:var(--text-sec);">${t.a}</div>
+                <div style="margin-top:10px; display:flex; align-items:center; gap:10px;">
+                    <button class="btn btn-sm btn-outline" onclick="toggleTimer(${i})"><i class="fas fa-play"></i></button>
+                    <span id="time-${i}" style="font-family:monospace; font-weight:800;">00:00</span>
+                </div>
+            </div>
+            <input type="checkbox" ${t.c ? 'checked' : ''} onclick="concluirTask('${curStr}', ${i})">
+        </div>`;
+    }).join('');
+
+    // Card de Parabéns
+    if(tasks.length > 0 && tasks.every(x => x.c)) {
+        html += `
+        <div class="stat-card" style="text-align:center; border:2px dashed var(--accent); background:#eff6ff;">
+            <h3 style="color:var(--accent);">🚀 Missão Cumprida!</h3>
+            <button class="btn btn-sm" style="margin-top:10px;" onclick="navDay(1)">ANTECIPAR AMANHÃ</button>
+        </div>`;
+    }
+
+    document.getElementById('lista-diaria').innerHTML = html + "</div>";
+}        function showTab(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(id).classList.add('active'); 
