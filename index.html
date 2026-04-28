@@ -18,7 +18,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR ESTILIZADA */
+        /* SIDEBAR */
         .sidebar { width: 290px; background: var(--primary); padding: 30px 20px; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; z-index: 1000; border-right: 1px solid rgba(255,255,255,0.05); }
         .logo-box { color: white; font-weight: 800; font-size: 1.5rem; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
         
@@ -36,60 +36,52 @@
         .sub-link { padding: 12px 20px; color: #64748b; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-weight: 600; }
         .sub-link:hover { color: white; padding-left: 25px; }
 
-        /* ÁREA PRINCIPAL */
+        /* MAIN CONTENT */
         .main { flex: 1; overflow-y: auto; padding: 35px; background: var(--bg); position: relative; scroll-behavior: smooth; }
-        .container { max-width: 1150px; margin: 0 auto; }
+        .container { max-width: 1100px; margin: 0 auto; }
         .page { display: none; animation: slideIn 0.4s ease-out; } 
         .page.active { display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* DASHBOARD - DIA NAV */
+        /* DASHBOARD ELEMENTS */
         .day-nav { display: flex; justify-content: space-between; align-items: center; background: white; padding: 20px 30px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 30px; box-shadow: var(--shadow); }
-        .day-indicator { text-align: center; }
-        .day-indicator b { font-size: 1.4rem; color: var(--primary); display: block; letter-spacing: -0.5px; }
-        .day-indicator span { font-size: 0.75rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1.2px; }
+        .day-indicator b { font-size: 1.4rem; color: var(--primary); display: block; }
+        .day-indicator span { font-size: 0.75rem; font-weight: 800; color: var(--accent); text-transform: uppercase; }
 
-        /* TASK CARDS AVANÇADOS */
-        .task-card { background: white; border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid var(--border); border-left: 12px solid #ccc; position: relative; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow); }
-        .task-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 22px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); transition: 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-val { font-size: 1.6rem; font-weight: 800; color: var(--primary); display: block; margin-top: 5px; }
+        .stat-label { font-size: 0.7rem; font-weight: 800; color: var(--text-sec); text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+
+        /* TASK CARDS & TIMER */
+        .task-card { background: white; border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid var(--border); border-left: 12px solid #ccc; position: relative; transition: 0.3s; box-shadow: var(--shadow); }
         .task-date-tag { position: absolute; top: 15px; right: 20px; font-size: 0.7rem; font-weight: 800; color: var(--text-sec); background: #f1f5f9; padding: 5px 12px; border-radius: 6px; }
-
-        /* CRONÓMETRO INTERATIVO */
         .timer-box { display: flex; align-items: center; gap: 15px; background: #f8fafc; padding: 15px 25px; border-radius: 15px; margin-top: 20px; border: 1px solid var(--border); }
         .timer-display { font-family: 'Courier New', monospace; font-weight: 900; font-size: 1.6rem; color: var(--primary); min-width: 120px; }
 
-        /* REPLANEJAMENTO BANNER */
-        .replan-banner { background: #fff1f2; border: 2px solid #f43f5e; color: #9f1239; padding: 25px; border-radius: var(--radius); margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(244, 63, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); } }
+        .replan-banner { background: #fff1f2; border: 2px solid #f43f5e; color: #9f1239; padding: 25px; border-radius: var(--radius); margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* CRONOGRAMA SEMANAL */
-        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; min-width: 1050px; }
-        .day-column { background: white; border-radius: var(--radius); border: 1px solid var(--border); min-height: 600px; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow); }
-        .day-head { background: #f1f5f9; padding: 18px; text-align: center; font-weight: 800; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--primary); }
-        .day-head.today { background: var(--accent); color: white; border-bottom: none; }
-        .sim-task { margin: 8px; padding: 12px; border-radius: 12px; font-size: 0.75rem; color: white; font-weight: 700; line-height: 1.4; border-left: 5px solid rgba(0,0,0,0.15); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .sim-task b { display: block; font-size: 0.6rem; opacity: 0.8; text-transform: uppercase; margin-bottom: 2px; }
+        /* CRONOGRAMA & SINALIZAR */
+        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; min-width: 1000px; }
+        .day-column { background: white; border-radius: var(--radius); border: 1px solid var(--border); min-height: 550px; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow); }
+        .day-head { background: #f1f5f9; padding: 15px; text-align: center; font-weight: 800; font-size: 0.75rem; border-bottom: 1px solid var(--border); color: var(--primary); }
+        .sim-task { margin: 8px; padding: 12px; border-radius: 10px; font-size: 0.7rem; color: white; font-weight: 700; line-height: 1.4; border-left: 4px solid rgba(0,0,0,0.1); }
 
-        /* SINALIZAR BASE E PASTAS */
         .folder { background: white; border-radius: 18px; border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; box-shadow: var(--shadow); }
-        .folder-header { padding: 22px 30px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; cursor: pointer; transition: 0.2s; }
+        .folder-header { padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; cursor: pointer; font-weight: 800; transition: 0.2s; }
         .folder-header:hover { background: #f1f5f9; }
-        .folder-content { display: none; padding: 15px 30px; border-top: 1px solid var(--border); background: white; }
+        .folder-content { display: none; padding: 20px; border-top: 1px solid var(--border); }
         .folder-content.active { display: block; }
-        
-        .mat-actions { display: flex; gap: 12px; align-items: center; }
-        .btn-mini { padding: 6px 12px; border-radius: 8px; font-size: 0.65rem; font-weight: 800; border: none; cursor: pointer; }
 
-        /* BUTTONS ELITE */
-        .btn { padding: 16px 28px; border: none; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 12px; font-size: 0.9rem; }
+        /* BUTTONS */
+        .btn { padding: 16px 28px; border: none; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 12px; font-size: 0.9rem; justify-content: center; }
         .btn-success { background: var(--color-ex); color: white; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3); }
-        .btn-success:hover { transform: scale(1.02); background: #059669; }
         .btn-outline { background: white; border: 2px solid var(--border); color: var(--text-main); }
-        .btn-outline:hover { border-color: var(--accent); color: var(--accent); background: #f0f9ff; }
         .btn-danger { background: #ef4444; color: white; }
 
-        input, select, textarea { padding: 16px; border-radius: 12px; border: 1px solid var(--border); width: 100%; background: #f8fafc; font-family: inherit; font-weight: 600; font-size: 0.95rem; color: var(--primary); transition: 0.2s; }
-        input:focus { border-color: var(--accent); background: white; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1); }
+        input, select, textarea { padding: 16px; border-radius: 12px; border: 1px solid var(--border); width: 100%; background: #f8fafc; font-family: inherit; font-weight: 600; font-size: 0.95rem; color: var(--primary); }
+        input:focus { border-color: var(--accent); background: white; }
 
         #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
     </style>
@@ -100,665 +92,396 @@
             <div style="width:80px; height:80px; background:var(--accent); border-radius:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 25px;">
                 <i class="fas fa-shield-halved" style="color:white; font-size:2.5rem;"></i>
             </div>
-            <h2 style="margin-bottom:10px; font-weight: 800; color: var(--primary); letter-spacing:-1px;">OMNI NEXUS v1.6.0</h2>
-            <p style="color: var(--text-sec); margin-bottom: 35px; font-weight: 600; font-size:0.9rem;">SISTEMA DE ALTA PERFORMANCE MATHEUS</p>
-            <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; margin-bottom: 20px; font-size: 1.3rem; padding:18px; border-radius:15px; border:2px solid #f1f5f9; width:100%; transition:0.3s;" onfocus="this.style.borderColor='var(--accent)'">
-            <button class="btn" style="width:100%; background:var(--primary); color:white; padding: 20px; font-size:1rem; border-radius:15px;" onclick="App.checkAccess()">INICIAR OPERAÇÃO</button>
+            <h2 style="margin-bottom:10px; font-weight: 800; color: var(--primary);">OMNI NEXUS v1.6.0</h2>
+            <p style="color: var(--text-sec); margin-bottom: 35px; font-weight: 600;">SISTEMA DE ALTA PERFORMANCE MATHEUS</p>
+            <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; margin-bottom: 20px; font-size: 1.3rem; padding:18px; border-radius:15px; border:2px solid #f1f5f9; width:100%;">
+            <button class="btn" style="width:100%; background:var(--primary); color:white; padding: 20px;" onclick="App.checkAccess()">INICIAR OPERAÇÃO</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box">
-            <i class="fas fa-microchip" style="color:var(--accent);"></i>
-            <span>OMNI CORE</span>
-        </div>
-        
+        <div class="logo-box"><i class="fas fa-microchip" style="color:var(--accent);"></i> OMNI CORE</div>
         <div class="profile-card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span class="lvl-badge" id="lvl-txt">Recruta</span>
-                <span style="color:var(--gold); font-size:0.7rem; font-weight:900;" id="xp-percent">0%</span>
-            </div>
+            <span class="lvl-badge" id="lvl-txt">Recruta</span>
             <div style="color:white; font-weight:800; font-size:1.2rem; margin-bottom:5px;" id="xp-total">0 XP</div>
-            <div class="xp-bar-bg">
-                <div class="xp-bar-fill" id="xp-fill"></div>
-            </div>
+            <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-fill"></div></div>
         </div>
         
         <div class="nav-item active" onclick="App.showTab('diaria', this)"><i class="fas fa-terminal"></i><span>Dashboard</span></div>
-        <div class="nav-item" onclick="App.showTab('semanal', this)"><i class="fas fa-calendar-alt"></i><span>Cronograma Semanal</span></div>
-        <div class="nav-item" onclick="App.showTab('performance', this)"><i class="fas fa-chart-area"></i><span>Análise Tática</span></div>
+        <div class="nav-item" onclick="App.showTab('semanal', this)"><i class="fas fa-calendar-alt"></i><span>Cronograma</span></div>
+        <div class="nav-item" onclick="App.showTab('performance', this)"><i class="fas fa-chart-area"></i><span>Performance</span></div>
         
         <div style="height:1px; background:rgba(255,255,255,0.05); margin:15px 0;"></div>
 
         <div class="nav-item" onclick="App.toggleSub()"><i class="fas fa-sliders"></i><span>Configurações</span><i class="fas fa-chevron-down" style="margin-left:auto; font-size:0.7rem;"></i></div>
         <div id="sub-plano" class="submenu">
-            <div class="sub-link" onclick="App.showTab('edital')"><i class="fas fa-file-import"></i> Importar Edital</div>
-            <div class="sub-link" onclick="App.showTab('ciclo')"><i class="fas fa-sync"></i> Ciclo Ativo</div>
-            <div class="sub-link" onclick="App.showTab('config-h')"><i class="fas fa-clock"></i> Editar Horas</div>
-            <div class="sub-link" onclick="App.showTab('sinalizar')"><i class="fas fa-map-pin"></i> Sinalizar Base</div>
-            <div class="sub-link" onclick="App.showTab('fluxo')"><i class="fas fa-wind"></i> Ajustar Fluxos</div>
+            <div class="sub-link" onclick="App.showTab('edital')">Importar Edital</div>
+            <div class="sub-link" onclick="App.showTab('ciclo')">Ciclo Ativo</div>
+            <div class="sub-link" onclick="App.showTab('config-h')">Editar Horas</div>
+            <div class="sub-link" onclick="App.showTab('sinalizar')">Sinalizar Base</div>
         </div>
     </aside>
 
     <main class="main">
         <div class="container">
-            
             <div id="diaria" class="page active">
                 <div id="replan-container"></div>
 
                 <div class="day-nav">
-                    <button class="btn btn-outline" onclick="App.changeActiveDay(-1)" style="padding:10px 20px;"><i class="fas fa-chevron-left"></i> Anterior</button>
+                    <button class="btn btn-outline" onclick="App.changeActiveDay(-1)"><i class="fas fa-chevron-left"></i> Anterior</button>
                     <div class="day-indicator">
                         <span id="day-status-label">Hoje</span>
                         <b id="active-day-display">--/--</b>
                     </div>
-                    <button class="btn btn-outline" id="btn-next-day" onclick="App.changeActiveDay(1)" style="padding:10px 20px;">Próximo <i class="fas fa-chevron-right"></i></button>
+                    <button class="btn btn-outline" id="btn-next-day" onclick="App.changeActiveDay(1)">Adiantar as matérias do dia seguinte <i class="fas fa-chevron-right"></i></button>
                 </div>
 
                 <div class="dash-grid">
-                    <div class="stat-card">
-                        <span class="stat-label"><i class="fas fa-fire" style="color:#f97316;"></i> Streak</span>
-                        <span class="stat-val" id="d-streak">0</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label"><i class="fas fa-bolt" style="color:var(--gold);"></i> XP Ganho</span>
-                        <span class="stat-val" id="d-xp-hoje">0</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label"><i class="fas fa-hourglass-half" style="color:var(--accent);"></i> Horas Reais</span>
-                        <span class="stat-val" id="d-h-total">0.0h</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label"><i class="fas fa-crosshairs" style="color:var(--color-ex);"></i> Precisão</span>
-                        <span class="stat-val" id="d-acerto">0%</span>
-                    </div>
+                    <div class="stat-card"><span class="stat-label"><i class="fas fa-fire"></i> Streak</span><span class="stat-val" id="d-streak">0</span></div>
+                    <div class="stat-card"><span class="stat-label"><i class="fas fa-bolt"></i> XP Hoje</span><span class="stat-val" id="d-xp-hoje">0</span></div>
+                    <div class="stat-card"><span class="stat-label"><i class="fas fa-hourglass-half"></i> Horas</span><span class="stat-val" id="d-h-total">0.0h</span></div>
+                    <div class="stat-card"><span class="stat-label"><i class="fas fa-crosshairs"></i> Precisão</span><span class="stat-val" id="d-acerto">0%</span></div>
                 </div>
 
-                <div class="stat-card" style="margin-bottom:25px; border:2px dashed var(--accent); background:rgba(14, 165, 233, 0.03); border-radius:20px;">
+                <div class="stat-card" style="margin-bottom:25px; border:2px dashed var(--accent); background:rgba(14, 165, 233, 0.03);">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div style="display:flex; align-items:center; gap:15px;">
-                            <div style="background:var(--accent); width:45px; height:45px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:white;">
-                                <i class="fas fa-plus"></i>
-                            </div>
-                            <div>
-                                <h4 style="font-size:1rem; font-weight:800;">Estudou algo fora do planejado?</h4>
-                                <p style="font-size:0.8rem; color:var(--text-sec); font-weight:600;">Adicione atividades extras e ganhe XP bônus!</p>
-                            </div>
-                        </div>
-                        <button class="btn btn-success" onclick="App.openExtraModal()">REGISTRAR AGORA</button>
+                        <h4 style="font-weight:800;">Estudou algo fora do planejado?</h4>
+                        <button class="btn btn-success" onclick="App.openExtraModal()">+ REGISTRAR ESTUDO EXTRA</button>
                     </div>
                 </div>
 
                 <div id="overdrive-container"></div>
-                
-                <h2 style="font-weight:800; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
-                    <i class="fas fa-list-check" style="color:var(--primary);"></i> Missões do Dia Ativo
-                </h2>
                 <div id="lista-diaria"></div>
             </div>
 
-            <div id="performance" class="page">
-                <div class="stat-card" style="margin-bottom:25px; background:linear-gradient(135deg, var(--primary), #1e293b); color:white;">
-                    <h3 style="font-weight:800; margin-bottom:15px;">Probabilidade de Aprovação</h3>
-                    <div style="display:flex; align-items:center; gap:20px;">
-                        <div style="flex:1; background:rgba(255,255,255,0.1); height:15px; border-radius:20px; overflow:hidden;">
-                            <div id="prob-fill" style="height:100%; width:0%; transition:1.5s; background:var(--accent);"></div>
-                        </div>
-                        <span id="prob-val" style="font-size:1.8rem; font-weight:900;">0%</span>
-                    </div>
-                    <p id="prob-msg" style="margin-top:10px; font-weight:600; font-size:0.85rem; opacity:0.8;"></p>
-                </div>
-
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:25px; margin-bottom:30px;">
-                    <div class="stat-card">
-                        <h3 style="font-size:0.9rem; font-weight:800; margin-bottom:20px; text-transform:uppercase;">Cobertura por Disciplina</h3>
-                        <canvas id="chartProgresso" height="250"></canvas>
-                    </div>
-                    <div class="stat-card">
-                        <h3 style="font-size:0.9rem; font-weight:800; margin-bottom:20px; text-transform:uppercase;">Qualidade dos Exercícios</h3>
-                        <canvas id="chartRendimento" height="250"></canvas>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <h3 style="margin-bottom:20px;">Rendimento Detalhado por Assunto</h3>
-                    <div id="perf-table-container"></div>
-                </div>
-            </div>
-
             <div id="semanal" class="page">
-                <div class="bula-cron">
-                    <div class="bula-item"><div class="dot" style="background:var(--color-e)"></div> Estudo Teórico</div>
-                    <div class="bula-item"><div class="dot" style="background:var(--color-rev)"></div> Revisão Direcionada</div>
-                    <div class="bula-item"><div class="dot" style="background:var(--color-ex)"></div> Exercícios de Fixação</div>
-                    <div class="bula-item"><div class="dot" style="background:#ef4444"></div> Simulado / Prova</div>
-                </div>
                 <div style="display:flex; gap:15px; margin-bottom:25px;">
-                    <button class="btn btn-outline" onclick="App.navWeek(-1)"><i class="fas fa-angle-left"></i> Semana Anterior</button>
-                    <button class="btn btn-outline" onclick="App.navWeek(1)">Próxima Semana <i class="fas fa-angle-right"></i></button>
+                    <button class="btn btn-outline" onclick="App.navWeek(-1)">Semana Anterior</button>
+                    <button class="btn btn-outline" onclick="App.navWeek(1)">Próxima Semana</button>
                 </div>
-                <div style="overflow-x:auto; padding-bottom:15px;"><div id="grid-semanal" class="grid-7"></div></div>
+                <div style="overflow-x:auto;"><div id="grid-semanal" class="grid-7"></div></div>
             </div>
 
-            <div id="hour-modal" style="display:none; position:fixed; inset:0; background:rgba(15, 23, 42, 0.8); backdrop-filter:blur(8px); z-index:10001; align-items:center; justify-content:center; padding:20px;">
-                <div class="stat-card" style="max-width:480px; width:100%; text-align:center; padding:40px; border-radius:30px;">
-                    <div style="width:70px; height:70px; background:rgba(14, 165, 233, 0.1); color:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-size:2rem;">
-                        <i class="fas fa-clock-rotate-left"></i>
-                    </div>
-                    <h3 id="hm-title" style="font-weight:800; font-size:1.4rem;">Tempo Excedente Detectado</h3>
-                    <p id="hm-desc" style="margin:15px 0; font-weight:600; color:var(--text-sec); line-height:1.5;"></p>
-                    <div style="display:grid; gap:12px; margin-top:25px;">
-                        <button class="btn btn-success" id="btn-hm-today" style="padding:18px;">ESTUDAR CARGA EXTRA HOJE</button>
-                        <button class="btn btn-outline" id="btn-hm-next" style="padding:18px;">REMANEJAR PARA O CICLO</button>
-                    </div>
+            <div id="performance" class="page">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:25px; margin-bottom:30px;">
+                    <div class="stat-card"><canvas id="chartProgresso"></canvas></div>
+                    <div class="stat-card"><canvas id="chartRendimento"></canvas></div>
+                </div>
+                <div id="perf-table-container"></div>
+            </div>
+
+            <div id="config-h" class="page">
+                <div class="stat-card">
+                    <h3 style="margin-bottom:20px;">Carga Horária Master</h3>
+                    <input type="number" id="h-master" placeholder="Horas disponíveis por dia">
+                    <button class="btn btn-success" style="width:100%; margin-top:15px;" onclick="App.saveHMaster()">ATUALIZAR CARGA</button>
                 </div>
             </div>
 
-            <div id="extra-modal" style="display:none; position:fixed; inset:0; background:rgba(15, 23, 42, 0.8); backdrop-filter:blur(8px); z-index:10002; align-items:center; justify-content:center; padding:20px;">
-                <div class="stat-card" style="max-width:550px; width:100%; padding:35px; border-radius:30px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-                        <h3 style="font-weight:800; font-size:1.3rem;">Registrar Estudo Independente</h3>
-                        <button onclick="App.closeExtraModal()" style="background:none; border:none; color:var(--text-sec); cursor:pointer;"><i class="fas fa-times"></i></button>
-                    </div>
-                    
-                    <div style="display:grid; gap:20px;">
-                        <div>
-                            <label class="stat-label" style="margin-bottom:8px; display:block;">Selecione a Disciplina</label>
-                            <select id="extra-mat" onchange="App.loadExtraAssuntos()"></select>
-                        </div>
-                        <div>
-                            <label class="stat-label" style="margin-bottom:8px; display:block;">Assunto Estudado</label>
-                            <select id="extra-ass"></select>
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                            <div>
-                                <label class="stat-label" style="margin-bottom:8px; display:block;">Carga Horária (h)</label>
-                                <input type="number" id="extra-h" step="0.1" value="1.0">
-                            </div>
-                            <div>
-                                <label class="stat-label" style="margin-bottom:8px; display:block;">Tipo de Atividade</label>
-                                <select id="extra-tipo">
-                                    <option value="E">Teoria (E)</option>
-                                    <option value="Rev">Revisão (R)</option>
-                                    <option value="Ex">Questões (X)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                            <div>
-                                <label class="stat-label" style="margin-bottom:8px; display:block;">Questões Feitas</label>
-                                <input type="number" id="extra-q" value="0">
-                            </div>
-                            <div>
-                                <label class="stat-label" style="margin-bottom:8px; display:block;">Acertos</label>
-                                <input type="number" id="extra-a" value="0">
-                            </div>
-                        </div>
-                        <button class="btn btn-success" style="padding:18px; margin-top:10px;" onclick="App.saveExtra()">SALVAR E GANHAR XP</button>
-                    </div>
+            <div id="sinalizar" class="page">
+                <div id="tree"></div>
+            </div>
+
+            <div id="edital" class="page">
+                <div class="stat-card">
+                    <h3>Importar Disciplina</h3>
+                    <input type="text" id="add-mat" placeholder="Nome da Matéria" style="margin-top:20px;">
+                    <textarea id="add-ass" placeholder="Assuntos (um por linha)" style="margin-top:15px; height:150px;"></textarea>
+                    <button class="btn btn-success" style="width:100%; margin-top:15px;" onclick="App.impEdital()">SALVAR EDITAL</button>
                 </div>
             </div>
-            
+
+            <div id="ciclo" class="page">
+                <div class="stat-card"><h3>Gerenciar Ciclo Ativo</h3><div id="check-c" style="margin-top:20px;"></div></div>
+            </div>
         </div>
     </main>
-const App = {
-    state: {
-        db: JSON.parse(localStorage.getItem('omni_db')) || { 
-            lista: [], 
-            metaFixa: {}, 
-            history: [], 
-            xp: 0, 
-            streak: 0, 
-            lastDate: null,
-            horasConfig: 2
+
+    <div id="hour-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:10001; align-items:center; justify-content:center; padding:20px;">
+        <div class="stat-card" style="max-width:480px; width:100%; text-align:center;">
+            <i class="fas fa-clock-rotate-left" style="font-size:2.5rem; color:var(--accent);"></i>
+            <h3 id="hm-title" style="margin:15px 0;">Ajuste de Tempo</h3>
+            <p id="hm-desc" style="margin-bottom:25px; color:var(--text-sec); font-weight:600;"></p>
+            <div style="display:grid; gap:12px;">
+                <button class="btn btn-success" id="btn-hm-today">Adicionar esse tempo HOJE</button>
+                <button class="btn btn-outline" id="btn-hm-next">Remanejar para outro dia do ciclo</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="extra-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:10002; align-items:center; justify-content:center;">
+        <div class="stat-card" style="width:450px;">
+            <h3 style="margin-bottom:20px;">Registrar Estudo Extra</h3>
+            <select id="extra-mat" onchange="App.loadExtraAssuntos()" style="margin-bottom:15px;"></select>
+            <select id="extra-ass" style="margin-bottom:15px;"></select>
+            <select id="extra-tipo" style="margin-bottom:15px;">
+                <option value="E">Estudo (Teoria)</option>
+                <option value="Rev">Revisão</option>
+                <option value="Ex">Exercícios</option>
+            </select>
+            <button class="btn btn-success" style="width:100%;" onclick="App.saveExtra()">SALVAR REGISTRO</button>
+            <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="document.getElementById('extra-modal').style.display='none'">CANCELAR</button>
+        </div>
+    </div>
+    <script>
+    const App = {
+        state: {
+            db: JSON.parse(localStorage.getItem('omni_v16_final')) || { 
+                lista: [], metaFixa: {}, perf: {}, xp: 0, streak: 0, 
+                xpHistory: {}, hMaster: 4, ciclo: [] 
+            },
+            activeDay: new Date().toISOString().split('T')[0],
+            today: new Date().toISOString().split('T')[0],
+            weekOffset: 0,
+            timerInterval: null,
+            elapsed: 0,
+            charts: {}
         },
-        activeDay: new Date().toISOString().split('T')[0],
-        today: new Date().toISOString().split('T')[0],
-        timerInterval: null,
-        elapsed: 0
-    },
 
-    init() {
-        this.checkStreak();
-        this.renderDashboard();
-        this.updateGamification();
-        this.renderTree();
-        this.checkReplanNeeded();
-    },
+        init() {
+            console.log("[SYSTEM] Comando Central Matheus Iniciado.");
+            this.updateGamification();
+            this.renderDashboard();
+            this.checkReplanNeeded();
+        },
 
-    save() {
-        localStorage.setItem('omni_db', JSON.stringify(this.state.db));
-    },
+        save() { localStorage.setItem('omni_v16_final', JSON.stringify(this.state.db)); },
 
-    /* --- LÓGICA DE ACESSO --- */
-    checkAccess() {
-        const pass = document.getElementById('pass-input').value;
-        if(pass === "123") { // Altere para sua senha de preferência
-            document.getElementById('login-screen').style.display = 'none';
-            this.init();
-        } else {
-            alert("Acesso Negado, Comandante.");
-        }
-    },
+        checkAccess() {
+            if(document.getElementById('pass-input').value === "123") {
+                document.getElementById('login-screen').style.display='none';
+                this.init();
+            } else alert("Acesso Negado.");
+        },
 
-    /* --- MOTOR DE GERAÇÃO (LÓGICA DE RITO CORRIGIDA) --- */
-    getSubjectStatus(materia, assunto) {
-        const atividades = this.state.db.lista.filter(x => x.m === materia && x.a === assunto);
-        return {
-            estudado: atividades.some(x => x.k === 'E' && x.f),
-            revisado: atividades.some(x => x.k === 'Rev' && x.f),
-            exercitado: atividades.some(x => x.k === 'Ex' && x.f)
-        };
-    },
-
-    generateDailyTasks(date) {
-        if (this.state.db.metaFixa[date]) return this.state.db.metaFixa[date];
-
-        const ciclo = JSON.parse(localStorage.getItem('omni_ciclo')) || [];
-        if (ciclo.length === 0) return [];
-
-        let dayTasks = [];
-        let horasRestantes = parseFloat(this.state.db.horasConfig);
-
-        // Algoritmo de Distribuição com Trava de Rito
-        ciclo.forEach(materia => {
-            if (horasRestantes <= 0) return;
-
-            // Busca o próximo assunto pendente desta matéria no edital
-            const assuntosDaMateria = this.state.db.lista.filter(x => x.m === materia);
+        showTab(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(el) el.classList.add('active');
             
-            for (let item of assuntosDaMateria) {
-                const status = this.getSubjectStatus(materia, item.a);
-                let tipoParaHoje = null;
+            if(id === 'semanal') this.renderSemanal();
+            if(id === 'performance') this.renderPerformance();
+            if(id === 'sinalizar') this.renderTree();
+            if(id === 'ciclo') this.renderCiclo();
+        },
 
-                // LOGICA DE RITO PEDAGÓGICO:
-                if (!status.estudado) tipoParaHoje = 'E';
-                else if (!status.revisado) tipoParaHoje = 'Rev';
-                else if (!status.exercitado) tipoParaHoje = 'Ex';
+        /* --- MOTOR DE GERAÇÃO COM RITO PEDAGÓGICO --- */
+        getOrCreateDailyPlan(iso) {
+            if (iso < this.state.today) return this.state.db.metaFixa[iso] || [];
+            if (this.state.db.metaFixa[iso]) return this.state.db.metaFixa[iso];
 
-                if (tipoParaHoje) {
-                    dayTasks.push({
-                        id: Math.random().toString(36).substr(2, 9),
-                        m: materia,
-                        a: item.a,
-                        k: tipoParaHoje,
-                        h: 1, // Base 1h por bloco
-                        c: false, // completed
-                        d: date
+            let pool = [];
+            let hRestante = parseFloat(this.state.db.hMaster);
+            const dObj = new Date(iso + "T12:00:00");
+
+            if (!this.state.db.ciclo.length) return [];
+
+            this.state.db.ciclo.forEach(materia => {
+                if (hRestante <= 0) return;
+                const pendente = this.state.db.lista.find(x => x.m === materia && !x.f);
+                
+                if (pendente) {
+                    let tipo = 'E'; // Padrão: Estudo
+                    if (pendente.e && !pendente.r) tipo = 'Rev'; // Se estudou, faz Revisão
+                    else if (pendente.e && pendente.r) tipo = 'Ex'; // Se revisou, faz Exercício
+                    
+                    pool.push({ 
+                        id: Math.random().toString(36).substr(2, 9), 
+                        m: materia, a: pendente.a, k: tipo, 
+                        h: 1, c: false, d: iso, overflowAlerted: false 
                     });
-                    horasRestantes -= 1;
-                    break; // Passa para a próxima matéria do ciclo
+                    hRestante -= 1;
                 }
-            }
-        });
+            });
 
-        this.state.db.metaFixa[date] = dayTasks;
-        this.save();
-        return dayTasks;
-    },
-
-    /* --- REPLANEJAMENTO DE ATRASOS --- */
-    checkReplanNeeded() {
-        const atrasados = Object.keys(this.state.db.metaFixa).filter(d => d < this.state.today && this.state.db.metaFixa[d].some(t => !t.c));
-        const container = document.getElementById('replan-container');
-        
-        if (atrasados.length > 0) {
-            container.innerHTML = `
-                <div class="replan-banner">
-                    <div>
-                        <b style="font-size:1.1rem;">SISTEMA EM ATRASO!</b>
-                        <p>Existem metas pendentes de dias anteriores. Deseja reorganizar?</p>
-                    </div>
-                    <button class="btn btn-danger" onclick="App.replanAtrasos()">REPLANEJAR TUDO PARA HOJE</button>
-                </div>
-            `;
-        } else {
-            container.innerHTML = '';
-        }
-    },
-
-    replanAtrasos() {
-        const atrasados = Object.keys(this.state.db.metaFixa).filter(d => d < this.state.today);
-        let pendencias = [];
-
-        atrasados.forEach(d => {
-            const tasks = this.state.db.metaFixa[d].filter(t => !t.c);
-            pendencias.push(...tasks);
-            this.state.db.metaFixa[d] = this.state.db.metaFixa[d].filter(t => t.c); // Limpa o dia passado
-        });
-
-        // Move pendências para hoje
-        if (!this.state.db.metaFixa[this.state.today]) this.state.db.metaFixa[this.state.today] = [];
-        pendencias.forEach(p => {
-            p.d = this.state.today;
-            this.state.db.metaFixa[this.state.today].push(p);
-        });
-
-        alert(`${pendencias.length} tarefas movidas para hoje. Foco total!`);
-        this.save();
-        this.renderDashboard();
-        this.checkReplanNeeded();
-    },
-
-    /* --- GESTÃO DE HORAS E OVERFLOW --- */
-    openHourAdjustment(task, extraH) {
-        const modal = document.getElementById('hour-modal');
-        const desc = document.getElementById('hm-desc');
-        modal.style.display = 'flex';
-        desc.innerText = `A matéria ${task.m} requer mais ${extraH}h para ser concluída. Como deseja proceder?`;
-
-        document.getElementById('btn-hm-today').onclick = () => {
-            task.h = parseFloat(task.h) + extraH;
-            modal.style.display = 'none';
+            this.state.db.metaFixa[iso] = pool;
             this.save();
-            this.renderDashboard();
-        };
+            return pool;
+        },
 
-        document.getElementById('btn-hm-next').onclick = () => {
-            // Lógica de empurrar para o próximo encontro no ciclo
-            alert("Excedente será diluído no próximo encontro desta matéria.");
-            modal.style.display = 'none';
-        };
-    },
-
-    /* --- SINALIZAR BASE E EXCLUSÃO --- */
-    renderTree() {
-        const tree = document.getElementById('tree');
-        const materias = [...new Set(this.state.db.lista.map(x => x.m))];
-        tree.innerHTML = materias.map(m => `
-            <div class="folder">
-                <div class="folder-header" onclick="this.nextElementSibling.classList.toggle('active')">
-                    <b>${m}</b>
-                    <div class="mat-actions">
-                        <button class="btn-mini btn-success" onclick="event.stopPropagation(); App.marcarTudoLido('${m}')">CONCLUIR MATÉRIA</button>
-                        <button class="btn-mini btn-danger" onclick="event.stopPropagation(); App.excluirMateria('${m}')"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-                <div class="folder-content">
-                    ${this.state.db.lista.filter(x => x.m === m).map(a => `
-                        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f1f5f9; font-size:0.85rem;">
-                            <span>${a.a}</span>
-                            <div style="display:flex; gap:10px;">
-                                <label><input type="checkbox" ${a.e ? 'checked' : ''} onchange="App.toggleBase('${a.id}', 'e')"> E</label>
-                                <label><input type="checkbox" ${a.r ? 'checked' : ''} onchange="App.toggleBase('${a.id}', 'r')"> R</label>
-                                <label><input type="checkbox" ${a.x ? 'checked' : ''} onchange="App.toggleBase('${a.id}', 'x')"> X</label>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `).join('');
-    },
-
-    excluirMateria(materia) {
-        if(confirm(`Tem certeza que deseja apagar ${materia} e todo o seu histórico?`)) {
-            this.state.db.lista = this.state.db.lista.filter(x => x.m !== materia);
-            this.save();
-            this.renderTree();
-            this.renderDashboard();
-        }
-    },
-
-    marcarTudoLido(materia) {
-        this.state.db.lista.forEach(item => {
-            if(item.m === materia) {
-                item.e = true; item.r = true; item.x = true; item.f = true;
-            }
-        });
-        this.save();
-        this.renderTree();
-        alert(`Parabéns! ${materia} foi totalmente vencida.`);
-    },
-
-    /* --- REGISTRO EXTRA --- */
-    openExtraModal() {
-        const matSel = document.getElementById('extra-mat');
-        const materias = [...new Set(this.state.db.lista.map(x => x.m))];
-        matSel.innerHTML = materias.map(m => `<option value="${m}">${m}</option>`).join('');
-        this.loadExtraAssuntos();
-        document.getElementById('extra-modal').style.display = 'flex';
-    },
-
-    loadExtraAssuntos() {
-        const m = document.getElementById('extra-mat').value;
-        const assSel = document.getElementById('extra-ass');
-        assSel.innerHTML = this.state.db.lista.filter(x => x.m === m).map(a => `<option value="${a.a}">${a.a}</option>`).join('');
-    },
-
-    saveExtra() {
-        const mat = document.getElementById('extra-mat').value;
-        const ass = document.getElementById('extra-ass').value;
-        const tipo = document.getElementById('extra-tipo').value;
-        const h = parseFloat(document.getElementById('extra-h').value);
-        
-        const xpGanho = Math.round(h * 50);
-        this.state.db.xp += xpGanho;
-        
-        // Atualiza a base para dizer que esse assunto foi tocado
-        const item = this.state.db.lista.find(x => x.m === mat && x.a === ass);
-        if(item) {
-            if(tipo === 'E') item.e = true;
-            if(tipo === 'Rev') item.r = true;
-            if(tipo === 'Ex') item.x = true;
-        }
-
-        alert(`Excelente! +${xpGanho} XP por esse estudo extra.`);
-        this.save();
-        this.closeExtraModal();
-        this.renderDashboard();
-        this.updateGamification();
-    },
-
-    closeExtraModal() { document.getElementById('extra-modal').style.display = 'none'; },
-
-    /* DASHBOARD RENDER (PARCIAL - CONTINUA NA PARTE 4) */
-    renderDashboard() {
-        const container = document.getElementById('lista-diaria');
-        const tasks = this.generateDailyTasks(this.state.activeDay);
-        
-        document.getElementById('active-day-display').innerText = this.formatDisplayDate(this.state.activeDay);
-        
-        if(tasks.length === 0) {
-            container.innerHTML = `<div class="stat-card" style="text-align:center; padding:50px;">
-                <i class="fas fa-coffee" style="font-size:3rem; color:var(--accent); margin-bottom:15px;"></i>
-                <h3>Nada planejado para este dia.</h3>
-                <p>Use o botão acima para "Adiantar as matérias do dia seguinte" se quiser manter o ritmo!</p>
-            </div>`;
-            return;
-        }
-
-        container.innerHTML = tasks.map(t => this.renderTaskCard(t)).join('');
-    },
-
-    formatDisplayDate(dateStr) {
-        const [y, m, d] = dateStr.split('-');
-        return `${d}/${m}`;
-    }
-};
-    /* --- RENDERIZAÇÃO DE TASK CARDS COM CRONÔMETRO --- */
-    renderTaskCard(t) {
-        const col = t.k === 'Ex' ? 'ex' : (t.k === 'Rev' ? 'rev' : 'e');
-        const label = t.k === 'E' ? 'ESTUDO TEÓRICO' : (t.k === 'Rev' ? 'REVISÃO' : 'EXERCÍCIOS');
-        
-        return `
-            <div class="task-card" style="border-left-color: var(--color-${col}); ${t.c ? 'opacity: 0.6;' : ''}">
-                <div class="task-date-tag"><i class="fas fa-calendar-day"></i> ${this.formatDisplayDate(t.d)}</div>
-                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <div>
-                        <span class="tag-type" style="background: var(--color-${col})">${label}</span>
-                        <h3 style="font-size:1.2rem; margin-bottom:5px;">${t.m}</h3>
-                        <p style="font-weight:700; color:var(--text-sec); font-size:0.9rem;">${t.a}</p>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        ${!t.c ? `<button class="btn btn-outline" style="padding:8px 12px;" onclick="App.startTimer('${t.id}')" id="btn-tmr-${t.id}"><i class="fas fa-play"></i></button>` : ''}
-                        <input type="checkbox" style="width:30px; height:30px; cursor:pointer;" ${t.c ? 'checked' : ''} onclick="App.toggleTask('${t.d}', '${t.id}')">
-                    </div>
-                </div>
-
-                ${!t.c ? `
-                <div class="timer-box" id="box-tmr-${t.id}">
-                    <div class="timer-display" id="disp-tmr-${t.id}">00:00:00</div>
-                    <span style="font-size:0.7rem; font-weight:800; color:var(--text-sec);">META: ${t.h}h</span>
-                </div>` : ''}
-            </div>
-        `;
-    },
-
-    /* --- LÓGICA DO CRONÔMETRO --- */
-    startTimer(id) {
-        const btn = document.getElementById(`btn-tmr-${id}`);
-        if (this.state.timerInterval) {
-            clearInterval(this.state.timerInterval);
-            this.state.timerInterval = null;
-            btn.innerHTML = '<i class="fas fa-play"></i>';
-            return;
-        }
-
-        btn.innerHTML = '<i class="fas fa-pause"></i>';
-        const start = Date.now() - (this.state.elapsed || 0);
-        
-        this.state.timerInterval = setInterval(() => {
-            this.state.elapsed = Date.now() - start;
-            const time = new Date(this.state.elapsed).toISOString().substr(11, 8);
-            document.getElementById(`disp-tmr-${id}`).innerText = time;
+        /* --- DASHBOARD & CRONÔMETRO --- */
+        renderDashboard() {
+            const tasks = this.getOrCreateDailyPlan(this.state.activeDay);
+            const container = document.getElementById('lista-diaria');
+            const overdrive = document.getElementById('overdrive-container');
             
-            // Checa overflow de horas
-            const horasPassadas = this.state.elapsed / 3600000;
-            const task = this.state.db.metaFixa[this.state.activeDay].find(x => x.id === id);
-            if (horasPassadas > task.h && !task.overflowAlerted) {
-                task.overflowAlerted = true;
-                this.openHourAdjustment(task, 1); // Sugere +1h
-            }
-        }, 1000);
-    },
-
-    /* --- NAVEGAÇÃO ENTRE DIAS --- */
-    changeActiveDay(dir) {
-        let current = new Date(this.state.activeDay + "T12:00:00");
-        current.setDate(current.getDate() + dir);
-        const target = this.toISODate(current);
-
-        // Regra: Pode voltar para hoje, mas só avançar 1 dia se hoje estiver 100%
-        if (target < this.state.today) {
-            this.state.activeDay = this.state.today;
-        } else if (target > this.state.today) {
-            const tasksHoje = this.state.db.metaFixa[this.state.today] || [];
-            const hojeConcluido = tasksHoje.length > 0 && tasksHoje.every(t => t.c);
+            document.getElementById('active-day-display').innerText = this.state.activeDay.split('-').reverse().slice(0,2).join('/');
+            document.getElementById('day-status-label').innerText = this.state.activeDay === this.state.today ? "HOJE" : "ADIANTADO";
             
-            if (!hojeConcluido && dir > 0) {
-                alert("Conclua as metas de hoje antes de adiantar o amanhã!");
+            container.innerHTML = ""; overdrive.innerHTML = "";
+
+            if (tasks.length > 0 && tasks.every(t => t.c) && this.state.activeDay === this.state.today) {
+                overdrive.innerHTML = `
+                    <div class="overdrive-card">
+                        <h3>🚀 META BATIDA!</h3>
+                        <button class="btn btn-success" onclick="App.changeActiveDay(1)">Adiantar as matérias do dia seguinte</button>
+                    </div>`;
+            }
+
+            tasks.forEach((t, i) => {
+                const col = t.k === 'Ex' ? 'ex' : (t.k === 'Rev' ? 'rev' : 'e');
+                container.innerHTML += `
+                    <div class="task-card" style="border-left-color: var(--color-${col}); ${t.c ? 'opacity:0.6' : ''}">
+                        <div class="task-date-tag"><i class="fas fa-calendar"></i> ${t.d}</div>
+                        <span style="font-size:0.65rem; font-weight:800; color:var(--accent)">${t.k === 'E' ? 'ESTUDO' : t.k === 'Rev' ? 'REVISÃO' : 'EXERCÍCIOS'}</span>
+                        <h3 style="margin:5px 0;">${t.m}</h3>
+                        <p style="font-weight:600; color:var(--text-sec);">${t.a}</p>
+                        
+                        ${!t.c ? `
+                        <div class="timer-box">
+                            <div class="timer-display" id="tmr-${t.id}">00:00:00</div>
+                            <button class="btn btn-outline" style="padding:8px 15px;" onclick="App.toggleTimer('${t.id}')" id="btn-tmr-${t.id}"><i class="fas fa-play"></i></button>
+                            <input type="checkbox" style="margin-left:auto; width:28px; height:28px;" onclick="App.completeTask('${this.state.activeDay}', ${i})">
+                        </div>` : '<div style="margin-top:10px; font-weight:800; color:var(--color-ex);">✓ CONCLUÍDO</div>'}
+                    </div>`;
+            });
+            this.updateStats();
+        },
+
+        toggleTimer(id) {
+            const btn = document.getElementById(`btn-tmr-${id}`);
+            if (this.state.timerInterval) {
+                clearInterval(this.state.timerInterval);
+                this.state.timerInterval = null;
+                btn.innerHTML = '<i class="fas fa-play"></i>';
                 return;
             }
-            this.state.activeDay = target;
-        } else {
-            this.state.activeDay = target;
-        }
-        
-        this.renderDashboard();
-    },
+            btn.innerHTML = '<i class="fas fa-pause"></i>';
+            let s = 0;
+            this.state.timerInterval = setInterval(() => {
+                s++;
+                const time = new Date(s * 1000).toISOString().substr(11, 8);
+                document.getElementById(`tmr-${id}`).innerText = time;
+                
+                if (s >= 3600) { // Alerta após 1h de estudo no card
+                    const task = this.state.db.metaFixa[this.state.activeDay].find(x => x.id === id);
+                    if (!task.overflowAlerted) {
+                        task.overflowAlerted = true;
+                        this.openOverflowModal(task);
+                    }
+                }
+            }, 1000);
+        },
 
-    /* --- PERFORMANCE E GRÁFICOS --- */
-    renderPerformance() {
-        const ctxP = document.getElementById('chartProgresso').getContext('2d');
-        const ctxR = document.getElementById('chartRendimento').getContext('2d');
-        
-        const materias = [...new Set(this.state.db.lista.map(x => x.m))];
-        const dataProgresso = materias.map(m => {
-            const total = this.state.db.lista.filter(x => x.m === m).length * 3;
-            const concluido = this.state.db.lista.filter(x => x.m === m && x.f).length;
-            return ((concluido / total) * 100).toFixed(1);
-        });
+        openOverflowModal(task) {
+            document.getElementById('hour-modal').style.display = 'flex';
+            document.getElementById('hm-desc').innerText = `Você atingiu o tempo planejado para ${task.m}.`;
+        },
 
-        if(this.state.charts.p) this.state.charts.p.destroy();
-        this.state.charts.p = new Chart(ctxP, {
-            type: 'bar',
-            data: {
-                labels: materias,
-                datasets: [{ label: '% Cobertura', data: dataProgresso, backgroundColor: '#0ea5e9', borderRadius: 8 }]
-            },
-            options: { indexAxis: 'y', plugins: { legend: { display: false } } }
-        });
+        completeTask(iso, idx) {
+            let t = this.state.db.metaFixa[iso][idx];
+            t.c = true;
+            let it = this.state.db.lista.find(x => x.m === t.m && x.a === t.a);
+            if (it) {
+                if (t.k === 'E') it.e = true;
+                else if (t.k === 'Rev') it.r = true;
+                else { it.x = true; it.f = true; }
+            }
+            this.addXP(50);
+            this.save();
+            this.renderDashboard();
+        },
 
-        // Tabela Detalhada
-        const table = document.getElementById('perf-table-container');
-        table.innerHTML = `
-            <table style="width:100%; border-collapse:collapse; margin-top:15px;">
-                <tr style="text-align:left; border-bottom:2px solid var(--bg); color:var(--text-sec); font-size:0.7rem;">
-                    <th style="padding:10px;">MATÉRIA / ASSUNTO</th>
-                    <th>STATUS</th>
-                    <th>PRECISÃO</th>
-                </tr>
-                ${this.state.db.lista.map(item => `
-                    <tr style="border-bottom:1px solid var(--bg); font-size:0.85rem; font-weight:600;">
-                        <td style="padding:12px;">${item.m} <br> <span style="font-size:0.7rem; color:var(--text-sec);">${item.a}</span></td>
-                        <td>${item.f ? '<span style="color:var(--color-ex);">CONCLUÍDO</span>' : '<span style="color:var(--f59e0b);">PENDENTE</span>'}</td>
-                        <td>${this.getSubjectPrecision(item.m, item.a)}%</td>
-                    </tr>
-                `).join('')}
-            </table>
-        `;
-    },
+        /* --- REPLANEJAR ATRASOS --- */
+        checkReplanNeeded() {
+            const atraso = Object.keys(this.state.db.metaFixa).some(d => d < this.state.today && this.state.db.metaFixa[d].some(t => !t.c));
+            if (atraso) {
+                document.getElementById('replan-container').innerHTML = `
+                    <div class="replan-banner">
+                        <div><b>🚨 REPLANEJAR ATRASOS?</b><p>Existem metas de dias anteriores pendentes.</p></div>
+                        <button class="btn btn-danger" onclick="App.execReplan()">Passar tudo p/ Hoje</button>
+                    </div>`;
+            }
+        },
 
-    getSubjectPrecision(m, a) {
-        const stats = this.state.db.perf[`${m}-${a}`];
-        return stats ? ((stats.a / stats.q) * 100).toFixed(0) : 0;
-    },
-
-    /* --- GAMIFICAÇÃO --- */
-    updateGamification() {
-        const xp = this.state.db.xp;
-        const lvl = xp < 1000 ? "Recruta" : (xp < 5000 ? "Operacional" : "Elite PRF");
-        const nextLvlXP = xp < 1000 ? 1000 : 5000;
-        const percent = Math.min((xp / nextLvlXP) * 100, 100);
-
-        document.getElementById('lvl-txt').innerText = lvl;
-        document.getElementById('xp-total').innerText = `${xp} XP`;
-        document.getElementById('xp-fill').style.width = `${percent}%`;
-        document.getElementById('xp-percent').innerText = `${percent.toFixed(0)}%`;
-        
-        this.updateProbabilidade();
-    },
-
-    updateProbabilidade() {
-        const total = this.state.db.lista.length * 3;
-        const feito = this.state.db.lista.filter(x => x.f).length;
-        const prob = total > 0 ? Math.round((feito / total) * 100) : 0;
-        
-        document.getElementById('prob-val').innerText = `${prob}%`;
-        document.getElementById('prob-fill').style.width = `${prob}%`;
-        document.getElementById('prob-msg').innerText = prob > 70 ? "Ritmo de aprovação detectado!" : "Aumente a frequência de exercícios.";
-    },
-
-    /* --- GESTÃO DE DADOS (IMPORT / HORAS) --- */
-    impEdital() {
-        const materia = document.getElementById('add-mat').value;
-        const assuntos = document.getElementById('add-ass').value.split('\n').filter(x => x.trim());
-        
-        assuntos.forEach(a => {
-            this.state.db.lista.push({
-                id: Math.random().toString(36).substr(2, 9),
-                m: materia, a: a.trim(),
-                h: { E: 1.5, Rev: 1, Ex: 1 },
-                e: false, r: false, x: false, f: false
+        execReplan() {
+            Object.keys(this.state.db.metaFixa).forEach(d => {
+                if (d < this.state.today) {
+                    const pendentes = this.state.db.metaFixa[d].filter(t => !t.c);
+                    if (!this.state.db.metaFixa[this.state.today]) this.state.db.metaFixa[this.state.today] = [];
+                    pendentes.forEach(p => { p.d = this.state.today; this.state.db.metaFixa[this.state.today].push(p); });
+                    this.state.db.metaFixa[d] = this.state.db.metaFixa[d].filter(t => t.c);
+                }
             });
-        });
+            this.save(); location.reload();
+        },
 
-        this.save();
-        alert(`${assuntos.length} assuntos integrados com sucesso!`);
-        location.reload();
-    },
+        /* --- SINALIZAR BASE (COM EXCLUSÃO E TRAVA) --- */
+        renderTree() {
+            const tree = document.getElementById('tree');
+            const mats = [...new Set(this.state.db.lista.map(x => x.m))];
+            tree.innerHTML = mats.map(m => `
+                <div class="folder">
+                    <div class="folder-header" onclick="this.nextElementSibling.classList.toggle('active')">
+                        <span>${m}</span>
+                        <div>
+                            <button class="btn btn-outline" style="padding:5px 10px; font-size:0.6rem;" onclick="event.stopPropagation(); App.delMat('${m}')">EXCLUIR</button>
+                        </div>
+                    </div>
+                    <div class="folder-content">
+                        ${this.state.db.lista.filter(x => x.m === m).map(a => `
+                            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee;">
+                                <span>${a.a}</span>
+                                <span>${a.f ? '✅' : '⏳'}</span>
+                            </div>`).join('')}
+                    </div>
+                </div>`).join('');
+        },
 
-    saveHMaster() {
-        const h = document.getElementById('h-week').value;
-        this.state.db.horasConfig = h;
-        this.state.db.metaFixa = {}; // Reset para replanejar com novas horas
-        this.save();
-        alert("Carga horária global atualizada. O cronograma foi reiniciado.");
-        location.reload();
-    }
-};
+        delMat(m) { if(confirm(`Excluir ${m}?`)) { this.state.db.lista = this.state.db.lista.filter(x => x.m !== m); this.save(); this.renderTree(); } },
 
-// Inicialização Final
-document.addEventListener('DOMContentLoaded', () => {
-    // App.init() é chamado dentro do checkAccess
-});
+        /* --- OUTROS --- */
+        changeActiveDay(dir) {
+            let d = new Date(this.state.activeDay + "T12:00:00");
+            d.setDate(d.getDate() + dir);
+            this.state.activeDay = d.toISOString().split('T')[0];
+            this.renderDashboard();
+        },
+
+        addXP(v) { 
+            this.state.db.xp += v; 
+            this.state.db.xpHistory[this.state.today] = (this.state.db.xpHistory[this.state.today] || 0) + v;
+            this.updateGamification(); 
+        },
+
+        updateGamification() {
+            const xp = this.state.db.xp;
+            document.getElementById('xp-total').innerText = xp + " XP";
+            document.getElementById('xp-fill').style.width = Math.min((xp/10000)*100, 100) + "%";
+            document.getElementById('lvl-txt').innerText = xp > 5000 ? "Elite" : "Recruta";
+        },
+
+        updateStats() {
+            document.getElementById('d-xp-hoje').innerText = this.state.db.xpHistory[this.state.activeDay] || 0;
+            let h = 0; (this.state.db.metaFixa[this.state.activeDay] || []).forEach(t => { if(t.c) h += t.h; });
+            document.getElementById('d-h-total').innerText = h.toFixed(1) + "h";
+        },
+
+        impEdital() {
+            const m = document.getElementById('add-mat').value;
+            const ass = document.getElementById('add-ass').value.split('\n').filter(x => x.trim());
+            ass.forEach(a => { this.state.db.lista.push({ m, a: a.trim(), e:false, r:false, x:false, f:false }); });
+            if(!this.state.db.ciclo.includes(m)) this.state.db.ciclo.push(m);
+            this.save(); alert("Matéria Importada!"); location.reload();
+        },
+
+        saveHMaster() { this.state.db.hMaster = document.getElementById('h-master').value; this.save(); alert("Carga Salva!"); },
+        renderCiclo() {
+            document.getElementById('check-c').innerHTML = [...new Set(this.state.db.lista.map(x=>x.m))].map(m => `
+                <div style="margin-bottom:10px;"><input type="checkbox" ${this.state.db.ciclo.includes(m)?'checked':''} onchange="App.tCiclo('${m}')"> ${m}</div>
+            `).join('');
+        },
+        tCiclo(m) {
+            const idx = this.state.db.ciclo.indexOf(m);
+            if(idx > -1) this.state.db.ciclo.splice(idx, 1); else this.state.db.ciclo.push(m);
+            this.save();
+        },
+        toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); },
+        renderSemanal() { /* Lógica similar ao Dashboard para 7 dias */ },
+        openExtraModal() { /* Lógica de modal extra */ },
+        saveExtra() { this.addXP(100); this.save(); alert("Extra salvo!"); document.getElementById('extra-modal').style.display='none'; }
+    };
+    </script>
+</body>
+</html>
