@@ -201,10 +201,13 @@
         };
 
         function checkAccess() { 
-            if(document.getElementById('pass-input').value === "123") { 
-                document.getElementById('login-screen').style.display='none'; 
-                init(); 
-            } 
+    const input = document.getElementById('pass-input').value;
+    if(input === "123") { 
+        document.getElementById('login-screen').style.display = 'none'; 
+        init(); 
+    } else {
+        alert("Chave incorreta!");
+    }
         }
 function init() { 
     renderDiario(vDate); 
