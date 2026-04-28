@@ -1,174 +1,248 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI NEXUS - Importar Edital</title>
+    <title>OMNI NEXUS v1.8.5 - MASTER CORE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --card-bg: #ffffff;
-            --primary-green: #10b981;
-            --text-main: #334155;
-            --border-color: #e2e8f0;
+            --primary: #0b1426; --accent: #0ea5e9; --bg: #f8fafc;
+            --border: #e2e8f0; --text-main: #1e293b; --text-sec: #64748b;
+            --color-e: #0ea5e9; --color-rev: #f59e0b; --color-ex: #10b981;
+            --gold: #fbbf24; --radius: 18px; --shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+        /* SIDEBAR PROFISSIONAL */
+        .sidebar { width: 280px; background: var(--primary); padding: 30px 20px; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+        .logo-box { color: white; font-weight: 800; font-size: 1.5rem; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
+        .profile-card { background: rgba(255,255,255,0.05); border-radius: var(--radius); padding: 20px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.1); }
+        .lvl-badge { background: var(--gold); color: var(--primary); padding: 3px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; margin-bottom: 12px; display: inline-block; }
+        .xp-bar-bg { background: rgba(255,255,255,0.1); height: 10px; border-radius: 10px; overflow: hidden; }
+        .xp-bar-fill { background: var(--gold); height: 100%; width: 0%; transition: 1s; }
 
-        .container-edital {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 800px;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
+        .nav-item { padding: 14px 18px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; border-radius: 14px; margin-bottom: 8px; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: var(--accent); color: white; }
+        .submenu { margin-left: 20px; border-left: 2px solid rgba(255,255,255,0.1); display: none; flex-direction: column; }
+        .submenu.show { display: flex; margin-bottom: 15px; }
+        .sub-link { padding: 10px 20px; color: #64748b; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+        .sub-link:hover { color: white; }
 
-        h2 {
-            color: var(--text-main);
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
+        /* CONTEÚDO */
+        .main { flex: 1; overflow-y: auto; padding: 30px; background: var(--bg); position: relative; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
 
-        .input-group {
-            margin-bottom: 15px;
-        }
+        /* CARDS E GRIDS */
+        .task-card { background: white; border-radius: 20px; padding: 25px; margin-bottom: 15px; border: 1px solid var(--border); border-left: 12px solid #ccc; position: relative; box-shadow: var(--shadow); }
+        .stat-card { background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 20px; }
+        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; min-width: 1000px; }
+        .day-column { background: white; border-radius: var(--radius); border: 1px solid var(--border); min-height: 600px; display: flex; flex-direction: column; box-shadow: var(--shadow); }
+        .day-header { background: #f1f5f9; padding: 15px; text-align: center; font-weight: 800; border-bottom: 1px solid var(--border); }
+        .day-header.active-day { background: var(--accent); color: white; }
 
-        input[type="text"], textarea, input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-            box-sizing: border-box;
-            outline: none;
-            transition: border 0.3s;
-        }
+        .timer-box { display: flex; align-items: center; gap: 15px; background: #f8fafc; padding: 12px 20px; border-radius: 12px; margin-top: 15px; border: 1px solid var(--border); }
+        .btn { padding: 12px 24px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-success { background: var(--color-ex); color: white; }
+        .btn-primary { background: var(--accent); color: white; }
+        .replan-banner { background: #fff1f2; border: 2px solid #f43f5e; color: #9f1239; padding: 20px; border-radius: var(--radius); margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
 
-        input:focus, textarea:focus {
-            border-color: var(--primary-green);
-        }
-
-        .time-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .time-field label {
-            display: block;
-            font-size: 12px;
-            color: #64748b;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .btn-salvar {
-            background-color: var(--primary-green);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .btn-salvar:hover {
-            background-color: #059669;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
+        #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-
-<div class="container-edital">
-    <h2>Importar Edital</h2>
-
-    <div class="input-group">
-        <input type="text" id="nomeMateria" placeholder="Nome da Matéria">
-    </div>
-
-    <div class="input-group">
-        <textarea id="assuntosArea" placeholder="Assuntos (um por linha)"></textarea>
-    </div>
-
-    <div class="time-row">
-        <div class="time-field">
-            <label>TEMPO ESTUDO (MIN)</label>
-            <input type="number" id="tempoEstudo" placeholder="Ex: 60" min="0">
-        </div>
-        <div class="time-field">
-            <label>TEMPO REVISÃO (MIN)</label>
-            <input type="number" id="tempoRevisao" placeholder="Ex: 20" min="0">
-        </div>
-        <div class="time-field">
-            <label>TEMPO EXERCÍCIO (MIN)</label>
-            <input type="number" id="tempoExercicio" placeholder="Ex: 30" min="0">
+    <div id="login-screen">
+        <div style="background:white; padding:40px; border-radius:30px; text-align:center; width:350px;">
+            <h2 style="margin-bottom:20px;">OMNI MASTER</h2>
+            <input type="password" id="pass-input" placeholder="Senha" style="padding:15px; width:100%; border-radius:10px; border:1px solid #ddd; margin-bottom:20px;">
+            <button class="btn btn-primary" style="width:100%;" onclick="App.checkAccess()">ENTRAR</button>
         </div>
     </div>
 
-    <button class="btn-salvar" onclick="salvarNoBanco()">Salvar no Banco</button>
-</div>
+    <aside class="sidebar">
+        <div class="logo-box"><i class="fas fa-shield-halved"></i> OMNI v1.8</div>
+        <div class="profile-card">
+            <span class="lvl-badge" id="lvl-txt">Iniciante</span>
+            <div style="color:white; font-weight:800; font-size:1.1rem;" id="xp-total">0 XP</div>
+            <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-fill"></div></div>
+        </div>
+        <div class="nav-item active" onclick="App.showTab('diaria', this)"><i class="fas fa-rocket"></i> Dashboard</div>
+        <div class="nav-item" onclick="App.showTab('semanal', this)"><i class="fas fa-calendar-week"></i> Cronograma</div>
+        <div class="nav-item" onclick="App.showTab('performance', this)"><i class="fas fa-chart-line"></i> Performance</div>
+        <div class="nav-item" onclick="App.toggleSub()"><i class="fas fa-gears"></i> Configurações <i class="fas fa-chevron-down" style="margin-left:auto;"></i></div>
+        <div id="sub-plano" class="submenu">
+            <div class="sub-link" onclick="App.showTab('edital')">Importar Edital</div>
+            <div class="sub-link" onclick="App.showTab('sinalizar')">Sinalizar Base</div>
+        </div>
+    </aside>
 
-<script>
-    function salvarNoBanco() {
-        const materia = document.getElementById('nomeMateria').value;
-        const assuntosRaw = document.getElementById('assuntosArea').value;
-        const tEstudo = document.getElementById('tempoEstudo').value;
-        const tRevisao = document.getElementById('tempoRevisao').value;
-        const tExercicio = document.getElementById('tempoExercicio').value;
+    <main class="main">
+        <div class="container">
+            <div id="diaria" class="page active">
+                <div id="replan-container"></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                    <b id="active-day-display" style="font-size:1.4rem;">--/--</b>
+                    <div id="next-day-container"></div>
+                </div>
+                <div id="lista-diaria"></div>
+                <div class="stat-card" style="border:2px dashed var(--accent); background:rgba(14,165,233,0.02); margin-top:20px;">
+                    <h4 style="margin-bottom:15px;">Estudo Extra</h4>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                        <select id="extra-mat" onchange="App.loadExtraAssuntos()"></select>
+                        <select id="extra-ass"></select>
+                        <button class="btn btn-primary" onclick="App.createExtra()">REGISTRAR</button>
+                    </div>
+                </div>
+            </div>
+            <div id="semanal" class="page"><div style="overflow-x:auto;"><div id="grid-semanal" class="grid-7"></div></div></div>
+            <div id="performance" class="page">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:25px;"><div class="stat-card"><canvas id="chartProgresso"></canvas></div><div class="stat-card"><canvas id="chartXP"></canvas></div></div>
+            </div>
+            <div id="edital" class="page">
+                <div class="stat-card">
+                    <h3>Importar Edital</h3>
+                    <input type="text" id="add-mat" placeholder="Matéria" style="margin-top:20px; padding:15px; width:100%; border-radius:10px; border:1px solid var(--border);">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px;">
+                        <div>
+                            <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-sec);">ESTUDO (MIN)</label>
+                            <input type="number" id="time-e" placeholder="60" style="padding:10px; width:100%; border-radius:8px; border:1px solid var(--border);">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-sec);">REVISÃO (MIN)</label>
+                            <input type="number" id="time-r" placeholder="20" style="padding:10px; width:100%; border-radius:8px; border:1px solid var(--border);">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-sec);">EXERCÍCIO (MIN)</label>
+                            <input type="number" id="time-x" placeholder="30" style="padding:10px; width:100%; border-radius:8px; border:1px solid var(--border);">
+                        </div>
+                    </div>
 
-        if (!materia || !assuntosRaw) {
-            alert("Por favor, preencha a matéria e os assuntos.");
-            return;
-        }
+                    <textarea id="add-ass" placeholder="Assuntos (um por linha)" style="margin-top:15px; padding:15px; height:150px; width:100%; border-radius:10px; border:1px solid var(--border);"></textarea>
+                    <button class="btn btn-success" style="width:100%; margin-top:15px;" onclick="App.impEdital()">SALVAR</button>
+                </div>
+            </div>
+            <div id="sinalizar" class="page"><div id="tree"></div></div>
+        </div>
+    </main>
 
-        const listaAssuntos = assuntosRaw.split('\n').filter(a => a.trim() !== "");
+    <script>
+    const App = {
+        state: {
+            db: JSON.parse(localStorage.getItem('omni_final_core')) || { lista: [], metaFixa: {}, xp: 0, streak: 0, xpHistory: {}, hMaster: 4 },
+            activeDay: new Date().toISOString().split('T')[0],
+            today: new Date().toISOString().split('T')[0],
+            timers: {}
+        },
 
-        // Objeto formatado com as novas métricas de tempo
-        const novoEdital = {
-            id: Date.now(),
-            materia: materia,
-            assuntos: listaAssuntos,
-            configuracaoTempo: {
-                estudo: parseInt(tEstudo) || 0,
-                revisao: parseInt(tRevisao) || 0,
-                exercicio: parseInt(tExercicio) || 0
-            },
-            dataCriacao: new Date().toLocaleDateString()
-        };
+        init() { this.renderDashboard(); this.updateGamification(); this.checkAtrasos(); },
+        save() { localStorage.setItem('omni_final_core', JSON.stringify(this.state.db)); },
+        checkAccess() { if(document.getElementById('pass-input').value === "123") { document.getElementById('login-screen').style.display='none'; this.init(); } },
+        showTab(id, el) { 
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(el) el.classList.add('active');
+            if(id === 'semanal') this.renderSemanal();
+            if(id === 'performance') this.renderPerformance();
+            if(id === 'sinalizar') this.renderTree();
+        },
 
-        // Persistência no LocalStorage (Simulando Banco)
-        let banco = JSON.parse(localStorage.getItem('omni_editais')) || [];
-        banco.push(novoEdital);
-        localStorage.setItem('omni_editais', JSON.stringify(banco));
+        getOrCreateDailyPlan(iso) {
+            if (this.state.db.metaFixa[iso]) return this.state.db.metaFixa[iso];
+            let pool = []; let h = parseFloat(this.state.db.hMaster);
+            const materias = [...new Set(this.state.db.lista.map(x => x.m))];
+            materias.forEach(m => {
+                if (h <= 0) return;
+                const pendente = this.state.db.lista.find(x => x.m === m && !x.f);
+                if (pendente) {
+                    let tipo = !pendente.e ? 'Estudo' : (!pendente.r ? 'Revisão' : 'Exercícios');
+                    pool.push({ id: Math.random().toString(36).substr(2,9), m: m, a: pendente.a, k: tipo, c: false, d: iso });
+                    h -= 1;
+                }
+            });
+            this.state.db.metaFixa[iso] = pool; this.save(); return pool;
+        },
 
-        alert("Matéria e metas de tempo salvas com sucesso!");
-        
-        // Limpar campos
-        document.getElementById('nomeMateria').value = '';
-        document.getElementById('assuntosArea').value = '';
-        document.getElementById('tempoEstudo').value = '';
-        document.getElementById('tempoRevisao').value = '';
-        document.getElementById('tempoExercicio').value = '';
-    }
-</script>
+        renderDashboard() {
+            const tasks = this.getOrCreateDailyPlan(this.state.activeDay);
+            const container = document.getElementById('lista-diaria');
+            const nextBtn = document.getElementById('next-day-container');
+            document.getElementById('active-day-display').innerText = this.state.activeDay.split('-').reverse().slice(0,2).join('/');
+            container.innerHTML = "";
+            const allDone = tasks.length > 0 && tasks.every(t => t.c);
+            nextBtn.innerHTML = (allDone && this.state.activeDay === this.state.today) ? `<button class="btn btn-success" onclick="App.nextDay()">Adiantar matérias do dia seguinte <i class="fas fa-arrow-right"></i></button>` : "";
+            tasks.forEach(t => {
+                const col = t.k === 'Exercícios' ? 'ex' : (t.k === 'Revisão' ? 'rev' : 'e');
+                container.innerHTML += `<div class="task-card" style="border-left-color: var(--color-${col}); ${t.c ? 'opacity:0.6' : ''}">
+                    <span style="font-size:0.65rem; font-weight:800; color:var(--accent); text-transform:uppercase;">${t.k}</span>
+                    <h3 style="margin:5px 0;">${t.m}</h3><p style="font-weight:600; color:var(--text-sec); font-size:0.85rem;">${t.a}</p>
+                    <div class="timer-box"><span id="tmr-${t.id}">00:00:00</span>
+                    <button class="btn btn-outline" style="padding:5px 10px;" onclick="App.toggleTimer('${t.id}')" id="btn-tmr-${t.id}"><i class="fas fa-play"></i></button>
+                    <input type="checkbox" style="margin-left:auto; width:25px; height:25px;" ${t.c?'checked':''} onclick="App.toggleTask('${t.id}')"></div></div>`;
+            });
+            this.loadExtraOptions();
+        },
 
+        toggleTimer(id) {
+            const btn = document.getElementById(`btn-tmr-${id}`);
+            if(this.state.timers[id]) { clearInterval(this.state.timers[id]); delete this.state.timers[id]; btn.innerHTML = '<i class="fas fa-play"></i>'; }
+            else { btn.innerHTML = '<i class="fas fa-pause"></i>'; let s = 0; this.state.timers[id] = setInterval(() => { s++; document.getElementById(`tmr-${id}`).innerText = new Date(s * 1000).toISOString().substr(11, 8); }, 1000); }
+        },
+
+        toggleTask(id) {
+            const t = this.state.db.metaFixa[this.state.activeDay].find(x => x.id === id); t.c = !t.c;
+            if(t.c) {
+                const item = this.state.db.lista.find(x => x.m === t.m && x.a === t.a);
+                if(item) { if(t.k === 'Estudo') item.e = true; if(t.k === 'Revisão') item.r = true; if(t.k === 'Exercícios' || t.k === 'EXTRA') { item.x = true; item.f = true; } }
+                this.state.db.xp += 50; this.state.db.xpHistory[this.state.today] = (this.state.db.xpHistory[this.state.today] || 0) + 50;
+            }
+            this.save(); this.renderDashboard(); this.updateGamification();
+        },
+
+        renderSemanal() {
+            const grid = document.getElementById('grid-semanal'); grid.innerHTML = "";
+            for(let i=0; i<7; i++) {
+                let d = new Date(this.state.today + "T12:00:00"); d.setDate(d.getDate() + i);
+                let iso = d.toISOString().split('T')[0]; let tasks = this.getOrCreateDailyPlan(iso);
+                grid.innerHTML += `<div class="day-column"><div class="day-header ${iso === this.state.today ? 'active-day' : ''}">${iso.split('-').reverse().slice(0,2).join('/')}</div>
+                    <div style="padding:10px;">${tasks.map(t => `<div style="font-size:0.6rem; background:#f1f5f9; padding:8px; border-radius:8px; margin-bottom:5px; border-left:3px solid var(--accent);"><b>${t.m}</b><br>${t.a}</div>`).join('')}</div></div>`;
+            }
+        },
+
+        checkAtrasos() {
+            const atrasados = Object.keys(this.state.db.metaFixa).filter(d => d < this.state.today && this.state.db.metaFixa[d].some(t => !t.c));
+            if(atrasados.length > 0) document.getElementById('replan-container').innerHTML = `<div class="replan-banner"><div><b>🚨 ATRASOS!</b><p>Sua progressão travou.</p></div><button class="btn btn-success" onclick="App.replan()">REPLANEJAR</button></div>`;
+        },
+
+        replan() { this.state.db.metaFixa = {}; this.save(); location.reload(); },
+        loadExtraOptions() { const mats = [...new Set(this.state.db.lista.map(x=>x.m))]; document.getElementById('extra-mat').innerHTML = mats.map(m => `<option value="${m}">${m}</option>`).join(''); this.loadExtraAssuntos(); },
+        loadExtraAssuntos() { const m = document.getElementById('extra-mat').value; document.getElementById('extra-ass').innerHTML = this.state.db.lista.filter(x=>x.m === m).map(x=>`<option value="${x.a}">${x.a}</option>`).join(''); },
+        createExtra() { const m = document.getElementById('extra-mat').value; const a = document.getElementById('extra-ass').value; this.state.db.metaFixa[this.state.activeDay].push({ id: "ex-"+Math.random(), m, a, k: 'EXTRA', c: false, d: this.state.activeDay }); this.save(); this.renderDashboard(); },
+        impEdital() { 
+            const m = document.getElementById('add-mat').value; 
+            const ass = document.getElementById('add-ass').value.split('\n').filter(x=>x.trim()); 
+            const tE = document.getElementById('time-e').value || 0;
+            const tR = document.getElementById('time-r').value || 0;
+            const tX = document.getElementById('time-x').value || 0;
+            ass.forEach(a => this.state.db.lista.push({ m, a: a.trim(), e:false, r:false, x:false, f:false, metas: { est: parseInt(tE), rev: parseInt(tR), exe: parseInt(tX) } })); 
+            this.save(); 
+            location.reload(); 
+        },
+        updateGamification() { document.getElementById('xp-total').innerText = this.state.db.xp + " XP"; document.getElementById('xp-fill').style.width = Math.min((this.state.db.xp/10000)*100, 100) + "%"; },
+        nextDay() { let d = new Date(this.state.activeDay + "T12:00:00"); d.setDate(d.getDate()+1); this.state.activeDay = d.toISOString().split('T')[0]; this.renderDashboard(); },
+        toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); },
+        renderTree() { 
+            document.getElementById('tree').innerHTML = [...new Set(this.state.db.lista.map(x=>x.m))].map(m => `<div class="stat-card"><div onclick="this.nextElementSibling.classList.toggle('active')" style="cursor:pointer; font-weight:800;">📁 ${m}</div><div class="page" style="padding-top:10px;">${this.state.db.lista.filter(x=>x.m===m).map(a=>`<div style="font-size:0.8rem; margin-bottom:5px; color:${a.f?'var(--color-ex)':'#ccc'}">● ${a.a}</div>`).join('')}</div></div>`).join('');
+        },
+        renderPerformance() { /* Gráficos aqui */ }
+    };
+    </script>
 </body>
 </html>
