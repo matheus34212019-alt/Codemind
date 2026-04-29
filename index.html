@@ -782,34 +782,23 @@
 
 
 
-        function updateDashboard() {
-
+                function updateDashboard() {
             const tasks = db.metaFixa[vDate.toLocaleDateString()] || [];
-
             const concluidas = tasks.filter(x => x.c).length;
-
             const p = tasks.length > 0 ? (concluidas / tasks.length * 100) : 0;
-
             document.getElementById('prog-dia').innerText = Math.round(p) + "%";
-
             document.getElementById('bar-dia').style.width = p + "%";
-
             const h = tasks.filter(x => x.c).reduce((acc, t) => acc + t.h, 0);
-
             document.getElementById('horas-hoje').innerText = h.toFixed(1) + "h";
-
             let tQ = 0, aQ = 0;
-
             tasks.forEach(x => { if(x.perf) { tQ += x.perf.t; aQ += x.perf.a; }});
-
             const prec = tQ > 0 ? Math.round((aQ / tQ) * 100) : 0;
-
             document.getElementById('precisao-dia').innerText = prec + "%";
-
-    updateStats(); // Linha 809
-    atualizarProgressoCiclo(); // AGORA DENTRO DA FUNÇÃO
-    checkStreak(); // AGORA DENTRO DA FUNÇÃO
-} // A CHAVE QUE FECHA A FUNÇÃO FICA POR ÚLTIMO (Linha 812)
+            
+            updateStats();
+            // As funções novas só vão rodar se existirem, isso evita travar o login
+            if (typeof atualizarProgressoCiclo === "function") atualizarProgressoCiclo();
+            if (typeof checkStreak === "function") checkStreak();
         }
 
 
