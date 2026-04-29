@@ -957,71 +957,11 @@ function navDay(dir) {
             // Stats globais podem ser usados para gráficos futuros
 
         }
-// Função para o estudo fora do planejado
-function abrirModalFora() {
-    const materia = prompt("Qual matéria você estudou?");
-    const assunto = prompt("Qual assunto específico?");
-    if (!materia || !assunto) return;
-
-    const hjStr = new Date().toLocaleDateString();
-    const novaTask = {
-        m: materia.toUpperCase(),
-        a: assunto,
-        l: "EXTRA",
-        k: "E",
-        h: 1.0,
-        c: false,
-        extra: true
-    };
-
-    if (!db.metaFixa[hjStr]) db.metaFixa[hjStr] = [];
-    db.metaFixa[hjStr].push(novaTask);
-    save();
-    renderDiario(vDate);
-}
-
-// Função para calcular progresso do Ciclo Ativo
-function atualizarProgressoCiclo() {
-    const itensCiclo = db.lista.filter(x => db.ciclo.includes(x.m));
-    if (itensCiclo.length === 0) return;
-
-    const totalEtapas = itensCiclo.length * 3; // Estudo, Rev, Ex
-    let concluidas = 0;
-    itensCiclo.forEach(a => {
-        if (a.done.E) concluidas++;
-        if (a.done.Rev) concluidas++;
-        if (a.done.Ex) concluidas++;
-    });
-
-    const perc = Math.round((concluidas / totalEtapas) * 100);
-    document.getElementById('bar-ciclo-total').style.width = perc + "%";
-    document.getElementById('perc-ciclo').innerText = `${perc}% concluído`;
-    
-    // Estimativa simples: se o ciclo tem 100h e estudo 4h/dia, faltam 25 dias
-    const horasFaltantes = itensCiclo.reduce((acc, curr) => acc + (curr.done.Ex ? 0 : 2), 0); // simplificado
-    document.getElementById('ciclo-estimativa').innerText = `Faltam aprox. ${Math.ceil(horasFaltantes/4)} dias para girar`;
-}
-
-// Função de Streak (Dias seguidos)
-function checkStreak() {
-    let streak = 0;
-    let d = new Date();
-    
-    while(true) {
-        let k = d.toLocaleDateString();
-        let tasks = db.metaFixa[k];
-        if (tasks && tasks.length > 0 && tasks.every(t => t.c)) {
-            streak++;
-            d.setDate(d.getDate() - 1);
-        } else {
-            break;
+function updateStats() {
+            let t = db.lista.length * 3; let d = 0;
+            db.lista.forEach(a => { if(a.done.E) d++; if(a.done.Rev) d++; if(a.done.Ex) d++; });
         }
-    }
-    document.getElementById('streak-val').innerText = streak;
-}
     </script>
-
 </body>
-
 </html>
 
