@@ -196,6 +196,7 @@ function navDay(dir) {
             alert("Limite da Projeção: Você só pode adiantar até o dia de amanhã.");
             return;
         }
+// --- 1. ACESSO E LOGIN ---
 function checkAccess() {
     const input = document.getElementById('pass-input').value;
     if (input === "123") {
@@ -211,64 +212,42 @@ function init() {
     updateDashboard();
 }
 
+// --- 2. RENDERIZAÇÃO DO PAINEL ---
 function renderDiario(date) {
     const hjStr = new Date().toLocaleDateString();
     const curStr = date.toLocaleDateString();
-    const hMeta = parseFloat(db.h[date.getDay()]);
     
     // Título Dinâmico
     document.getElementById('view-title').innerText = (hjStr === curStr) ? "Missão de Hoje 🚓" : "Missão de Amanhã 🗓️";
+
+    // Dados da lista
+    const tasks = db.metaFixa[curStr] || [];
     
-    // Botão Voltar (Só aparece se não estivermos no dia de hoje)
-    document.getElementById('nav-l').innerHTML = (hjStr === curStr) ? "" : `<button class="btn btn-outline btn-sm" onclick="navDay(0)"><i class="fas fa-undo"></i> VOLTAR PARA HOJE</button>`;
-    
-    // Esconder "Ver Amanhã" se já estivermos visualizando o amanhã
-    let amanha = new Date(); amanha.setDate(amanha.getDate() + 1);
-    document.getElementById('nav-r').style.visibility = (curStr === amanha.toLocaleDateString()) ? "hidden" : "visible";
+    // Cálculo simples de progresso (para não travar)
+    let concluidas = 0;
+    db.lista.forEach(it => { if(it.done.E || it.done.Rev || it.done.Ex) concluidas++; });
+    let prog = db.lista.length > 0 ? Math.round((concluidas / (db.lista.length * 3)) * 100) : 0;
 
-    if(!db.metaFixa[curStr]) {
-        let simL = JSON.parse(JSON.stringify(db.lista));
-        db.metaFixa[curStr] = getNeuralPool(hMeta, simL);
-    }
-
-    const tasks = db.metaFixa[curStr];
-    
-// --- 1. CÁLCULOS DO CICLO E PROJEÇÃO ---
-    let hPendentesTotal = 0;
-    db.lista.forEach(it => {
-        if(!it.done.E) hPendentesTotal += (it.h.E - (it.hF || 0));
-        if(!it.done.Rev) hPendentesTotal += it.h.Rev;
-        if(!it.done.Ex) hPendentesTotal += it.h.Ex;
-    });
-
-    let mediaDiaria = Object.values(db.h).reduce((a,b) => a + b, 0) / 7 || 1;
-    let diasParaFinalizar = Math.ceil(hPendentesTotal / mediaDiaria);
-    let dataPrevisao = new Date();
-    dataPrevisao.setDate(dataPrevisao.getDate() + diasParaFinalizar);
-
-    let totalEtapasCiclo = db.lista.length * 3;
-    let concluidasNoCiclo = 0;
-    db.lista.forEach(it => { 
-        if(it.done.E) concluidasNoCiclo++; 
-        if(it.done.Rev) concluidasNoCiclo++; 
-        if(it.done.Ex) concluidasNoCiclo++; 
-    });
-    let progCiclo = totalEtapasCiclo > 0 ? (concluidasNoCiclo / totalEtapasCiclo * 100) : 0;
-
-    // --- 2. MONTAGEM DO HTML ---
     let html = `
         <div class="stat-card" style="margin-bottom:20px; border-bottom: 4px solid var(--accent);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <small>Progresso Total do Ciclo</small>
-                <b style="color:var(--accent)">${Math.round(progCiclo)}%</b>
+            <div style="display:flex; justify-content:space-between;">
+                <small>Progresso do Ciclo</small>
+                <b style="color:var(--accent)">${prog}%</b>
             </div>
-            <div style="width:100%; height:8px; background:#eee; border-radius:10px; margin:10px 0;">
-                <div style="width:${progCiclo}%; height:100%; background:var(--accent); border-radius:10px;"></div>
-            </div>
-            <small style="font-size:0.65rem;">Finalização estimada: <b>${dataEstimada.toLocaleDateString()}</b></small>
         </div>
-        <div id="scroll-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+        <div id="scroll-list" style="max-height: 400px; overflow-y: auto;">
     `;
+
+    // Se houver tasks, elas aparecem aqui
+    html += tasks.map((t, i) => `
+        <div class="task-card" style="border-left: 5px solid var(--color-e); margin-bottom:10px; padding: 15px; background: #f9f9f9; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-weight: 800;">${t.m}</div>
+            <input type="checkbox" ${t.c ? 'checked' : ''} onclick="concluirTask('${curStr}', ${i})">
+        </div>
+    `).join('');
+
+    document.getElementById('lista-diaria').innerHTML = html + "</div>";
+}
     // 2. MONTAGEM DO HTML
     let html = `
         <div class="stat-card" style="margin-bottom:20px; border-bottom: 4px solid var(--accent);">
