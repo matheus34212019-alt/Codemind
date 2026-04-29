@@ -380,7 +380,7 @@
                 html += `
                 <div class="stat-card" style="text-align:center; border:2px dashed var(--accent); background:#eff6ff; margin-top:20px;">
                     <h2 style="color:var(--accent); margin-bottom:10px;">🚀 Missão Cumprida!</h2>
-                    <p style="margin-bottom:15px; font-weight:600;">Parabéns João! Todas as metas de hoje foram finalizadas.</p>
+                    <p style="margin-bottom:15px; font-weight:600;">Parabéns Matheus! Todas as metas de hoje foram finalizadas.</p>
                     <button class="btn" onclick="navDay(1)">ADIANTAR MATÉRIAS DE AMANHÃ</button>
                 </div>`;
             }
@@ -523,11 +523,22 @@
             let concluidas = 0;
             itensCiclo.forEach(a => { if (a.done.E) concluidas++; if (a.done.Rev) concluidas++; if (a.done.Ex) concluidas++; });
             const perc = Math.round((concluidas / totalEtapas) * 100);
-            document.getElementById('bar-ciclo-total').style.width = perc + "%";
-            document.getElementById('viatura-progresso').style.left = (perc * 0.95) + "%";
-            document.getElementById('perc-ciclo').innerText = `${perc}% da missão cumprida`;
+            
+            // POSICIONAMENTO DA VIATURA E BARRA
+            if(document.getElementById('bar-ciclo-total')) {
+                document.getElementById('bar-ciclo-total').style.width = perc + "%";
+            }
+            if(document.getElementById('viatura-progresso')) {
+                document.getElementById('viatura-progresso').style.left = (perc * 0.95) + "%";
+            }
+            if(document.getElementById('perc-ciclo')) {
+                document.getElementById('perc-ciclo').innerText = `${perc}% da missão cumprida`;
+            }
+
             const horasFaltantes = itensCiclo.reduce((acc, curr) => acc + (curr.done.Ex ? 0 : 2), 0);
-            document.getElementById('ciclo-estimativa').innerText = `Faltam aprox. ${Math.ceil(horasFaltantes/4)} dias para girar`;
+            if(document.getElementById('ciclo-estimativa')) {
+                document.getElementById('ciclo-estimativa').innerText = `Faltam aprox. ${Math.ceil(horasFaltantes/4)} dias para girar`;
+            }
         }
 
         function checkStreak() {
@@ -538,7 +549,9 @@
                 if (tasks && tasks.length > 0 && tasks.every(t => t.c)) { streak++; d.setDate(d.getDate() - 1); } 
                 else { break; }
             }
-            document.getElementById('streak-val').innerText = streak;
+            if(document.getElementById('streak-val')) {
+                document.getElementById('streak-val').innerText = streak;
+            }
         }
     </script>
 </body>
