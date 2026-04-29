@@ -67,18 +67,19 @@
         .login-card { background: white; padding: 60px; border-radius: 35px; width: 420px; text-align: center; }
     </style>
 </head>
-<body>
+<body style="display: flex; height: 100vh; background: var(--bg);">
+
     <div id="login-screen">
         <div class="login-card">
             <h2 style="margin-bottom: 10px; font-weight: 800;">OMNI v.120</h2>
-            <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; letter-spacing: 5px;">
-            <button class="btn" style="width:100%; margin-top:25px;" onclick="checkAccess()">ENTRAR NO SISTEMA</button>
+            <input type="password" id="pass-input" placeholder="Chave de Acesso">
+            <button class="btn" style="width:100%; margin-top:25px;" onclick="checkAccess()">ENTRAR</button>
         </div>
     </div>
 
     <aside class="sidebar">
         <div class="logo-box"><i class="fas fa-microchip"></i> OMNI NEXUS</div>
-        <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-calendar-day"></i><span>Painel Hoje</span></div>
+        <div class="nav-item active" onclick="showTab('hoje', this)">
         <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-week"></i><span>Cronograma IA</span></div>
         <div class="nav-item" onclick="showTab('performance', this)"><i class="fas fa-chart-pie"></i><span>Performance</span></div>
         <div class="nav-item" onclick="toggleSub()"><i class="fas fa-sliders"></i><span>Meu Plano</span><i class="fas fa-chevron-down" style="margin-left:auto;"></i></div>
