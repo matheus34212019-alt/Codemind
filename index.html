@@ -42,6 +42,11 @@
         .tag { font-size: 0.65rem; font-weight: 800; padding: 6px 14px; border-radius: 50px; color: white; margin-bottom: 8px; display: inline-block; text-transform: uppercase; }
         .tag-e { background: var(--color-e); } .tag-rev { background: var(--color-rev); } .tag-ex { background: var(--color-ex); }
 
+        /* MODAIS */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-box { background: white; padding: 30px; border-radius: 25px; width: 450px; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .modal-close { position: absolute; top: 20px; right: 20px; cursor: pointer; color: var(--text-sec); font-size: 1.2rem; }
+
         .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; min-width: 1000px; }
         .day-column { background: white; border-radius: 15px; border: 1px solid var(--border); min-height: 500px; overflow: hidden; display: flex; flex-direction: column; }
         .day-head { background: #f1f5f9; padding: 15px 10px; text-align: center; border-bottom: 1px solid var(--border); font-weight: 800; font-size: 0.75rem; color: var(--primary); }
@@ -49,20 +54,50 @@
         .sim-task { margin: 6px; padding: 10px; border-radius: 10px; font-size: 0.6rem; color: white; font-weight: 700; line-height: 1.3; border: 1px solid rgba(0,0,0,0.05); }
         .atrasado { background: var(--color-atraso) !important; color: var(--text-atraso) !important; border: 1px solid #fecaca !important; }
 
+        .folder { background: white; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 12px; overflow: hidden; }
+        .folder-header { padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #f8fafc; border-bottom: 1px solid var(--border); }
+        .folder-content { display: none; padding: 10px; }
+        .folder-content.open { display: block; }
+        .sinal-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #f1f5f9; }
+
         .btn { padding: 14px 22px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
         .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-main); }
         .btn-sm { padding: 8px 14px; font-size: 0.75rem; }
+        input, select, textarea { padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: #f1f5f9; width: 100%; margin-top: 5px; margin-bottom: 10px; }
         input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent); cursor: pointer; }
-        #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: white; padding: 40px; border-radius: 35px; width: 400px; text-align: center; }
+        #login-screen { position: fixed; inset: 0; background: var(--primary); z-index: 30000; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
     <div id="login-screen">
-        <div class="login-card">
-            <h2 style="margin-bottom: 10px; font-weight: 800;">PLANTÃO POLÍCIA</h2>
-            <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; letter-spacing: 5px; padding: 14px; width:100%; border-radius:10px; border:1px solid #ddd;">
+        <div style="background:white; padding:50px; border-radius:35px; width:400px; text-align:center;">
+            <h2 style="font-weight:800; margin-bottom:20px;">PLANTÃO POLÍCIA</h2>
+            <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; letter-spacing: 5px;">
             <button class="btn" style="width:100%; margin-top:25px;" onclick="checkAccess()">ENTRAR NO SISTEMA</button>
+        </div>
+    </div>
+
+    <div id="modal-extra" class="modal-overlay">
+        <div class="modal-box">
+            <i class="fas fa-times modal-close" onclick="fecharModais()"></i>
+            <h3 style="margin-bottom:15px;"><i class="fas fa-plus-circle"></i> Estudo Fora do Fluxo</h3>
+            <input type="text" id="extra-mat" placeholder="Matéria">
+            <input type="text" id="extra-ass" placeholder="Assunto">
+            <button class="btn" style="width:100%;" onclick="salvarExtra()">INCLUIR NO PLANTÃO</button>
+        </div>
+    </div>
+
+    <div id="modal-exercicio" class="modal-overlay">
+        <div class="modal-box">
+            <i class="fas fa-times modal-close" onclick="fecharModais()"></i>
+            <h3 style="margin-bottom:10px;"><i class="fas fa-pen-to-square"></i> Registro de Desempenho</h3>
+            <p id="label-ex-assunto" style="font-size:0.85rem; color:var(--text-sec); margin-bottom:15px;"></p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div><label>Feitas</label><input type="number" id="ex-total"></div>
+                <div><label>Certas</label><input type="number" id="ex-acertos"></div>
+            </div>
+            <div id="cebraspe-feedback" style="padding:15px; border-radius:12px; background:#f8fafc; margin-bottom:15px; font-size:0.8rem; font-weight:700; text-align:center;"></div>
+            <button class="btn" style="width:100%;" onclick="confirmarExercicio()">REGISTRAR RESULTADO</button>
         </div>
     </div>
 
@@ -76,6 +111,8 @@
             <div class="sub-link" onclick="showTab('edital')">Importar Edital</div>
             <div class="sub-link" onclick="showTab('ciclo')">Ciclo Ativo</div>
             <div class="sub-link" onclick="showTab('config-h')">Horas Diárias</div>
+            <div class="sub-link" onclick="showTab('sinalizar')">Sinalizar Base</div>
+            <div class="sub-link" onclick="showTab('fluxo')">Ajustar Fluxos</div>
         </div>
     </aside>
 
@@ -83,46 +120,46 @@
         <div class="container">
             <div class="stats-grid">
                 <div class="stat-card"><small>Missão da Semana</small><div id="prog-dia" class="stat-val">0%</div><div style="width:100%; height:6px; background:#eee; border-radius:10px; margin-top:10px;"><div id="bar-dia" style="width:0%; height:100%; background:var(--accent); border-radius:10px; transition:0.5s;"></div></div></div>
-                <div class="stat-card"><small>Horas Acumuladas (Semana)</small><div id="horas-hoje" class="stat-val">0.0h</div></div>
-                <div class="stat-card"><small>Precisão de Tiro (Média Semanal)</small><div id="precisao-dia" class="stat-val" style="color:#10b981">0%</div></div>
+                <div class="stat-card"><small>Horas Semanais</small><div id="horas-hoje" class="stat-val">0.0h</div></div>
+                <div class="stat-card"><small>Precisão de Tiro</small><div id="precisao-dia" class="stat-val" style="color:#10b981">0%</div></div>
             </div>
 
             <div id="diaria" class="page active">
                 <div style="background: var(--primary); color: white; padding: 20px; border-radius: 20px; margin-bottom: 25px; border-left: 5px solid var(--accent);">
                     <h3 style="margin:0;">FORÇA E HONRA, MATHEUS! 👮‍♂️</h3>
-                    <p style="font-size: 0.85rem; opacity: 0.8;">A persistência é a arma do sobrevivente. Foco na missão!</p>
+                    <div id="streak-info" style="color:#f59e0b; font-weight:800; font-size:0.8rem; margin-top:5px;"><i class="fas fa-fire"></i> STREAK: <span id="streak-val">0</span> DIAS</div>
                 </div>
 
                 <div class="stat-card" style="margin-bottom: 20px; position: relative; overflow: hidden;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <small style="font-weight:800;">Perseguição ao Edital (Ciclo Ativo)</small>
-                        <span id="ciclo-estimativa" style="font-size:0.7rem; color:var(--text-sec); font-weight:700;"></span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><small style="font-weight:800;">Perseguição ao Edital</small><span id="ciclo-estimativa" style="font-size:0.7rem; font-weight:700;"></span></div>
+                    <div style="width:100%; height:16px; background:#eee; border-radius:50px; position: relative;">
+                        <div id="viatura-progresso" style="position: absolute; left: 0%; top: -8px; transition: 0.5s;"><i class="fas fa-car-police" style="font-size: 22px; color: var(--primary);"></i></div>
+                        <div id="bar-ciclo-total" style="width:0%; height:100%; background: linear-gradient(90deg, #3b82f6, #10b981); border-radius:50px;"></div>
                     </div>
-                    <div style="width:100%; height:20px; background:#eee; border-radius:50px; position: relative; border: 2px solid var(--border);">
-                        <div id="viatura-progresso" style="position: absolute; left: 0%; top: -8px; transition: 0.5s; z-index: 10;"><i class="fas fa-car-police" style="font-size: 25px; color: var(--primary); text-shadow: 2px 2px 5px rgba(0,0,0,0.2);"></i></div>
-                        <div id="bar-ciclo-total" style="width:0%; height:100%; background: linear-gradient(90deg, #3b82f6, #10b981); border-radius:50px; transition:0.5s;"></div>
-                    </div>
-                    <div id="perc-ciclo" style="font-size: 0.8rem; font-weight: 800; margin-top: 10px; color: var(--accent);">0% da missão cumprida</div>
+                    <div id="perc-ciclo" style="font-size: 0.8rem; font-weight: 800; margin-top: 10px; color: var(--accent);">0% cumprido</div>
                 </div>
 
                 <div style="display:flex; justify-content:center; gap: 15px; margin-bottom:25px;">
-                    <button id="btn-hoje" class="btn btn-outline btn-sm" onclick="navDay(0)" style="display:none;"><i class="fas fa-undo"></i> VOLTAR PARA METAS DE HOJE</button>
-                    <button id="btn-amanha" class="btn btn-sm" onclick="navDay(1)">VISUALIZAR O DIA DE AMANHÃ <i class="fas fa-arrow-right"></i></button>
+                    <button id="btn-hoje" class="btn btn-outline btn-sm" onclick="navDay(0)" style="display:none;"><i class="fas fa-undo"></i> VOLTAR PARA HOJE</button>
+                    <button id="btn-amanha" class="btn btn-sm" onclick="navDay(1)">VER AMANHÃ <i class="fas fa-arrow-right"></i></button>
                 </div>
 
                 <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h1 id="view-title" style="font-weight:800; letter-spacing:-1px;">Missão Diária 🚓</h1>
+                    <h1 id="view-title" style="font-weight:800;">Missão Diária 🚓</h1>
                     <button class="btn btn-sm btn-outline" style="color:#ef4444; border-color:#ef4444;" onclick="replanejarAgora()"><i class="fas fa-rotate"></i> REPLANEJAR ATRASOS</button>
                 </div>
                 <p id="meta-status" style="color:var(--text-sec); font-weight:600; font-size:0.9rem; margin-bottom:20px;"></p>
-
                 <div id="lista-diaria" style="max-height: 450px; overflow-y: auto;"></div>
-                <button class="btn btn-outline" style="width:100%; margin-top:20px; border-style:dashed;" onclick="abrirModalFora()"><i class="fas fa-plus-circle"></i> Estudou algo fora do planejado?</button>
+                <button class="btn btn-outline" style="width:100%; margin-top:20px; border-style:dashed;" onclick="abrirModalExtra()"><i class="fas fa-plus-circle"></i> Estudou algo fora do planejado?</button>
             </div>
 
             <div id="semanal" class="page"><h1 style="margin-bottom:25px; font-weight:800;">Cronograma Plantão</h1><div style="overflow-x:auto;"><div id="grid-semanal" class="grid-7"></div></div></div>
-            <div id="edital" class="page"><div class="stat-card"><h3>Edital</h3><input type="text" id="add-mat" placeholder="Matéria"><textarea id="add-ass" placeholder="Assuntos (um por linha)"></textarea><button class="btn" onclick="impEdital()">IMPORTAR</button></div></div>
-            <div id="ciclo" class="page"><div class="stat-card"><h3>Ciclo</h3><div id="check-c"></div><button class="btn" onclick="saveC()">SALVAR</button></div></div>
+            <div id="edital" class="page"><div class="stat-card"><h3>Adicionar Matéria</h3><input type="text" id="add-mat" placeholder="Matéria"><textarea id="add-ass" placeholder="Assuntos (um por linha)"></textarea><button class="btn" onclick="impEdital()">IMPORTAR</button></div></div>
+            <div id="ciclo" class="page"><div class="stat-card"><h3>Ciclo de Giro</h3><div id="check-c"></div><button class="btn" onclick="saveC()">SALVAR</button></div></div>
+            <div id="config-h" class="page"><div class="stat-card"><h3>Horas Semanais</h3><div id="grid-h-in"></div><button class="btn" onclick="saveH()">SALVAR</button></div></div>
+            <div id="sinalizar" class="page"><h2 style="margin-bottom:20px;">Progresso da Base</h2><div id="tree"></div></div>
+            <div id="fluxo" class="page"><h2 style="margin-bottom:20px;">Ajustar Fluxos</h2><div id="fluxo-content"></div></div>
+            <div id="performance" class="page"><div class="stats-grid"><div class="stat-card"><canvas id="c1"></canvas></div><div class="stat-card"><canvas id="c2"></canvas></div></div></div>
         </div>
     </main>
 
@@ -130,10 +167,13 @@
         let db = JSON.parse(localStorage.getItem('prf_v120')) || { lista: [], ciclo: [], h: {1:4, 2:4, 3:4, 4:4, 5:4, 6:4, 0:4}, metaFixa: {} };
         let vDate = new Date();
         let timers = {};
+        let exPendente = null;
+
         const save = () => localStorage.setItem('prf_v120', JSON.stringify(db));
-        
         function checkAccess() { if(document.getElementById('pass-input').value === "123") { document.getElementById('login-screen').style.display='none'; init(); } }
         function init() { renderDiario(vDate); updateDashboard(); }
+        function fecharModais() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
+        function abrirModalExtra() { document.getElementById('modal-extra').style.display = 'flex'; }
 
         function showTab(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -141,18 +181,18 @@
             document.getElementById(id).classList.add('active'); 
             if(el) el.classList.add('active');
             if(id === 'semanal') renderSemanal();
+            if(id === 'ciclo') renderCiclo();
+            if(id === 'config-h') renderHInputs();
+            if(id === 'sinalizar') renderTree();
+            if(id === 'fluxo') renderFluxo();
             updateDashboard();
         }
 
-        function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
-
-        function formatT(h) { if(h === 0.5) return "30m"; if(h === 1) return "60m"; if(h === 1.5) return "90m"; if(h === 2) return "2h"; return Math.round(h*60) + "m"; }
-
         function updateDashboard() {
-            let hoje = new Date(); let primeiroDia = new Date(hoje); primeiroDia.setDate(hoje.getDate() - hoje.getDay());
+            let h = new Date(); let pD = new Date(h); pD.setDate(h.getDate() - h.getDay());
             let tT=0, cT=0, hS=0, tQ=0, aQ=0;
             for (let i=0; i<7; i++) {
-                let d = new Date(primeiroDia); d.setDate(primeiroDia.getDate() + i);
+                let d = new Date(pD); d.setDate(pD.getDate() + i);
                 let tasks = db.metaFixa[d.toLocaleDateString()] || [];
                 tasks.forEach(t => { tT++; if(t.c) { cT++; hS+=t.h; if(t.perf){ tQ+=t.perf.t; aQ+=t.perf.a; }}});
             }
@@ -164,29 +204,19 @@
             checkStreak();
         }
 
-        function toggleTimer(id) {
-            if (timers[id]) { clearInterval(timers[id].interval); delete timers[id]; document.getElementById(`btn-t-${id}`).innerHTML = '<i class="fas fa-play"></i>'; } 
-            else {
-                let display = document.getElementById(`time-${id}`); let parts = display.innerText.split(':'); let sec = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-                timers[id] = { interval: setInterval(() => { sec++; let m = Math.floor(sec / 60).toString().padStart(2, '0'); let s = (sec % 60).toString().padStart(2, '0'); display.innerText = `${m}:${s}`; }, 1000) };
-                document.getElementById(`btn-t-${id}`).innerHTML = '<i class="fas fa-pause"></i>';
-            }
-        }
-
         function renderDiario(date) {
-            const hoje = new Date(); hoje.setHours(0,0,0,0);
+            const h = new Date(); h.setHours(0,0,0,0);
             const curStr = date.toLocaleDateString();
             
-            let temAtraso = false;
-            let primeiroDiaSemana = new Date(hoje); primeiroDiaSemana.setDate(hoje.getDate() - hoje.getDay());
-            for(let i=0; i < hoje.getDay(); i++) {
-                let dPast = new Date(primeiroDiaSemana); dPast.setDate(primeiroDiaSemana.getDate() + i);
-                let kPast = dPast.toLocaleDateString();
-                if(db.metaFixa[kPast] && db.metaFixa[kPast].some(t => !t.c)) { temAtraso = true; break; }
+            let temAtr = false;
+            let pD = new Date(h); pD.setDate(h.getDate() - h.getDay());
+            for(let i=0; i < h.getDay(); i++) {
+                let dP = new Date(pD); dP.setDate(pD.getDate() + i);
+                if(db.metaFixa[dP.toLocaleDateString()]?.some(t => !t.c)) { temAtr = true; break; }
             }
 
-            if(date > hoje && temAtraso) {
-                document.getElementById('lista-diaria').innerHTML = `<div class="stat-card" style="text-align:center; border:2px solid #ef4444;"><h3 style="color:#ef4444;">ACESSO NEGADO 🚫</h3><p>Existem plantões atrasados nesta semana. Estude os anteriores ou use <b>Replanejar</b>.</p></div>`;
+            if(date > h && temAtr) {
+                document.getElementById('lista-diaria').innerHTML = `<div class="stat-card" style="text-align:center; border:2px solid red;"><h3>ACESSO BLOQUEADO 🚫</h3><p>Conclua os plantões atrasados ou replaneje.</p></div>`;
                 return;
             }
 
@@ -194,63 +224,89 @@
             const tasks = db.metaFixa[curStr];
             document.getElementById('meta-status').innerText = `${tasks.reduce((a,b)=>a+b.h,0).toFixed(1)}h / ${db.h[date.getDay()]}h meta`;
             
-            let html = tasks.map((t, i) => `
+            document.getElementById('lista-diaria').innerHTML = tasks.map((t, i) => `
                 <div class="task-card" style="border-left-color:var(--color-${t.k==='Ex'?'ex':(t.k==='Rev'?'rev':'e')})">
                     <div style="flex:1;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span class="tag tag-${t.k==='Ex'?'ex':(t.k==='Rev'?'rev':'e')}">${t.l}</span><small style="font-weight:700; color:var(--text-sec);">${curStr}</small></div>
-                        <div style="font-weight:800; font-size:1.1rem;">${t.m}</div><div style="font-size:0.85rem; color:var(--text-sec); margin-bottom:10px;">${t.a}</div>
-                        <div style="display:flex; align-items:center; gap:10px;"><button class="btn btn-sm btn-outline" id="btn-t-${i}" onclick="toggleTimer(${i})"><i class="fas fa-play"></i></button><span id="time-${i}" style="font-family:monospace; font-weight:800; color:var(--accent);">00:00</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span class="tag tag-${t.k==='Ex'?'ex':(t.k==='Rev'?'rev':'e')}">${t.l}</span><small>${curStr}</small></div>
+                        <div style="font-weight:800; font-size:1.1rem;">${t.m}</div><div style="font-size:0.85rem; color:var(--text-sec);">${t.a}</div>
+                        <div style="display:flex; align-items:center; gap:10px; margin-top:10px;">
+                            <button class="btn btn-sm btn-outline" id="btn-t-${i}" onclick="toggleTimer(${i})"><i class="fas fa-play"></i></button>
+                            <span id="time-${i}" style="font-family:monospace; font-weight:800; color:var(--accent);">00:00</span>
+                        </div>
                     </div>
-                    <input type="checkbox" ${t.c ? 'checked' : ''} onclick="concluirTask('${curStr}', ${i})">
+                    <input type="checkbox" ${t.c ? 'checked' : ''} onclick="cliqueTask('${curStr}', ${i})">
                 </div>`).join('');
-
-            if(tasks.length > 0 && tasks.every(x => x.c) && date.toLocaleDateString() === hoje.toLocaleDateString()) {
-                html += `<div class="stat-card" style="text-align:center; border:2px dashed var(--accent); background:#eff6ff; margin-top:20px;"><h2>🚀 Missão Cumprida!</h2><p>Parabéns Matheus! Todas as metas de hoje foram finalizadas.</p><button class="btn" onclick="navDay(1)">ADIANTAR MATÉRIAS DE AMANHÃ</button></div>`;
-            }
-            document.getElementById('lista-diaria').innerHTML = html;
-            const ehHoje = date.toLocaleDateString() === hoje.toLocaleDateString();
-            document.getElementById('view-title').innerText = ehHoje ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
+            
+            document.getElementById('view-title').innerText = (curStr === h.toLocaleDateString()) ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
         }
 
-        function concluirTask(dK, idx) {
-            let t = db.metaFixa[dK][idx]; t.c = !t.c;
-            if(t.c && t.k === 'Ex') { let tot = prompt("Questões:"); let ac = prompt("Acertos:"); if(tot && ac) t.perf = { t: parseInt(tot), a: parseInt(ac) }; }
-            save(); updateDashboard(); renderDiario(vDate);
+        function cliqueTask(dK, idx) {
+            const t = db.metaFixa[dK][idx];
+            if(!t.c && t.k === 'Ex') {
+                exPendente = { dK, idx };
+                document.getElementById('label-ex-assunto').innerText = `${t.m} - ${t.a}`;
+                document.getElementById('modal-exercicio').style.display = 'flex';
+                document.getElementById('ex-total').oninput = calcCebraspe;
+                document.getElementById('ex-acertos').oninput = calcCebraspe;
+            } else { t.c = !t.c; save(); updateDashboard(); renderDiario(vDate); }
+        }
+
+        function calcCebraspe() {
+            const t = parseInt(document.getElementById('ex-total').value) || 0;
+            const a = parseInt(document.getElementById('ex-acertos').value) || 0;
+            const liq = a - (t - a);
+            const perc = t > 0 ? Math.round((liq / t) * 100) : 0;
+            document.getElementById('cebraspe-feedback').innerHTML = `Nota Líquida: ${liq} | Aproveitamento: ${perc}%<br>${perc >= 70 ? 'Nível Cebraspe: ALTO 🔥' : 'Nível Cebraspe: REFORÇAR ⚠️'}`;
+        }
+
+        function confirmarExercicio() {
+            const t = db.metaFixa[exPendente.dK][exPendente.idx];
+            t.c = true; t.perf = { t: parseInt(document.getElementById('ex-total').value), a: parseInt(document.getElementById('ex-acertos').value) };
+            save(); fecharModais(); updateDashboard(); renderDiario(vDate);
+        }
+
+        function toggleTimer(id) {
+            if (timers[id]) { clearInterval(timers[id].interval); delete timers[id]; document.getElementById(`btn-t-${id}`).innerHTML = '<i class="fas fa-play"></i>'; } 
+            else {
+                let display = document.getElementById(`time-${id}`); let parts = display.innerText.split(':'); let sec = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+                timers[id] = { interval: setInterval(() => { sec++; let m = Math.floor(sec/60).toString().padStart(2,'0'); let s = (sec%60).toString().padStart(2,'0'); display.innerText = `${m}:${s}`; }, 1000) };
+                document.getElementById(`btn-t-${id}`).innerHTML = '<i class="fas fa-pause"></i>';
+            }
         }
 
         function replanejarAgora() {
-            let hoje = new Date(); hoje.setHours(0,0,0,0);
-            let primeiroDia = new Date(hoje); primeiroDia.setDate(hoje.getDate() - hoje.getDay());
-            let acumuladoAtraso = [];
-            for(let i=0; i <= hoje.getDay(); i++) {
-                let d = new Date(primeiroDia); d.setDate(primeiroDia.getDate() + i);
+            let h = new Date(); h.setHours(0,0,0,0);
+            let pD = new Date(h); pD.setDate(h.getDate() - h.getDay());
+            let atr = [];
+            for(let i=0; i <= h.getDay(); i++) {
+                let d = new Date(pD); d.setDate(pD.getDate() + i);
                 let k = d.toLocaleDateString();
-                if(db.metaFixa[k]) { db.metaFixa[k].filter(t => !t.c).forEach(t => acumuladoAtraso.push(t)); db.metaFixa[k] = db.metaFixa[k].filter(t => t.c); }
+                if(db.metaFixa[k]) { db.metaFixa[k].filter(t => !t.c).forEach(t => atr.push(t)); db.metaFixa[k] = db.metaFixa[k].filter(t => t.c); }
             }
-            let diasRestantes = 6 - hoje.getDay();
-            if(diasRestantes > 0 && acumuladoAtraso.length > 0) {
-                acumuladoAtraso.forEach((t, idx) => {
-                    let dAloc = new Date(hoje); dAloc.setDate(hoje.getDate() + (idx % (diasRestantes + 1)));
-                    let kAloc = dAloc.toLocaleDateString();
-                    if(!db.metaFixa[kAloc]) db.metaFixa[kAloc] = [];
-                    db.metaFixa[kAloc].push(t);
+            let rest = 6 - h.getDay();
+            if(rest > 0 && atr.length > 0) {
+                atr.forEach((t, idx) => {
+                    let dAl = new Date(h); dAl.setDate(h.getDate() + (idx % (rest + 1)));
+                    let kAl = dAl.toLocaleDateString();
+                    if(!db.metaFixa[kAl]) db.metaFixa[kAl] = [];
+                    db.metaFixa[kAl].push(t);
                 });
             }
-            save(); alert("Plantão Replanejado!"); init();
+            save(); alert("Replanejado!"); init();
         }
 
         function renderSemanal() {
-            const dNames = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
-            let hoje = new Date(); hoje.setHours(0,0,0,0);
-            let primeiroDia = new Date(hoje); primeiroDia.setDate(hoje.getDate() - hoje.getDay());
+            const dN = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
+            let h = new Date(); h.setHours(0,0,0,0);
+            let pD = new Date(h); pD.setDate(h.getDate() - h.getDay());
             document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(off => {
-                let d = new Date(primeiroDia); d.setDate(primeiroDia.getDate() + off);
+                let d = new Date(pD); d.setDate(pD.getDate() + off);
                 let k = d.toLocaleDateString();
                 let tasks = db.metaFixa[k] || [];
-                let isAtrasado = d < hoje && tasks.some(t => !t.c);
+                let isAtr = d < h && tasks.some(t => !t.c);
                 return `<div class="day-column">
-                    <div class="day-head ${isAtrasado ? 'atrasado' : ''}">${dNames[d.getDay()]}<br>${k.slice(0,5)}</div>
-                    ${tasks.map(x => `<div class="sim-task tag-${(x.k==='Ex')?'ex':((x.k==='Rev')?'rev':'e')} ${!x.c && d < hoje ? 'atrasado' : ''}"><b>${x.m}</b><br>${x.a}</div>`).join('')}
+                    <div class="day-head ${isAtr ? 'atrasado' : ''}">${dN[d.getDay()]}<br>${k.slice(0,5)}</div>
+                    ${tasks.map(x => `<div class="sim-task tag-${x.k==='Ex'?'ex':(x.k==='Rev'?'rev':'e')} ${!x.c && d < h ? 'atrasado' : ''}"><b>${x.m}</b><br>${x.a}</div>`).join('')}
                 </div>`;
             }).join('');
         }
@@ -269,9 +325,12 @@
                         for(let s of rito) {
                             if(!pending.done[s.k]) {
                                 if(s.k === 'E') {
-                                    let alocar = Math.min(s.h - (pending.hF || 0), limit - somaH);
-                                    if(alocar > 0) { pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: alocar, c: false }); pending.hF = (pending.hF || 0) + alocar; if(pending.hF >= s.h - 0.05) pending.done.E = true; somaH += alocar; addedAny = true; }
-                                } else if(somaH + s.h <= limit + 0.1) { pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: s.h, c: false }); pending.done[s.k] = true; somaH += s.h; addedAny = true; if(s.k === 'Ex') pending.f = true; }
+                                    let al = Math.min(s.h - (pending.hF || 0), limit - somaH);
+                                    if(al > 0) { pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: al, c: false }); pending.hF = (pending.hF || 0) + al; if(pending.hF >= s.h - 0.05) pending.done.E = true; somaH += al; addedAny = true; }
+                                } else if(somaH + s.h <= limit + 0.1) {
+                                    pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: s.h, c: false });
+                                    pending.done[s.k] = true; somaH += s.h; addedAny = true; if(s.k === 'Ex') pending.f = true;
+                                }
                                 break; 
                             }
                         }
@@ -288,6 +347,27 @@
             txt.split('\n').filter(l => l.trim().length > 1).forEach(a => { db.lista.push({ m, a: a.trim(), h: {E:1.5, Rev:1.0, Ex:1.0}, f: false, done: {E:false, Rev:false, Ex:false}, hF: 0 }); });
             db.metaFixa = {}; save(); alert("Importado!");
         }
+
+        function renderTree() {
+            const mats = [...new Set(db.lista.map(x => x.m))];
+            document.getElementById('tree').innerHTML = mats.map(m => {
+                const ass = db.lista.filter(x => x.m === m);
+                return `<div class="folder"><div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b></div><div class="folder-content">
+                        ${ass.map(a => `<div class="sinal-row"><span>${a.a}</span><input type="checkbox" ${a.done.Ex?'checked':''} disabled></div>`).join('')}
+                    </div></div>`;
+            }).join('');
+        }
+
+        function renderFluxo() {
+            const mats = [...new Set(db.lista.map(x => x.m))];
+            document.getElementById('fluxo-content').innerHTML = mats.map(m => `<div class="stat-card"><b>${m}</b><div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
+                <div><small>Estudo</small><input type="number" step="0.5" value="1.5" onchange="alterarH('${m}', 'E', this.value)"></div>
+                <div><small>Revisão</small><input type="number" step="0.5" value="1.0" onchange="alterarH('${m}', 'Rev', this.value)"></div>
+                <div><small>Exercício</small><input type="number" step="0.5" value="1.0" onchange="alterarH('${m}', 'Ex', this.value)"></div>
+            </div></div>`).join('');
+        }
+
+        function alterarH(m, k, v) { db.lista.filter(x => x.m === m).forEach(x => x.h[k] = parseFloat(v)); save(); }
 
         function renderCiclo() {
             const mats = [...new Set(db.lista.map(x => x.m))];
@@ -306,8 +386,10 @@
             let concl = 0; itens.forEach(a => { if(a.done.E) concl++; if(a.done.Rev) concl++; if(a.done.Ex) concl++; });
             let p = Math.round((concl/(itens.length*3))*100);
             if(document.getElementById('bar-ciclo-total')) document.getElementById('bar-ciclo-total').style.width = p+"%";
-            if(document.getElementById('viatura-progresso')) document.getElementById('viatura-progresso').style.left = (p*0.95)+"%";
+            if(document.getElementById('viatura-progresso')) document.getElementById('viatura-progresso').style.left = (p * 0.95) + "%";
             if(document.getElementById('perc-ciclo')) document.getElementById('perc-ciclo').innerText = p+"% cumprido";
+            const hF = itens.reduce((acc, curr) => acc + (curr.done.Ex ? 0 : 2), 0);
+            if(document.getElementById('ciclo-estimativa')) document.getElementById('ciclo-estimativa').innerText = `Faltam aprox. ${Math.ceil(hF/4)} dias para girar`;
         }
 
         function checkStreak() {
@@ -320,21 +402,22 @@
         }
 
         function navDay(dir) {
-            const hoje = new Date(); hoje.setHours(0,0,0,0);
-            if (dir === 0) vDate = new Date(); else { let amanha = new Date(hoje); amanha.setDate(hoje.getDate() + 1); vDate = amanha; }
-            const ehHoje = vDate.toLocaleDateString() === hoje.toLocaleDateString();
-            document.getElementById('btn-hoje').style.display = ehHoje ? 'none' : 'inline-flex';
-            document.getElementById('btn-amanha').style.display = ehHoje ? 'inline-flex' : 'none';
+            const h = new Date(); h.setHours(0,0,0,0);
+            if (dir === 0) vDate = new Date(); else { let am = new Date(h); am.setDate(h.getDate() + 1); vDate = am; }
+            const ehH = vDate.toLocaleDateString() === h.toLocaleDateString();
+            document.getElementById('btn-hoje').style.display = ehH ? 'none' : 'inline-flex';
+            document.getElementById('btn-amanha').style.display = ehH ? 'inline-flex' : 'none';
             renderDiario(vDate);
         }
 
-        function abrirModalFora() {
-            const materia = prompt("Matéria:"); const assunto = prompt("Assunto:");
-            if (!materia || !assunto) return;
-            const hjStr = new Date().toLocaleDateString();
-            const novaTask = { m: materia.toUpperCase(), a: assunto, l: "EXTRA", k: "E", h: 1.0, c: false, extra: true };
-            if (!db.metaFixa[hjStr]) db.metaFixa[hjStr] = [];
-            db.metaFixa[hjStr].push(novaTask); save(); renderDiario(vDate);
+        function salvarExtra() {
+            const m = document.getElementById('extra-mat').value.toUpperCase();
+            const a = document.getElementById('extra-ass').value;
+            if(!m || !a) return;
+            const hj = new Date().toLocaleDateString();
+            if(!db.metaFixa[hj]) db.metaFixa[hj] = [];
+            db.metaFixa[hj].push({ m, a, l: "EXTRA", k: "E", h: 1.0, c: false, extra: true });
+            save(); fecharModais(); renderDiario(vDate);
         }
     </script>
 </body>
