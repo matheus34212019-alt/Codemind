@@ -807,8 +807,12 @@
             document.getElementById('precisao-dia').innerText = prec + "%";
 
             updateStats();
-atualizarProgressoCiclo();
-    checkStreak();
+document.getElementById('precisao-dia').innerText = prec + "%";
+    
+    updateStats(); // Linha 809
+    atualizarProgressoCiclo(); // AGORA DENTRO DA FUNÇÃO
+    checkStreak(); // AGORA DENTRO DA FUNÇÃO
+} // A CHAVE QUE FECHA A FUNÇÃO FICA POR ÚLTIMO (Linha 812)
         }
 
 
