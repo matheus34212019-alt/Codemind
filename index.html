@@ -418,97 +418,55 @@ function addExtra() {
             save(); updateDashboard(); renderDiario(vDate);
         }
 
-  function updateDashboard() {
-    // 1. Pega os dados básicos com segurança
-    const dataAtual = vDate ? vDate.toLocaleDateString() : new Date().toLocaleDateString();
-    const tasks = (db.metaFixa && db.metaFixa[dataAtual]) ? db.metaFixa[dataAtual] : [];
-    const concluidas = tasks.filter(x => x.c).length;
+ // --- FUNÇÃO DASHBOARD REVISADA ---
+function updateDashboard() {
+    try {
+        const dataAtual = vDate ? vDate.toLocaleDateString() : new Date().toLocaleDateString();
+        const tasks = (db.metaFixa && db.metaFixa[dataAtual]) ? db.metaFixa[dataAtual] : [];
+        const concluidas = tasks.filter(x => x.c).length;
 
-    // 2. Atualiza os números do topo (APENAS SE ELES EXISTIREM NA TELA)
-    const p = tasks.length > 0 ? (concluidas / tasks.length * 100) : 0;
-    
-    let elProgText = document.getElementById('prog-dia');
-    let elProgBar = document.getElementById('bar-dia');
-    let elHoras = document.getElementById('horas-hoje');
-    let elPrec = document.getElementById('precisao-dia');
-
-    if(elProgText) elProgText.innerText = Math.round(p) + "%";
-    if(elProgBar) elProgBar.style.width = p + "%";
-    
-    if(elHoras) {
-        const h = tasks.filter(x => x.c).reduce((acc, t) => acc + t.h, 0);
-        elHoras.innerText = h.toFixed(1) + "h";
-    }
-
-    if(elPrec) {
-        let tQ = 0, aQ = 0;
-        tasks.forEach(x => { if(x.perf) { tQ += x.perf.t; aQ += x.perf.a; }});
-        const prec = tQ > 0 ? Math.round((aQ / tQ) * 100) : 0;
-        elPrec.innerText = prec + "%";
-    }
-
-    // 3. BARRA DO EDITAL (Lógica à prova de falhas)
-    if (db.lista && db.lista.length > 0) {
-        let totalGeral = db.lista.length * 3;
-        let feitasGeral = 0;
-        db.lista.forEach(item => {
-            if(item.done && item.done.E) feitasGeral++;
-            if(item.done && item.done.Rev) feitasGeral++;
-            if(item.done && item.done.Ex) feitasGeral++;
-        });
-
-        const progCiclo = (feitasGeral / totalGeral * 100);
+        // Atualiza números do topo
+        const p = tasks.length > 0 ? (concluidas / tasks.length * 100) : 0;
+        if(document.getElementById('prog-dia')) document.getElementById('prog-dia').innerText = Math.round(p) + "%";
+        if(document.getElementById('bar-dia')) document.getElementById('bar-dia').style.width = p + "%";
         
-        // Só tenta desenhar a barra se estivermos na página diária
-        const listaContainer = document.getElementById('lista-diaria');
-        if (listaContainer) {
-            const barraCicloHtml = `
-                <div id="barra-ciclo-id" style="margin-bottom: 25px; background: white; padding: 20px; border-radius: 20px; border: 1px solid var(--border);">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <small style="font-weight:800; color:var(--text-sec);">PROGRESSO TOTAL DO EDITAL</small>
+        if(document.getElementById('horas-hoje')) {
+            const h = tasks.filter(x => x.c).reduce((acc, t) => acc + t.h, 0);
+            document.getElementById('horas-hoje').innerText = h.toFixed(1) + "h";
+        }
+
+        // Lógica da Barra do Ciclo (Alteração 3)
+        if (db.lista && db.lista.length > 0) {
+            let totalGeral = db.lista.length * 3;
+            let feitasGeral = 0;
+            db.lista.forEach(item => {
+                if(item.done && item.done.E) feitasGeral++;
+                if(item.done && item.done.Rev) feitasGeral++;
+                if(item.done && item.done.Ex) feitasGeral++;
+            });
+            const progCiclo = (feitasGeral / totalGeral * 100);
+            const listaContainer = document.getElementById('lista-diaria');
+            if (listaContainer) {
+                const barraHtml = `<div id="barra-ciclo-id" style="margin-bottom:20px; background:white; padding:20px; border-radius:15px; border:1px solid var(--border);">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <small style="font-weight:800; color:var(--text-sec);">PROGRESSO DO EDITAL</small>
                         <b style="color:var(--accent);">${progCiclo.toFixed(1)}%</b>
                     </div>
-                    <div style="width:100%; height:12px; background:#f1f5f9; border-radius:10px; overflow:hidden;">
+                    <div style="width:100%; height:10px; background:#f1f5f9; border-radius:10px; overflow:hidden;">
                         <div style="width:${progCiclo}%; height:100%; background:linear-gradient(90deg, #3b82f6, #10b981);"></div>
                     </div>
-                </div>
-            `;
-            
-            const barraExistente = document.getElementById('barra-ciclo-id');
-            if (barraExistente) {
-                barraExistente.outerHTML = barraCicloHtml;
-            } else {
-                listaContainer.insertAdjacentHTML('beforebegin', barraCicloHtml);
+                </div>`;
+                const existe = document.getElementById('barra-ciclo-id');
+                if (existe) existe.outerHTML = barraHtml;
+                else listaContainer.insertAdjacentHTML('beforebegin', barraHtml);
             }
         }
+    } catch (e) {
+        console.log("Erro silenciado para não travar o sistema.");
     }
-
-    // 4. Continua a execução sem travar
-    if (typeof updateStats === "function") updateStats();
 }
-       function navDay(dir) {
-    // 1. Descobre a diferença de dias entre a data que você quer ver e o dia de HOJE
-    const hoje = new Date();
-    hoje.setHours(0,0,0,0);
-    
-    let pretendida = new Date(vDate);
-    pretendida.setDate(pretendida.getDate() + dir);
-    pretendida.setHours(0,0,0,0);
 
-    const diffDias = Math.round((pretendida - hoje) / (1000 * 60 * 60 * 24));
 
-    // 2. Regra: Não pode ir para o passado e não pode passar de +1 dia (amanhã)
-    if(diffDias < 0 || diffDias > 1) return; 
-
-    // 3. Atualiza a data e redesenha a tela
-    vDate = pretendida;
-    renderDiario(vDate);
-    updateDashboard();
-
-    // 4. Esconde o botão "Ver Amanhã" se você já estiver vendo o dia de amanhã
-    const btnNext = document.querySelector('#nav-r button');
-    if(btnNext) btnNext.style.visibility = (diffDias === 1) ? 'hidden' : 'visible';
-}
 
         function renderSemanal() {
             let vList = JSON.parse(JSON.stringify(db.lista));
