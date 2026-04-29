@@ -213,7 +213,7 @@
             updateDashboard();
         }
 
-       function showTab(id, el) {
+     function showTab(id, el) {
     // 1. Esconde todas as páginas e desmarca os botões do menu
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -245,7 +245,6 @@
         console.warn("Erro ao carregar aba:", id, error);
     }
 }
-
         function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
 
         // --- CÉREBRO: INTERCALADO, TRAVA RITO E ABATIMENTO ---
@@ -419,72 +418,73 @@ function addExtra() {
             save(); updateDashboard(); renderDiario(vDate);
         }
 
-     function updateDashboard() {
-    // 1. Pega os dados básicos (Proteção contra erro se estiver vazio)
-    const dataAtualStr = vDate.toLocaleDateString();
-    const tasks = db.metaFixa[dataAtualStr] || [];
+  function updateDashboard() {
+    // 1. Pega os dados básicos com segurança
+    const dataAtual = vDate ? vDate.toLocaleDateString() : new Date().toLocaleDateString();
+    const tasks = (db.metaFixa && db.metaFixa[dataAtual]) ? db.metaFixa[dataAtual] : [];
     const concluidas = tasks.filter(x => x.c).length;
-    
-    // 2. Atualiza os cards do topo (Usa 'if' para não travar se o elemento não existir)
+
+    // 2. Atualiza os números do topo (APENAS SE ELES EXISTIREM NA TELA)
     const p = tasks.length > 0 ? (concluidas / tasks.length * 100) : 0;
-    const progDiaEl = document.getElementById('prog-dia');
-    const barDiaEl = document.getElementById('bar-dia');
-    if(progDiaEl) progDiaEl.innerText = Math.round(p) + "%";
-    if(barDiaEl) barDiaEl.style.width = p + "%";
     
-    const h = tasks.filter(x => x.c).reduce((acc, t) => acc + t.h, 0);
-    const horasHojeEl = document.getElementById('horas-hoje');
-    if(horasHojeEl) horasHojeEl.innerText = h.toFixed(1) + "h";
+    let elProgText = document.getElementById('prog-dia');
+    let elProgBar = document.getElementById('bar-dia');
+    let elHoras = document.getElementById('horas-hoje');
+    let elPrec = document.getElementById('precisao-dia');
+
+    if(elProgText) elProgText.innerText = Math.round(p) + "%";
+    if(elProgBar) elProgBar.style.width = p + "%";
     
-    let tQ = 0, aQ = 0;
-    tasks.forEach(x => { if(x.perf) { tQ += x.perf.t; aQ += x.perf.a; }});
-    const prec = tQ > 0 ? Math.round((aQ / tQ) * 100) : 0;
-    const precisaoEl = document.getElementById('precisao-dia');
-    if(precisaoEl) precisaoEl.innerText = prec + "%";
-
-    // 3. LÓGICA DA BARRA DO EDITAL (ALTERAÇÃO 3)
-    let totalGeral = (db.lista.length * 3) || 1; 
-    let feitasGeral = 0;
-    db.lista.forEach(item => {
-        if(item.done && item.done.E) feitasGeral++;
-        if(item.done && item.done.Rev) feitasGeral++;
-        if(item.done && item.done.Ex) feitasGeral++;
-    });
-
-    const progCiclo = (feitasGeral / totalGeral * 100);
-    const falta = totalGeral - feitasGeral;
-    const dataEst = new Date();
-    dataEst.setDate(dataEst.getDate() + Math.ceil(falta / 3));
-
-    const barraCicloHtml = `
-        <div id="barra-ciclo-id" style="margin-bottom: 25px; background: white; padding: 20px; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <small style="font-weight:800; color:var(--text-sec); text-transform:uppercase; letter-spacing:1px;">Progresso Total do Edital</small>
-                <b style="color:var(--accent); font-size:0.9rem;">${progCiclo.toFixed(1)}%</b>
-            </div>
-            <div style="width:100%; height:12px; background:#f1f5f9; border-radius:10px; overflow:hidden; border: 1px solid #e2e8f0;">
-                <div style="width:${progCiclo}%; height:100%; background:linear-gradient(90deg, #3b82f6, #10b981); transition: 1s ease-in-out;"></div>
-            </div>
-            <p style="margin-top:10px; font-size:0.75rem; color:var(--text-sec); font-weight:600;">
-                <i class="fas fa-bullseye"></i> Alvo: Conclusão estimada em <b>${dataEst.toLocaleDateString()}</b>
-            </p>
-        </div>
-    `;
-
-    // 4. INSERÇÃO DA BARRA NA TELA
-    const listaContainer = document.getElementById('lista-diaria');
-    const barraExistente = document.getElementById('barra-ciclo-id');
-    
-    if (barraExistente) {
-        barraExistente.outerHTML = barraCicloHtml;
-    } else if (listaContainer) {
-        listaContainer.insertAdjacentHTML('beforebegin', barraCicloHtml);
+    if(elHoras) {
+        const h = tasks.filter(x => x.c).reduce((acc, t) => acc + t.h, 0);
+        elHoras.innerText = h.toFixed(1) + "h";
     }
 
-    // 5. COMANDO CRUCIAL: Atualiza as outras funções e garante o desenho da tela
-    updateStats(); 
-    // Removido o renderDiario daqui para evitar loop infinito, 
-    // mas garantimos que as abas funcionem.
+    if(elPrec) {
+        let tQ = 0, aQ = 0;
+        tasks.forEach(x => { if(x.perf) { tQ += x.perf.t; aQ += x.perf.a; }});
+        const prec = tQ > 0 ? Math.round((aQ / tQ) * 100) : 0;
+        elPrec.innerText = prec + "%";
+    }
+
+    // 3. BARRA DO EDITAL (Lógica à prova de falhas)
+    if (db.lista && db.lista.length > 0) {
+        let totalGeral = db.lista.length * 3;
+        let feitasGeral = 0;
+        db.lista.forEach(item => {
+            if(item.done && item.done.E) feitasGeral++;
+            if(item.done && item.done.Rev) feitasGeral++;
+            if(item.done && item.done.Ex) feitasGeral++;
+        });
+
+        const progCiclo = (feitasGeral / totalGeral * 100);
+        
+        // Só tenta desenhar a barra se estivermos na página diária
+        const listaContainer = document.getElementById('lista-diaria');
+        if (listaContainer) {
+            const barraCicloHtml = `
+                <div id="barra-ciclo-id" style="margin-bottom: 25px; background: white; padding: 20px; border-radius: 20px; border: 1px solid var(--border);">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <small style="font-weight:800; color:var(--text-sec);">PROGRESSO TOTAL DO EDITAL</small>
+                        <b style="color:var(--accent);">${progCiclo.toFixed(1)}%</b>
+                    </div>
+                    <div style="width:100%; height:12px; background:#f1f5f9; border-radius:10px; overflow:hidden;">
+                        <div style="width:${progCiclo}%; height:100%; background:linear-gradient(90deg, #3b82f6, #10b981);"></div>
+                    </div>
+                </div>
+            `;
+            
+            const barraExistente = document.getElementById('barra-ciclo-id');
+            if (barraExistente) {
+                barraExistente.outerHTML = barraCicloHtml;
+            } else {
+                listaContainer.insertAdjacentHTML('beforebegin', barraCicloHtml);
+            }
+        }
+    }
+
+    // 4. Continua a execução sem travar
+    if (typeof updateStats === "function") updateStats();
 }
        function navDay(dir) {
     // 1. Descobre a diferença de dias entre a data que você quer ver e o dia de HOJE
