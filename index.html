@@ -112,19 +112,20 @@
                 </div>
             </div>
 
-            <div id="diaria" class="page active">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-                    <div id="nav-l" style="width: 150px;"></div>
-                    <div>
-                        <h1 id="view-title" style="font-weight:800; letter-spacing:-1px; text-align:center;">Missão Diária 🚓</h1>
-                        <p id="meta-status" style="text-align:center; color:var(--text-sec); font-weight:600; font-size:0.9rem; margin-top:5px;"></p>
-                    </div>
-                    <div id="nav-r" style="width: 150px; text-align:right;">
-                        <button class="btn btn-outline btn-sm" onclick="navDay(1)">VER AMANHÃ <i class="fas fa-arrow-right"></i></button>
-                    </div>
-                </div>
-                <div id="lista-diaria"></div>
-            </div>
+           <div id="diaria" class="page active">
+    <div style="background: var(--primary); color: white; padding: 20px; border-radius: 15px; margin-bottom: 25px; border-left: 5px solid var(--accent);">
+        <h3 style="margin:0;">FORÇA E HONRA, JOÃO! ⚡</h3>
+        <p style="font-size: 0.85rem; opacity: 0.8;">"O treinamento difícil faz a combate fácil." - Mantenha o foco na farda!</p>
+    </div>
+
+    <div style="display: flex; gap: 15px; margin-bottom: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">
+        <span style="display:flex; align-items:center; gap:5px;"><i class="fas fa-circle" style="color: #3b82f6;"></i> Estudo</span>
+        <span style="display:flex; align-items:center; gap:5px;"><i class="fas fa-circle" style="color: #f59e0b;"></i> Revisão</span>
+        <span style="display:flex; align-items:center; gap:5px;"><i class="fas fa-circle" style="color: #10b981;"></i> Exercícios</span>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+        <div id="nav-l" style="width: 150px;"></div>
 
             <div id="semanal" class="page">
                 <h1 style="margin-bottom:25px; font-weight:800; letter-spacing:-1px;">Projeção Neural 7 Dias</h1>
@@ -354,6 +355,25 @@
             }
 
             document.getElementById('lista-diaria').innerHTML = html || "<p style='text-align:center; color:gray;'>Zere o edital ou adicione matérias ao ciclo.</p>";
+       // No final da função renderDiario(date)
+let btnExtra = `
+    <button class="btn btn-outline" style="width:100%; margin-top:20px; border-style: dashed;" onclick="addExtra()">
+        <i class="fas fa-plus"></i> Estudou algo fora do planejado?
+    </button>
+`;
+document.getElementById('lista-diaria').innerHTML += btnExtra;
+
+// Crie esta função nova fora de qualquer outra
+function addExtra() {
+    let oque = prompt("O que você estudou de extra?");
+    if(oque) {
+        let novaTask = { m: "EXTRA", a: oque, l: "ESTUDO", k: "E", h: 1, c: false };
+        const hj = vDate.toLocaleDateString();
+        db.metaFixa[hj].push(novaTask);
+        save();
+        renderDiario(vDate);
+    }
+}
         }
 
         function concluirTask(dK, idx) {
@@ -391,14 +411,73 @@
             tasks.forEach(x => { if(x.perf) { tQ += x.perf.t; aQ += x.perf.a; }});
             const prec = tQ > 0 ? Math.round((aQ / tQ) * 100) : 0;
             document.getElementById('precisao-dia').innerText = prec + "%";
+           // --- CÁLCULO DO PROGRESSO DO CICLO (Abaixo do cálculo de precisão) ---
+    let totalGeral = db.lista.length * 3; // Multiplicamos por 3 (Estudo, Revisão, Exercício)
+    let feitasGeral = 0;
+    
+    // Contamos tudo o que já foi marcado como feito no banco de dados
+    db.lista.forEach(item => {
+        if(item.done.E) feitasGeral++;
+        if(item.done.Rev) feitasGeral++;
+        if(item.done.Ex) feitasGeral++;
+    });
+
+    const progCiclo = totalGeral > 0 ? (feitasGeral / totalGeral * 100) : 0;
+
+    // Criamos o visual da barra para inserir na tela
+    const barraCicloHtml = `
+        <div style="margin-bottom: 25px; background: white; padding: 20px; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <small style="font-weight:800; color:var(--text-sec); text-transform:uppercase; letter-spacing:1px;">Progresso Total do Edital</small>
+                <b style="color:var(--accent); font-size:0.9rem;">${progCiclo.toFixed(1)}%</b>
+            </div>
+            <div style="width:100%; height:12px; background:#f1f5f9; border-radius:10px; overflow:hidden; border: 1px solid #e2e8f0;">
+                <div style="width:${progCiclo}%; height:100%; background:linear-gradient(90deg, #3b82f6, #10b981); transition: 1s ease-in-out;"></div>
+            </div>
+            <p style="margin-top:10px; font-size:0.75rem; color:var(--text-sec); font-weight:600;">
+                <i class="fas fa-bullseye"></i> Alvo: Conclusão estimada em <b>${new Date(Date.now() + (totalGeral - feitasGeral) * 24 * 60 * 60 * 1000 / 3).toLocaleDateString()}</b>
+            </p>
+        </div>
+    `;
+
+    // Local onde a barra vai aparecer (antes da lista de tarefas)
+    const container = document.getElementById('lista-diaria');
+    if (container && !document.getElementById('barra-ciclo-id')) {
+        const divBarra = document.createElement('div');
+        divBarra.id = 'barra-ciclo-id';
+        container.parentNode.insertBefore(divBarra, container);
+    }
+    
+    if(document.getElementById('barra-ciclo-id')) {
+        document.getElementById('barra-ciclo-id').innerHTML = barraCicloHtml;
+    }
+    // --- FIM DA ALTERAÇÃO 3 ---
             updateStats();
         }
 
-        function navDay(dir) {
-            vDate.setDate(vDate.getDate() + dir);
-            renderDiario(vDate);
-            updateDashboard();
-        }
+       function navDay(dir) {
+    // 1. Descobre a diferença de dias entre a data que você quer ver e o dia de HOJE
+    const hoje = new Date();
+    hoje.setHours(0,0,0,0);
+    
+    let pretendida = new Date(vDate);
+    pretendida.setDate(pretendida.getDate() + dir);
+    pretendida.setHours(0,0,0,0);
+
+    const diffDias = Math.round((pretendida - hoje) / (1000 * 60 * 60 * 24));
+
+    // 2. Regra: Não pode ir para o passado e não pode passar de +1 dia (amanhã)
+    if(diffDias < 0 || diffDias > 1) return; 
+
+    // 3. Atualiza a data e redesenha a tela
+    vDate = pretendida;
+    renderDiario(vDate);
+    updateDashboard();
+
+    // 4. Esconde o botão "Ver Amanhã" se você já estiver vendo o dia de amanhã
+    const btnNext = document.querySelector('#nav-r button');
+    if(btnNext) btnNext.style.visibility = (diffDias === 1) ? 'hidden' : 'visible';
+}
 
         function renderSemanal() {
             let vList = JSON.parse(JSON.stringify(db.lista));
