@@ -133,3 +133,31 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
     font-size: 1.1rem;
     display: block;
 }
+.day-column {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tasks-container-semanal {
+    padding: 6px !important; /* Reduz o espaçamento entre as bordas e os cards */
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* Espaço pequeno entre um card e outro */
+    background: #f8fafc;
+    min-height: 300px;
+}
+
+.day-head {
+    padding: 6px 4px;
+    text-align: center;
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.day-head span {
+    line-height: 1.1;
+}
