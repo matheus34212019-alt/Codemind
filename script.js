@@ -240,7 +240,6 @@ function replanejarAgora() {
     save(); alert("Plantão Replanejado!"); init();
 }
 
-// CRONOGRAMA PLANTÃO (DOM-SÁB COM ATRASOS EM VERMELHO)
 function renderSemanal() {
     const dN = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
     let hoje = new Date(); hoje.setHours(0,0,0,0);
@@ -249,7 +248,6 @@ function renderSemanal() {
     let pD = new Date(hoje); 
     pD.setDate(hoje.getDate() - hoje.getDay());
     
-    // Variáveis para o Desempenho
     let totalHoras = 0;
     let totalQuest = 0;
     let totalAcertos = 0;
@@ -259,63 +257,61 @@ function renderSemanal() {
         d.setDate(pD.getDate() + off);
         let k = d.toLocaleDateString();
         
-        // LÓGICA DE PREENCHIMENTO AUTOMÁTICO:
-        // Se não existir meta para este dia da semana, ele gera usando a lógica do NeuralPool
+        // --- LOGICA DE PREENCHIMENTO AUTOMÁTICO (Sexta e Sábado) ---
+        // Se o dia não tem meta e tem horas configuradas, gera agora
         if(!db.metaFixa[k]) {
-            const horasMetaDia = parseFloat(db.h[d.getDay()]);
-            if(horasMetaDia > 0) {
-                db.metaFixa[k] = getNeuralPool(horasMetaDia, JSON.parse(JSON.stringify(db.lista)));
+            const horasConfiguradas = parseFloat(db.h[d.getDay()]);
+            if(horasConfiguradas > 0) {
+                db.metaFixa[k] = getNeuralPool(horasConfiguradas, JSON.parse(JSON.stringify(db.lista)));
             }
         }
 
         let tasks = db.metaFixa[k] || [];
         let isAtr = d < hoje && tasks.some(t => !t.c);
         
-        // Acumular estatísticas se a tarefa estiver concluída
+        // Cálculos de Desempenho
         tasks.forEach(t => {
             if(t.c) {
                 totalHoras += t.h;
-                if(t.q) { // Se houver registro de questões
-                    totalQuest += t.q;
-                    totalAcertos += t.ok;
-                }
+                if(t.q) { totalQuest += t.q; totalAcertos += t.ok; }
             }
         });
 
         return `
             <div class="day-column">
-                <div class="day-head ${isAtr ? 'atrasado' : ''}" style="${d.getTime() === hoje.getTime() ? 'border-bottom: 3px solid var(--accent);' : ''}">
-                    <span style="font-weight:800; font-size:0.75rem;">${dN[d.getDay()]}</span><br>
-                    <span style="font-size:0.65rem; opacity:0.7;">${k.slice(0,5)}</span>
+                <div class="day-head ${isAtr ? 'atrasado' : ''}">
+                    <span style="font-weight:800;">${dN[d.getDay()]}</span><br>
+                    <span style="font-size:0.7rem;">${k.slice(0,5)}</span>
                 </div>
-                <div class="tasks-container-semanal">
+                <div class="tasks-container-semanal" style="padding: 10px; display: flex; flex-direction: column; gap: 10px;">
                     ${tasks.length > 0 ? tasks.map(x => {
-                        const cores = { 'E': 'var(--color-e)', 'Rev': 'var(--color-rev)', 'Ex': 'var(--color-ex)' };
-                        const corCard = (!x.c && d < hoje) ? '#ef4444' : cores[x.k];
+                        // Cores originais do seu sistema
+                        const cores = { 'E': '#3b82f6', 'Rev': '#f59e0b', 'Ex': '#10b981' };
+                        const corCard = (d < hoje && !x.c) ? '#ef4444' : (cores[x.k] || '#3b82f6');
                         
                         return `
-                        <div class="sim-task" 
-                             style="background: ${corCard}; border-left: 4px solid rgba(0,0,0,0.2); ${x.c ? 'opacity: 0.6;' : ''}">
-                            <div style="display:flex; justify-content:space-between; font-size:0.55rem; font-weight:700; margin-bottom:2px;">
-                                <span>${x.l.toUpperCase()}</span>
-                                <span>${x.h}h</span>
+                        <div style="background: ${corCard}; color: white; padding: 12px; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                                <b style="font-size: 0.75rem; text-transform: uppercase;">${x.m}</b>
+                                <span style="font-size: 0.65rem; background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 4px;">${x.h}h</span>
                             </div>
-                            <b style="font-size: 0.65rem; display: block; line-height: 1.1; margin-bottom:2px;">${x.m}</b>
-                            <span style="font-size: 0.55rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${x.a}</span>
-                            ${x.c && x.q ? `<div style="font-size:0.5rem; margin-top:3px; border-top:1px solid rgba(255,255,255,0.3); padding-top:2px;">🎯 ${x.ok}/${x.q}</div>` : ''}
+                            <div style="font-size: 0.7rem; line-height: 1.2; opacity: 0.9;">${x.a}</div>
+                            ${x.c && x.q ? `<div style="font-size:0.6rem; margin-top:5px; font-weight:700;">🎯 ${x.ok}/${x.q}</div>` : ''}
                         </div>`;
-                    }).join('') : '<div style="text-align:center; padding-top:20px; font-size:0.6rem; color:#94a3b8;">--</div>'}
+                    }).join('') : ''}
                 </div>
             </div>`;
     }).join('');
 
-    // Atualiza os números de desempenho no topo do cronograma
-    document.getElementById('sem-horas').innerText = totalHoras.toFixed(1) + 'h';
-    document.getElementById('sem-quest').innerText = totalQuest;
-    const precisao = totalQuest > 0 ? Math.round((totalAcertos / totalQuest) * 100) : 0;
-    document.getElementById('sem-prec').innerText = precisao + '%';
+    // Atualiza os cards de resumo no topo
+    if(document.getElementById('sem-horas')) document.getElementById('sem-horas').innerText = totalHoras.toFixed(1) + 'h';
+    if(document.getElementById('sem-quest')) document.getElementById('sem-quest').innerText = totalQuest;
+    if(document.getElementById('sem-prec')) {
+        const perc = totalQuest > 0 ? Math.round((totalAcertos/totalQuest)*100) : 0;
+        document.getElementById('sem-prec').innerText = perc + '%';
+    }
     
-    save(); // Salva as metas que foram geradas automaticamente para sexta/sábado
+    save(); // Salva as metas geradas de sexta e sábado permanentemente
 }
 function getNeuralPool(limit, simList) {
     let pool = []; let somaH = 0; if(!db.ciclo.length) return pool;
