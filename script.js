@@ -249,37 +249,37 @@ function renderSemanal() {
     const parts = db.inicioCiclo.split('/');
     const dataInicio = new Date(parts[2], parts[1] - 1, parts[0]);
 
-    let totalHoras = 0, totalQuest = 0, totalAcertos = 0;
+    let totalHorasSemana = 0, totalQuest = 0, totalAcertos = 0;
 
     document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(off => {
         let d = new Date(pD); d.setDate(pD.getDate() + off);
         let k = d.toLocaleDateString();
+        const limiteDiario = parseFloat(db.h[d.getDay()]) || 0; // Pega o limite de horas que você definiu
         
         let tasks = [];
         if (d >= dataInicio) {
-            // Se o dia está vazio, o motor de inteligência entra em ação
-            if(!db.metaFixa[k]) {
-                const hConfig = parseFloat(db.h[d.getDay()]);
-                if(hConfig > 0) {
-                    // AQUI ESTÁ A MÁGICA: O NeuralPool agora filtra o que já foi estudado
-                    // Ele prioriza revisões de 3, 7 e 21 dias antes de novos assuntos
-                    db.metaFixa[k] = getNeuralPool(hConfig, JSON.parse(JSON.stringify(db.lista)), d);
-                }
+            // Se o dia não foi gerado, o NeuralPool cria respeitando o limiteDiario
+            if(!db.metaFixa[k] && limiteDiario > 0) {
+                db.metaFixa[k] = getNeuralPool(limiteDiario, JSON.parse(JSON.stringify(db.lista)), d);
             }
             tasks = db.metaFixa[k] || [];
         }
 
         let isAtr = d < hoje && tasks.some(t => !t.c);
-        tasks.forEach(t => { if(t.c) { totalHoras += t.h; if(t.q){ totalQuest += t.q; totalAcertos += t.ok; } } });
+        let somaHorasDia = 0;
 
         return `
             <div class="day-column">
                 <div class="day-head ${isAtr ? 'atrasado' : ''}" style="${d.getTime() === hoje.getTime() ? 'background: #dbeafe; border-bottom: 2px solid #2563eb;' : ''}">
                     <span style="font-weight:800; font-size:0.65rem;">${dN[d.getDay()]}</span><br>
                     <span style="font-size:0.55rem; opacity:0.7;">${k.slice(0,5)}</span>
+                    <div style="font-size:0.5rem; font-weight:700; color:var(--accent);">${limiteDiario}h META</div>
                 </div>
                 <div class="tasks-container-semanal" style="padding: 6px; display: flex; flex-direction: column; gap: 6px; background: ${d < dataInicio ? '#f8fafc' : '#fff'}; min-height: 250px;">
-                    ${tasks.length > 0 ? tasks.map(x => {
+                    ${tasks.map(x => {
+                        somaHorasDia += x.h;
+                        if(x.c) { totalHorasSemana += x.h; if(x.q){ totalQuest += x.q; totalAcertos += t.ok; } }
+                        
                         const cores = { 'E': '#3b82f6', 'Rev': '#f59e0b', 'Ex': '#10b981' };
                         const corCard = (d < hoje && !x.c) ? '#ef4444' : (cores[x.k] || '#3b82f6');
                         
@@ -294,13 +294,15 @@ function renderSemanal() {
                                 ${x.k === 'E' ? 'CICLO 1' : 'CICLO 2'}
                             </div>
                         </div>`;
-                    }).join('') : (d < dataInicio ? '<div style="text-align:center; margin-top:20px; font-size:0.5rem; color:#cbd5e1; font-weight:700;">FORA DO CICLO</div>' : '')}
+                    }).join('')}
+                    ${d >= dataInicio && tasks.length === 0 ? '<div style="text-align:center; margin-top:20px; font-size:0.5rem; color:#cbd5e1;">FOLGA</div>' : ''}
+                    ${d < dataInicio ? '<div style="text-align:center; margin-top:20px; font-size:0.5rem; color:#cbd5e1; font-weight:700;">FORA DO CICLO</div>' : ''}
                 </div>
             </div>`;
     }).join('');
 
-    // Atualiza os indicadores de performance
-    if(document.getElementById('sem-horas')) document.getElementById('sem-horas').innerText = totalHoras.toFixed(1) + 'h';
+    // Atualiza indicadores globais
+    if(document.getElementById('sem-horas')) document.getElementById('sem-horas').innerText = totalHorasSemana.toFixed(1) + 'h';
     if(document.getElementById('sem-quest')) document.getElementById('sem-quest').innerText = totalQuest;
     if(document.getElementById('sem-prec')) {
         const perc = totalQuest > 0 ? Math.round((totalAcertos/totalQuest)*100) : 0;
