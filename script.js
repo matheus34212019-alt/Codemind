@@ -110,6 +110,19 @@ function renderDiario(date) {
     
     const ehHoje = curStr === hoje.toLocaleDateString();
     document.getElementById('view-title').innerText = ehHoje ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
+// No final da renderDiario(date):
+    const tarefasConcluidas = tasks.length > 0 && tasks.every(x => x.c);
+    if(tarefasConcluidas && curStr === hoje.toLocaleDateString()) {
+        const divFim = document.createElement('div');
+        divFim.className = "stat-card";
+        divFim.style = "text-align:center; background:#eff6ff; border:2px dashed var(--accent); margin-top:20px;";
+        divFim.innerHTML = `
+            <h3>🚀 Missão Cumprida!</h3>
+            <p>Matheus, parabéns pelo plantão finalizado.</p>
+            <button class="btn" onclick="navDay(1)">ADIANTAR MATÉRIAS DE AMANHÃ</button>
+        `;
+        document.getElementById('lista-diaria').appendChild(divFim);
+    }
 }
 
 function toggleTimer(id) {
@@ -134,8 +147,27 @@ function toggleTimer(id) {
 
 // MODAIS E EXERCÍCIOS CEBRASPE
 function fecharModais() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-function abrirModalExtra() { document.getElementById('modal-extra').style.display = 'flex'; }
-
+function abrirModalExtra() {
+    const selectMat = document.getElementById('extra-mat');
+    const materiasUnicas = [...new Set(db.lista.map(x => x.m))];
+    
+    selectMat.innerHTML = '<option value="">Selecione a Matéria</option>' + 
+        materiasUnicas.map(m => `<option value="${m}">${m}</option>`).join('');
+    
+    document.getElementById('modal-extra').style.display = 'flex';
+}
+function atualizarAssuntosExtra() {
+    const matSelecionada = document.getElementById('extra-mat').value;
+    const selectAss = document.getElementById('extra-ass');
+    
+    if (!matSelecionada) {
+        selectAss.innerHTML = '<option value="">Selecione o Assunto</option>';
+        return;
+    }
+    
+    const assuntos = db.lista.filter(x => x.m === matSelecionada).map(x => x.a);
+    selectAss.innerHTML = assuntos.map(a => `<option value="${a}">${a}</option>`).join('');
+}
 function cliqueTask(dK, idx) {
     const t = db.metaFixa[dK][idx];
     if(!t.c && t.k === 'Ex') {
@@ -353,11 +385,30 @@ function navDay(dir) {
 }
 
 function salvarExtra() {
-    const m = document.getElementById('extra-mat').value.toUpperCase();
+    const m = document.getElementById('extra-mat').value;
     const a = document.getElementById('extra-ass').value;
-    if(!m || !a) return;
+    const tipoK = document.getElementById('extra-tipo').value;
+    const tempo = parseFloat(document.getElementById('extra-tempo').value);
+    
+    if(!m || !a) { alert("Selecione matéria e assunto!"); return; }
+    
+    const tiposL = { "E": "Estudo", "Rev": "Revisão", "Ex": "Exercícios" };
     const hj = new Date().toLocaleDateString();
+    
     if(!db.metaFixa[hj]) db.metaFixa[hj] = [];
-    db.metaFixa[hj].push({ m, a, l: "EXTRA", k: "E", h: 1.0, c: false, extra: true });
-    save(); fecharModais(); renderDiario(vDate);
+    
+    db.metaFixa[hj].push({ 
+        m: m.toUpperCase(), 
+        a: a, 
+        l: tiposL[tipoK], 
+        k: tipoK, 
+        h: tempo, 
+        c: false, 
+        extra: true 
+    });
+    
+    save(); 
+    fecharModais(); 
+    renderDiario(vDate);
+    updateDashboard();
 }
