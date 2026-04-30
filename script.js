@@ -243,25 +243,80 @@ function replanejarAgora() {
 // CRONOGRAMA PLANTÃO (DOM-SÁB COM ATRASOS EM VERMELHO)
 function renderSemanal() {
     const dN = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
-    let h = new Date(); h.setHours(0,0,0,0);
-    let pD = new Date(h); pD.setDate(h.getDate() - h.getDay());
+    let hoje = new Date(); hoje.setHours(0,0,0,0);
+    
+    // Encontra o domingo da semana atual
+    let pD = new Date(hoje); 
+    pD.setDate(hoje.getDate() - hoje.getDay());
+    
+    // Variáveis para o Desempenho
+    let totalHoras = 0;
+    let totalQuest = 0;
+    let totalAcertos = 0;
+
     document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(off => {
-        let d = new Date(pD); d.setDate(pD.getDate() + off);
+        let d = new Date(pD); 
+        d.setDate(pD.getDate() + off);
         let k = d.toLocaleDateString();
+        
+        // LÓGICA DE PREENCHIMENTO AUTOMÁTICO:
+        // Se não existir meta para este dia da semana, ele gera usando a lógica do NeuralPool
+        if(!db.metaFixa[k]) {
+            const horasMetaDia = parseFloat(db.h[d.getDay()]);
+            if(horasMetaDia > 0) {
+                db.metaFixa[k] = getNeuralPool(horasMetaDia, JSON.parse(JSON.stringify(db.lista)));
+            }
+        }
+
         let tasks = db.metaFixa[k] || [];
-        let isAtr = d < h && tasks.some(t => !t.c);
+        let isAtr = d < hoje && tasks.some(t => !t.c);
+        
+        // Acumular estatísticas se a tarefa estiver concluída
+        tasks.forEach(t => {
+            if(t.c) {
+                totalHoras += t.h;
+                if(t.q) { // Se houver registro de questões
+                    totalQuest += t.q;
+                    totalAcertos += t.ok;
+                }
+            }
+        });
+
         return `
             <div class="day-column">
-                <div class="day-head ${isAtr ? 'atrasado' : ''}">${dN[d.getDay()]}<br>${k.slice(0,5)}</div>
-                ${tasks.map(x => `
-                    <div class="sim-task tag-${x.k==='Ex'?'ex':(x.k==='Rev'?'rev':'e')} ${!x.c && d < h ? 'atrasado' : ''}">
-                        <b>${x.m}</b><br>${x.a}
-                    </div>`).join('')}
+                <div class="day-head ${isAtr ? 'atrasado' : ''}" style="${d.getTime() === hoje.getTime() ? 'border-bottom: 3px solid var(--accent);' : ''}">
+                    <span style="font-weight:800; font-size:0.75rem;">${dN[d.getDay()]}</span><br>
+                    <span style="font-size:0.65rem; opacity:0.7;">${k.slice(0,5)}</span>
+                </div>
+                <div class="tasks-container-semanal">
+                    ${tasks.length > 0 ? tasks.map(x => {
+                        const cores = { 'E': 'var(--color-e)', 'Rev': 'var(--color-rev)', 'Ex': 'var(--color-ex)' };
+                        const corCard = (!x.c && d < hoje) ? '#ef4444' : cores[x.k];
+                        
+                        return `
+                        <div class="sim-task" 
+                             style="background: ${corCard}; border-left: 4px solid rgba(0,0,0,0.2); ${x.c ? 'opacity: 0.6;' : ''}">
+                            <div style="display:flex; justify-content:space-between; font-size:0.55rem; font-weight:700; margin-bottom:2px;">
+                                <span>${x.l.toUpperCase()}</span>
+                                <span>${x.h}h</span>
+                            </div>
+                            <b style="font-size: 0.65rem; display: block; line-height: 1.1; margin-bottom:2px;">${x.m}</b>
+                            <span style="font-size: 0.55rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${x.a}</span>
+                            ${x.c && x.q ? `<div style="font-size:0.5rem; margin-top:3px; border-top:1px solid rgba(255,255,255,0.3); padding-top:2px;">🎯 ${x.ok}/${x.q}</div>` : ''}
+                        </div>`;
+                    }).join('') : '<div style="text-align:center; padding-top:20px; font-size:0.6rem; color:#94a3b8;">--</div>'}
+                </div>
             </div>`;
     }).join('');
-}
 
-// MOTOR DE INTELIGÊNCIA (NEURAL POOL)
+    // Atualiza os números de desempenho no topo do cronograma
+    document.getElementById('sem-horas').innerText = totalHoras.toFixed(1) + 'h';
+    document.getElementById('sem-quest').innerText = totalQuest;
+    const precisao = totalQuest > 0 ? Math.round((totalAcertos / totalQuest) * 100) : 0;
+    document.getElementById('sem-prec').innerText = precisao + '%';
+    
+    save(); // Salva as metas que foram geradas automaticamente para sexta/sábado
+}
 function getNeuralPool(limit, simList) {
     let pool = []; let somaH = 0; if(!db.ciclo.length) return pool;
     let localList = JSON.parse(JSON.stringify(simList));
