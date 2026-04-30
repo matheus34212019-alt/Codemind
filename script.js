@@ -110,20 +110,32 @@ function renderDiario(date) {
     
     const ehHoje = curStr === hoje.toLocaleDateString();
     document.getElementById('view-title').innerText = ehHoje ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
-// No final da renderDiario(date):
+// --- CÓDIGO DE CONCLUSÃO DO PLANTÃO (Substitua no final da renderDiario) ---
     const tarefasConcluidas = tasks.length > 0 && tasks.every(x => x.c);
-    if(tarefasConcluidas && curStr === hoje.toLocaleDateString()) {
+    
+    if (tarefasConcluidas && curStr === hoje.toLocaleDateString()) {
+        const lista = document.getElementById('lista-diaria');
+        
+        // Criamos o card de congratulações
         const divFim = document.createElement('div');
         divFim.className = "stat-card";
-        divFim.style = "text-align:center; background:#eff6ff; border:2px dashed var(--accent); margin-top:20px;";
+        divFim.style = "text-align:center; background: #f0fdf4; border: 2px dashed #16a34a; margin-top: 20px; padding: 30px; border-radius: 20px;";
+        
         divFim.innerHTML = `
-            <h3>🚀 Missão Cumprida!</h3>
-            <p>Matheus, parabéns pelo plantão finalizado.</p>
-            <button class="btn" onclick="navDay(1)">ADIANTAR MATÉRIAS DE AMANHÃ</button>
+            <div style="font-size: 3rem; margin-bottom: 10px;">🏆</div>
+            <h2 style="color: #16a34a; font-weight: 800; margin-bottom: 10px;">MISSÃO CUMPRIDA!</h2>
+            <p style="color: #15803d; font-weight: 600; margin-bottom: 20px;">
+                Excelente trabalho, Matheus! Todos os alvos de hoje foram atingidos com sucesso.
+            </p>
+            <button class="btn" onclick="navDay(1)" style="background: #16a34a; box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.3);">
+                <i class="fas fa-arrow-right"></i> ADIANTAR ESTUDOS DE AMANHÃ
+            </button>
         `;
-        document.getElementById('lista-diaria').appendChild(divFim);
+        
+        lista.appendChild(divFim);
     }
-}
+} // <--- Certifique-se de que esta chave fecha a função renderDiario
+
 
 function toggleTimer(id) {
     if (timers[id]) { 
