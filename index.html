@@ -18,15 +18,50 @@
         </div>
     </div>
 
-    <div id="modal-extra" class="modal-overlay">
-        <div class="modal-box">
-            <i class="fas fa-times modal-close" onclick="fecharModais()"></i>
-            <h3 style="margin-bottom:15px;"><i class="fas fa-plus-circle"></i> Estudo Fora do Fluxo</h3>
-            <input type="text" id="extra-mat" placeholder="Matéria">
-            <input type="text" id="extra-ass" placeholder="Assunto">
-            <button class="btn" style="width:100%;" onclick="salvarExtra()">INCLUIR NO PLANTÃO</button>
+   <!-- MODAL ESTUDO EXTRA ATUALIZADO -->
+<div id="modal-extra" class="modal-overlay">
+    <div class="modal-box" style="width: 500px;">
+        <i class="fas fa-times modal-close" onclick="fecharModais()"></i>
+        <h3 style="margin-bottom:20px;"><i class="fas fa-plus-circle"></i> Inserir Atividade Extra</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+                <label style="font-size: 0.75rem; font-weight: 700;">Disciplina:</label>
+                <select id="extra-mat" onchange="atualizarAssuntosExtra()">
+                    <option value="">Selecione a Matéria</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 0.75rem; font-weight: 700;">Assunto:</label>
+                <select id="extra-ass">
+                    <option value="">Selecione o Assunto</option>
+                </select>
+            </div>
         </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+            <div>
+                <label style="font-size: 0.75rem; font-weight: 700;">Modalidade:</label>
+                <select id="extra-tipo">
+                    <option value="E">Estudo</option>
+                    <option value="Rev">Revisão</option>
+                    <option value="Ex">Exercícios</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 0.75rem; font-weight: 700;">Tempo:</label>
+                <select id="extra-tempo">
+                    <option value="0.5">30 minutos</option>
+                    <option value="1.0" selected>60 minutos</option>
+                    <option value="1.5">90 minutos</option>
+                    <option value="2.0">2 horas</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="btn" style="width:100%; margin-top: 25px;" onclick="salvarExtra()">INCLUIR NO PLANTÃO</button>
     </div>
+</div>
 
     <div id="modal-exercicio" class="modal-overlay">
         <div class="modal-box">
