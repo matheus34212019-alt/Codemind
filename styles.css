@@ -77,3 +77,59 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 .replan-btn { color: #ef4444; border-color: #ef4444; }
 .meta-sub { color: var(--text-sec); font-weight: 600; font-size: 0.9rem; margin-bottom: 20px; }
 .nav-days { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+/* --- NOVOS ESTILOS DO CRONOGRAMA SEMANAL --- */
+
+.weekly-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* Cria as 7 colunas (uma para cada dia) */
+    gap: 10px;
+    align-items: start;
+    margin-top: 10px;
+}
+
+.tasks-container-semanal {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 200px;
+    background: #f8fafc;
+    border-radius: 0 0 8px 8px;
+    padding: 10px !important;
+    border: 1px solid #e2e8f0;
+    border-top: none;
+}
+
+.sim-task {
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+    cursor: default;
+}
+
+.sim-task:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+}
+
+.day-head {
+    padding: 10px;
+    text-align: center;
+    background: #f1f5f9;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid #e2e8f0;
+}
+
+/* Estilo para quando o dia ou a tarefa estiver atrasada */
+.day-head.atrasado {
+    background: #fee2e2 !important;
+    color: #ef4444 !important;
+    border-color: #fecaca !important;
+}
+
+/* Estilo para os cards de estatísticas no topo */
+#stats-semanal span {
+    font-size: 1.1rem;
+    display: block;
+}
