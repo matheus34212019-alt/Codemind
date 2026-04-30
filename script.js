@@ -243,48 +243,34 @@ function replanejarAgora() {
 function renderSemanal() {
     const dN = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
     let hoje = new Date(); hoje.setHours(0,0,0,0);
-    
-    // Encontra o domingo da semana atual
-    let pD = new Date(hoje); 
-    pD.setDate(hoje.getDate() - hoje.getDay());
-    
-    // Define ou recupera a data de início do ciclo para evitar "culpas retroativas"
-    if(!db.inicioCiclo) {
-        db.inicioCiclo = hoje.toLocaleDateString();
-        save();
-    }
-    
+    let pD = new Date(hoje); pD.setDate(hoje.getDate() - hoje.getDay());
+
+    if(!db.inicioCiclo) { db.inicioCiclo = hoje.toLocaleDateString(); save(); }
     const parts = db.inicioCiclo.split('/');
     const dataInicio = new Date(parts[2], parts[1] - 1, parts[0]);
 
     let totalHoras = 0, totalQuest = 0, totalAcertos = 0;
 
     document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(off => {
-        let d = new Date(pD); 
-        d.setDate(pD.getDate() + off);
+        let d = new Date(pD); d.setDate(pD.getDate() + off);
         let k = d.toLocaleDateString();
         
         let tasks = [];
-        // Só processa se o dia for igual ou posterior ao início do ciclo
         if (d >= dataInicio) {
+            // Se o dia está vazio, o motor de inteligência entra em ação
             if(!db.metaFixa[k]) {
                 const hConfig = parseFloat(db.h[d.getDay()]);
                 if(hConfig > 0) {
-                    db.metaFixa[k] = getNeuralPool(hConfig, JSON.parse(JSON.stringify(db.lista)));
+                    // AQUI ESTÁ A MÁGICA: O NeuralPool agora filtra o que já foi estudado
+                    // Ele prioriza revisões de 3, 7 e 21 dias antes de novos assuntos
+                    db.metaFixa[k] = getNeuralPool(hConfig, JSON.parse(JSON.stringify(db.lista)), d);
                 }
             }
             tasks = db.metaFixa[k] || [];
         }
 
         let isAtr = d < hoje && tasks.some(t => !t.c);
-        
-        // Soma estatísticas
-        tasks.forEach(t => {
-            if(t.c) {
-                totalHoras += t.h;
-                if(t.q) { totalQuest += t.q; totalAcertos += t.ok; }
-            }
-        });
+        tasks.forEach(t => { if(t.c) { totalHoras += t.h; if(t.q){ totalQuest += t.q; totalAcertos += t.ok; } } });
 
         return `
             <div class="day-column">
@@ -303,27 +289,24 @@ function renderSemanal() {
                                 <b style="font-size: 0.55rem; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">${x.m}</b>
                                 <span style="font-size: 0.5rem; background: rgba(0,0,0,0.2); padding: 1px 3px; border-radius: 3px; font-weight: 800;">${x.h}h</span>
                             </div>
-                            <div style="font-size: 0.55rem; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; opacity: 0.9;">
-                                ${x.a}
+                            <div style="font-size: 0.55rem; line-height: 1.1; opacity: 0.9;">${x.a}</div>
+                            <div style="font-size: 0.45rem; margin-top: 3px; font-weight: 700; background: rgba(255,255,255,0.1); display: inline-block; padding: 1px 3px; border-radius: 2px;">
+                                ${x.k === 'E' ? 'CICLO 1' : 'CICLO 2'}
                             </div>
-                            ${x.c && x.q ? `<div style="font-size:0.5rem; margin-top:3px; font-weight:700; border-top:1px solid rgba(255,255,255,0.2); padding-top:2px;">🎯 ${x.ok}/${x.q}</div>` : ''}
                         </div>`;
-                    }).join('') : (d < dataInicio ? '<div style="text-align:center; margin-top:20px; font-size:0.5rem; color:#cbd5e1; font-weight:700; text-transform:uppercase;">Fora do Ciclo</div>' : '')}
+                    }).join('') : (d < dataInicio ? '<div style="text-align:center; margin-top:20px; font-size:0.5rem; color:#cbd5e1; font-weight:700;">FORA DO CICLO</div>' : '')}
                 </div>
             </div>`;
     }).join('');
 
-    // Atualiza o resumo de desempenho no topo
-    const elH = document.getElementById('sem-horas');
-    const elQ = document.getElementById('sem-quest');
-    const elP = document.getElementById('sem-prec');
-    
-    if(elH) elH.innerText = totalHoras.toFixed(1) + 'h';
-    if(elQ) elQ.innerText = totalQuest;
-    if(elP) elP.innerText = (totalQuest > 0 ? Math.round((totalAcertos/totalQuest)*100) : 0) + '%';
-    
+    // Atualiza os indicadores de performance
+    if(document.getElementById('sem-horas')) document.getElementById('sem-horas').innerText = totalHoras.toFixed(1) + 'h';
+    if(document.getElementById('sem-quest')) document.getElementById('sem-quest').innerText = totalQuest;
+    if(document.getElementById('sem-prec')) {
+        const perc = totalQuest > 0 ? Math.round((totalAcertos/totalQuest)*100) : 0;
+        document.getElementById('sem-prec').innerText = perc + '%';
+    }
     save();
-}
 }
 function getNeuralPool(limit, simList) {
     let pool = []; let somaH = 0; if(!db.ciclo.length) return pool;
