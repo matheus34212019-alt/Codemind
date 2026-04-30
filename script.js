@@ -248,28 +248,37 @@ function renderSemanal() {
     let pD = new Date(hoje); 
     pD.setDate(hoje.getDate() - hoje.getDay());
     
-    let totalHoras = 0;
-    let totalQuest = 0;
-    let totalAcertos = 0;
+    // Define ou recupera a data de início do ciclo para evitar "culpas retroativas"
+    if(!db.inicioCiclo) {
+        db.inicioCiclo = hoje.toLocaleDateString();
+        save();
+    }
+    
+    const parts = db.inicioCiclo.split('/');
+    const dataInicio = new Date(parts[2], parts[1] - 1, parts[0]);
+
+    let totalHoras = 0, totalQuest = 0, totalAcertos = 0;
 
     document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(off => {
         let d = new Date(pD); 
         d.setDate(pD.getDate() + off);
         let k = d.toLocaleDateString();
         
-        // --- LOGICA DE PREENCHIMENTO AUTOMÁTICO (Sexta e Sábado) ---
-        // Se o dia não tem meta e tem horas configuradas, gera agora
-        if(!db.metaFixa[k]) {
-            const horasConfiguradas = parseFloat(db.h[d.getDay()]);
-            if(horasConfiguradas > 0) {
-                db.metaFixa[k] = getNeuralPool(horasConfiguradas, JSON.parse(JSON.stringify(db.lista)));
+        let tasks = [];
+        // Só processa se o dia for igual ou posterior ao início do ciclo
+        if (d >= dataInicio) {
+            if(!db.metaFixa[k]) {
+                const hConfig = parseFloat(db.h[d.getDay()]);
+                if(hConfig > 0) {
+                    db.metaFixa[k] = getNeuralPool(hConfig, JSON.parse(JSON.stringify(db.lista)));
+                }
             }
+            tasks = db.metaFixa[k] || [];
         }
 
-        let tasks = db.metaFixa[k] || [];
         let isAtr = d < hoje && tasks.some(t => !t.c);
         
-        // Cálculos de Desempenho
+        // Soma estatísticas
         tasks.forEach(t => {
             if(t.c) {
                 totalHoras += t.h;
@@ -279,39 +288,42 @@ function renderSemanal() {
 
         return `
             <div class="day-column">
-                <div class="day-head ${isAtr ? 'atrasado' : ''}">
-                    <span style="font-weight:800;">${dN[d.getDay()]}</span><br>
-                    <span style="font-size:0.7rem;">${k.slice(0,5)}</span>
+                <div class="day-head ${isAtr ? 'atrasado' : ''}" style="${d.getTime() === hoje.getTime() ? 'background: #dbeafe; border-bottom: 2px solid #2563eb;' : ''}">
+                    <span style="font-weight:800; font-size:0.65rem;">${dN[d.getDay()]}</span><br>
+                    <span style="font-size:0.55rem; opacity:0.7;">${k.slice(0,5)}</span>
                 </div>
-                <div class="tasks-container-semanal" style="padding: 10px; display: flex; flex-direction: column; gap: 10px;">
+                <div class="tasks-container-semanal" style="padding: 6px; display: flex; flex-direction: column; gap: 6px; background: ${d < dataInicio ? '#f8fafc' : '#fff'}; min-height: 250px;">
                     ${tasks.length > 0 ? tasks.map(x => {
-                        // Cores originais do seu sistema
                         const cores = { 'E': '#3b82f6', 'Rev': '#f59e0b', 'Ex': '#10b981' };
                         const corCard = (d < hoje && !x.c) ? '#ef4444' : (cores[x.k] || '#3b82f6');
                         
                         return `
-                        <div style="background: ${corCard}; color: white; padding: 12px; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                                <b style="font-size: 0.75rem; text-transform: uppercase;">${x.m}</b>
-                                <span style="font-size: 0.65rem; background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 4px;">${x.h}h</span>
+                        <div style="background: ${corCard}; color: white; padding: 6px 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); ${x.c ? 'opacity:0.5' : ''}; min-height: 50px;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2px; gap: 4px;">
+                                <b style="font-size: 0.55rem; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">${x.m}</b>
+                                <span style="font-size: 0.5rem; background: rgba(0,0,0,0.2); padding: 1px 3px; border-radius: 3px; font-weight: 800;">${x.h}h</span>
                             </div>
-                            <div style="font-size: 0.7rem; line-height: 1.2; opacity: 0.9;">${x.a}</div>
-                            ${x.c && x.q ? `<div style="font-size:0.6rem; margin-top:5px; font-weight:700;">🎯 ${x.ok}/${x.q}</div>` : ''}
+                            <div style="font-size: 0.55rem; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; opacity: 0.9;">
+                                ${x.a}
+                            </div>
+                            ${x.c && x.q ? `<div style="font-size:0.5rem; margin-top:3px; font-weight:700; border-top:1px solid rgba(255,255,255,0.2); padding-top:2px;">🎯 ${x.ok}/${x.q}</div>` : ''}
                         </div>`;
-                    }).join('') : ''}
+                    }).join('') : (d < dataInicio ? '<div style="text-align:center; margin-top:20px; font-size:0.5rem; color:#cbd5e1; font-weight:700; text-transform:uppercase;">Fora do Ciclo</div>' : '')}
                 </div>
             </div>`;
     }).join('');
 
-    // Atualiza os cards de resumo no topo
-    if(document.getElementById('sem-horas')) document.getElementById('sem-horas').innerText = totalHoras.toFixed(1) + 'h';
-    if(document.getElementById('sem-quest')) document.getElementById('sem-quest').innerText = totalQuest;
-    if(document.getElementById('sem-prec')) {
-        const perc = totalQuest > 0 ? Math.round((totalAcertos/totalQuest)*100) : 0;
-        document.getElementById('sem-prec').innerText = perc + '%';
-    }
+    // Atualiza o resumo de desempenho no topo
+    const elH = document.getElementById('sem-horas');
+    const elQ = document.getElementById('sem-quest');
+    const elP = document.getElementById('sem-prec');
     
-    save(); // Salva as metas geradas de sexta e sábado permanentemente
+    if(elH) elH.innerText = totalHoras.toFixed(1) + 'h';
+    if(elQ) elQ.innerText = totalQuest;
+    if(elP) elP.innerText = (totalQuest > 0 ? Math.round((totalAcertos/totalQuest)*100) : 0) + '%';
+    
+    save();
+}
 }
 function getNeuralPool(limit, simList) {
     let pool = []; let somaH = 0; if(!db.ciclo.length) return pool;
