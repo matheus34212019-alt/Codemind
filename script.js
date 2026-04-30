@@ -70,7 +70,7 @@ function renderDiario(date) {
     const hoje = new Date(); hoje.setHours(0,0,0,0);
     const curStr = date.toLocaleDateString();
     
-    // Bloqueio por atraso
+    // 1. Verificação de Atrasos
     let temAtr = false;
     let pD = new Date(hoje); pD.setDate(hoje.getDate() - hoje.getDay());
     for(let i=0; i < hoje.getDay(); i++) {
@@ -78,6 +78,7 @@ function renderDiario(date) {
         if(db.metaFixa[dP.toLocaleDateString()]?.some(t => !t.c)) { temAtr = true; break; }
     }
 
+    // 2. BLOQUEIO DE SEGURANÇA (Se houver atraso e tentar ver o futuro)
     if(date > hoje && temAtr) {
         document.getElementById('lista-diaria').innerHTML = `
             <div class="stat-card" style="text-align:center; border:2px solid red;">
@@ -87,6 +88,7 @@ function renderDiario(date) {
         return;
     }
 
+    // 3. GERAÇÃO DA LISTA DE TAREFAS
     if(!db.metaFixa[curStr]) db.metaFixa[curStr] = getNeuralPool(parseFloat(db.h[date.getDay()]), JSON.parse(JSON.stringify(db.lista)));
     const tasks = db.metaFixa[curStr];
     document.getElementById('meta-status').innerText = `${tasks.reduce((a,b)=>a+b.h,0).toFixed(1)}h / ${db.h[date.getDay()]}h meta`;
@@ -110,32 +112,35 @@ function renderDiario(date) {
     
     const ehHoje = curStr === hoje.toLocaleDateString();
     document.getElementById('view-title').innerText = ehHoje ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
-// --- CÓDIGO DE CONCLUSÃO DO PLANTÃO (Substitua no final da renderDiario) ---
+
+    // 4. LÓGICA DO BOTÃO DE REPLANEJAR (Independente)
+    const btnReplanejar = document.querySelector('.replan-btn');
+    if (btnReplanejar) {
+        if (temAtr) {
+            btnReplanejar.style.display = "inline-flex";
+            btnReplanejar.innerHTML = "<i class='fas fa-exclamation-triangle'></i> REPLANEJAR ATRASOS PENDENTES";
+            btnReplanejar.style.backgroundColor = "#fee2e2"; 
+        } else {
+            btnReplanejar.style.display = "none";
+        }
+    }
+
+    // 5. LÓGICA DO PARABÉNS (Só se tudo estiver OK)
     const tarefasConcluidas = tasks.length > 0 && tasks.every(x => x.c);
-    
-    if (tarefasConcluidas && curStr === hoje.toLocaleDateString()) {
+    if (tarefasConcluidas && ehHoje) {
         const lista = document.getElementById('lista-diaria');
-        
-        // Criamos o card de congratulações
         const divFim = document.createElement('div');
         divFim.className = "stat-card";
         divFim.style = "text-align:center; background: #f0fdf4; border: 2px dashed #16a34a; margin-top: 20px; padding: 30px; border-radius: 20px;";
-        
         divFim.innerHTML = `
             <div style="font-size: 3rem; margin-bottom: 10px;">🏆</div>
             <h2 style="color: #16a34a; font-weight: 800; margin-bottom: 10px;">MISSÃO CUMPRIDA!</h2>
-            <p style="color: #15803d; font-weight: 600; margin-bottom: 20px;">
-                Excelente trabalho, Matheus! Todos os alvos de hoje foram atingidos com sucesso.
-            </p>
-            <button class="btn" onclick="navDay(1)" style="background: #16a34a; box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.3);">
-                <i class="fas fa-arrow-right"></i> ADIANTAR ESTUDOS DE AMANHÃ
-            </button>
+            <p style="color: #15803d; font-weight: 600; margin-bottom: 20px;">Excelente trabalho, Matheus! Todos os alvos de hoje foram atingidos.</p>
+            <button class="btn" onclick="navDay(1)" style="background: #16a34a;"><i class="fas fa-arrow-right"></i> ADIANTAR ESTUDOS DE AMANHÃ</button>
         `;
-        
         lista.appendChild(divFim);
     }
-} // <--- Certifique-se de que esta chave fecha a função renderDiario
-
+}
 
 function toggleTimer(id) {
     if (timers[id]) { 
