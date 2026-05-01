@@ -77,6 +77,11 @@ function renderDiario(date) {
         let dP = new Date(pD); dP.setDate(pD.getDate() + i);
         if(db.metaFixa[dP.toLocaleDateString()]?.some(t => !t.c)) { temAtr = true; break; }
     }
+    // Controle de visibilidade do botão Replanejar
+    const btnReplan = document.querySelector('.replan-btn');
+    if (btnReplan) {
+        btnReplan.style.display = temAtr ? "inline-flex" : "none";
+    }
 
     if(date > hoje && temAtr) {
         document.getElementById('lista-diaria').innerHTML = `
@@ -388,22 +393,25 @@ function salvarExtra() {
     const m = document.getElementById('extra-mat').value;
     const a = document.getElementById('extra-ass').value;
     const tipoK = document.getElementById('extra-tipo').value;
-    const tempo = parseFloat(document.getElementById('extra-tempo').value);
+    const tempoMin = parseFloat(document.getElementById('extra-tempo').value);
     
-    if(!m || !a) { alert("Selecione matéria e assunto!"); return; }
+    if(!m || !a || isNaN(tempoMin)) { alert("Preencha todos os campos corretamente!"); return; }
     
     const tiposL = { "E": "Estudo", "Rev": "Revisão", "Ex": "Exercícios" };
     const hj = new Date().toLocaleDateString();
+    
+    // Converte minutos para o padrão decimal de horas do sistema (ex: 30min -> 0.5h)
+    const tempoHoras = parseFloat((tempoMin / 60).toFixed(2));
     
     if(!db.metaFixa[hj]) db.metaFixa[hj] = [];
     
     db.metaFixa[hj].push({ 
         m: m.toUpperCase(), 
         a: a, 
-        l: tiposL[tipoK], 
+        l: tiposL[tipoK] || "Extra", 
         k: tipoK, 
-        h: tempo, 
-        c: false, 
+        h: tempoHoras, 
+        c: true, // Já entra como concluído
         extra: true 
     });
     
@@ -412,3 +420,4 @@ function salvarExtra() {
     renderDiario(vDate);
     updateDashboard();
 }
+
