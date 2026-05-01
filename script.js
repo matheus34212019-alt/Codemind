@@ -56,10 +56,10 @@ function updateDashboard() {
         });
     }
 
-    document.getElementById('prog-dia').innerText = tT>0 ? Math.round((cT/tT)*100)+"%" : "0%";
-    document.getElementById('bar-dia').style.width = tT>0 ? (cT/tT)*100+"%" : "0%";
-    document.getElementById('horas-hoje').innerText = hS.toFixed(1)+"h";
-    document.getElementById('precisao-dia').innerText = tQ>0 ? Math.round((aQ/tQ)*100)+"%" : "0%";
+    if(document.getElementById('prog-dia')) document.getElementById('prog-dia').innerText = tT>0 ? Math.round((cT/tT)*100)+"%" : "0%";
+    if(document.getElementById('bar-dia')) document.getElementById('bar-dia').style.width = tT>0 ? (cT/tT)*100+"%" : "0%";
+    if(document.getElementById('horas-hoje')) document.getElementById('horas-hoje').innerText = hS.toFixed(1)+"h";
+    if(document.getElementById('precisao-dia')) document.getElementById('precisao-dia').innerText = tQ>0 ? Math.round((aQ/tQ)*100)+"%" : "0%";
     
     atualizarProgressoCiclo();
     checkStreak();
@@ -89,7 +89,7 @@ function renderDiario(date) {
     }
 
     // 3. GERAÇÃO DA LISTA DE TAREFAS
-    if(!db.metaFixa[curStr]) db.metaFixa[curStr] = getNeuralPool(parseFloat(db.h[date.getDay()]), JSON.parse(JSON.stringify(db.lista)));
+    if(!db.metaFixa[curStr]) db.metaFixa[curStr] = getNeuralPool(parseFloat(db.h[date.getDay()]), db.lista, date);
     const tasks = db.metaFixa[curStr];
     document.getElementById('meta-status').innerText = `${tasks.reduce((a,b)=>a+b.h,0).toFixed(1)}h / ${db.h[date.getDay()]}h meta`;
     
@@ -185,17 +185,33 @@ function atualizarAssuntosExtra() {
     const assuntos = db.lista.filter(x => x.m === matSelecionada).map(x => x.a);
     selectAss.innerHTML = assuntos.map(a => `<option value="${a}">${a}</option>`).join('');
 }
-function cliqueTask(dK, idx) {
-    const t = db.metaFixa[dK][idx];
-    if(!t.c && t.k === 'Ex') {
-        exPendente = { dK, idx };
-        document.getElementById('label-ex-assunto').innerText = `${t.m} - ${t.a}`;
-        document.getElementById('modal-exercicio').style.display = 'flex';
-        document.getElementById('ex-total').oninput = calcCebraspe;
-        document.getElementById('ex-acertos').oninput = calcCebraspe;
-    } else { 
-        t.c = !t.c; save(); updateDashboard(); renderDiario(vDate); 
+
+function cliqueTask(dateStr, index) {
+    const task = db.metaFixa[dateStr][index];
+    task.c = !task.c; 
+
+    const mat = db.lista.find(m => m.m === task.m && m.a === task.a);
+    if (mat) {
+        if (task.k === 'E' && task.l === 'Ciclo 1') {
+            if (task.c) {
+                mat.hF = (mat.hF || 0) + task.h;
+            } else {
+                mat.hF = Math.max(0, (mat.hF || 0) - task.h);
+            }
+            if (mat.hF >= 3.0) mat.done.E = true; 
+        }
+        if (task.l === 'Ciclo 1') {
+            if (task.k === 'Rev') mat.done.Rev = task.c;
+            if (task.k === 'Ex') {
+                mat.done.Ex = task.c;
+                if (task.c && mat.done.E && mat.done.Rev) mat.concluidoCiclo1 = true;
+            }
+        }
     }
+
+    save();
+    renderDiario(vDate); 
+    updateDashboard();
 }
 
 function calcCebraspe() {
@@ -245,16 +261,14 @@ function renderSemanal() {
     let hoje = new Date(); hoje.setHours(0,0,0,0);
     let pD = new Date(hoje); pD.setDate(hoje.getDate() - hoje.getDay());
 
-    if(!db.inicioCiclo) { db.inicioCiclo = hoje.toLocaleDateString(); save(); }
-    const parts = db.inicioCiclo.split('/');
-    const dataInicio = new Date(parts[2], parts[1] - 1, parts[0]);
-
-    document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(off => {
+    if(!gridElement) var gridElement = document.getElementById('grid-semanal');
+    
+    gridElement.innerHTML = [0,1,2,3,4,5,6].map(off => {
         let d = new Date(pD); d.setDate(pD.getDate() + off);
         let k = d.toLocaleDateString();
         const limiteDiario = parseFloat(db.h[d.getDay()]) || 0;
         
-        if (d >= dataInicio && !db.metaFixa[k] && limiteDiario > 0) {
+        if (!db.metaFixa[k] && limiteDiario > 0) {
             db.metaFixa[k] = getNeuralPool(limiteDiario, db.lista, d);
         }
 
@@ -267,7 +281,7 @@ function renderSemanal() {
                     <span style="font-weight:800; font-size:0.65rem;">${dN[d.getDay()]}</span><br>
                     <span style="font-size:0.55rem; opacity:0.7;">${k.slice(0,5)}</span>
                 </div>
-                <div class="tasks-container-semanal" style="padding: 6px; display: flex; flex-direction: column; gap: 6px; background: ${d < dataInicio ? '#f8fafc' : '#fff'}; min-height: 250px;">
+                <div class="tasks-container-semanal" style="padding: 6px; display: flex; flex-direction: column; gap: 6px; background: white; min-height: 250px;">
                     ${tasks.map(x => {
                         const cores = { 'E': '#3b82f6', 'Rev': '#f59e0b', 'Ex': '#10b981' };
                         const corCard = (d < hoje && !x.c) ? '#ef4444' : (cores[x.k] || '#3b82f6');
@@ -281,66 +295,48 @@ function renderSemanal() {
                             <div style="font-size: 0.45rem; font-weight: 700; text-transform: uppercase; opacity: 0.8;">${x.l}</div>
                         </div>`;
                     }).join('')}
-                    ${d < dataInicio ? '<div style="text-align:center; margin-top:20px; font-size:0.5rem; color:#cbd5e1; font-weight:700;">FORA DO CICLO</div>' : ''}
                 </div>
             </div>`;
     }).join('');
     save();
 }
-}
+
 function getNeuralPool(limiteHoras, listaMaterias, dataAlvo) {
     let pool = [];
     let horasAcumuladas = 0;
-
-    // Ordena matérias para priorizar o que começou e não terminou
-    listaMaterias.sort((a, b) => (b.horasEstudadas || 0) - (a.horasEstudadas || 0));
+    listaMaterias.sort((a, b) => (b.hF || 0) - (a.hF || 0));
 
     for (let mat of listaMaterias) {
         if (horasAcumuladas >= limiteHoras) break;
 
-        // LÓGICA DO CICLO 1
         if (!mat.concluidoCiclo1) {
-            // 1. ESTUDO: Só sai daqui quando horasEstudadas >= horasMeta
-            if ((mat.horasEstudadas || 0) < mat.horasMeta) {
-                let horasRestantes = mat.horasMeta - (mat.horasEstudadas || 0);
+            if ((mat.hF || 0) < 3.0) {
+                let horasRestantes = 3.0 - (mat.hF || 0);
                 let horasHoje = Math.min(horasRestantes, limiteHoras - horasAcumuladas);
-                
-                pool.push({
-                    m: mat.materia,
-                    a: mat.assunto,
-                    h: horasHoje,
-                    k: 'E', // Estudo
-                    l: 'Ciclo 1'
-                });
+                pool.push({ m: mat.m, a: mat.a, h: horasHoje, k: 'E', l: 'Ciclo 1' });
                 horasAcumuladas += horasHoje;
             } 
-            // 2. REVISÃO: Só aparece após o estudo completo
-            else if (!mat.revisaoFeita) {
+            else if (!mat.done?.Rev) {
                 if (horasAcumuladas + 1 <= limiteHoras) {
-                    pool.push({ m: mat.materia, a: mat.assunto, h: 1, k: 'Rev', l: 'Ciclo 1' });
+                    pool.push({ m: mat.m, a: mat.a, h: 1, k: 'Rev', l: 'Ciclo 1' });
                     horasAcumuladas += 1;
                 }
             }
-            // 3. EXERCÍCIOS: O "Grand Finale" do Ciclo 1
-            else if (!mat.exerciciosFeitos) {
+            else if (!mat.done?.Ex) {
                 if (horasAcumuladas + 1 <= limiteHoras) {
-                    pool.push({ m: mat.materia, a: mat.assunto, h: 1, k: 'Ex', l: 'Ciclo 1' });
+                    pool.push({ m: mat.m, a: mat.a, h: 1, k: 'Ex', l: 'Ciclo 1' });
                     horasAcumuladas += 1;
                 }
             }
         } 
-        // LÓGICA DO CICLO 2 (Repetição Espaçada)
         else {
-            // Aqui entra a regra dos 3, 7, 21 dias (Rev + Ex)
-            // Implementação simplificada para o pool:
             if (horasAcumuladas + 1 <= limiteHoras) {
-                pool.push({ m: mat.materia, a: mat.assunto, h: 1, k: 'Rev', l: 'Ciclo 2' });
+                pool.push({ m: mat.m, a: mat.a, h: 1, k: 'Rev', l: 'Ciclo 2' });
                 horasAcumuladas += 1;
             }
         }
     }
     return pool;
-}
 }
 
 // FERRAMENTAS DE CONFIGURAÇÃO E PERFORMANCE
@@ -349,7 +345,7 @@ function impEdital() {
     const txt = document.getElementById('add-ass').value;
     if(!m || !txt.trim()) return;
     txt.split('\n').filter(l => l.trim().length > 1).forEach(a => { 
-        db.lista.push({ m, a: a.trim(), h: {E:1.5, Rev:1.0, Ex:1.0}, f: false, done: {E:false, Rev:false, Ex:false}, hF: 0 }); 
+        db.lista.push({ m, a: a.trim(), done: {E:false, Rev:false, Ex:false}, hF: 0 }); 
     });
     db.metaFixa = {}; save(); alert("Matéria Integrada!"); 
 }
@@ -382,7 +378,7 @@ function renderFluxo() {
 }
 
 function alterarH(m, k, v) { 
-    db.lista.filter(x => x.m === m).forEach(x => x.h[k] = parseFloat(v)); 
+    db.lista.filter(x => x.m === m).forEach(x => { if(!x.h) x.h = {}; x.h[k] = parseFloat(v); }); 
     save(); 
 }
 
@@ -409,18 +405,13 @@ function saveH() {
 }
 
 function atualizarProgressoCiclo() {
-    const itens = db.lista.filter(x => db.ciclo.includes(x.m)); 
+    const itens = db.lista; 
     if (!itens.length) return;
-    let concl = 0; 
-    itens.forEach(a => { if(a.done.E) concl++; if(a.done.Rev) concl++; if(a.done.Ex) concl++; });
-    let p = Math.round((concl/(itens.length*3))*100);
+    let concl = itens.filter(a => a.concluidoCiclo1).length; 
+    let p = Math.round((concl/itens.length)*100);
     
-    document.getElementById('bar-ciclo-total').style.width = p+"%";
-    document.getElementById('viatura-progresso').style.left = (p * 0.95) + "%";
-    document.getElementById('perc-ciclo').innerText = p+"% cumprido";
-    
-    const hF = itens.reduce((acc, curr) => acc + (curr.done.Ex ? 0 : 2), 0);
-    document.getElementById('ciclo-estimativa').innerText = `Faltam aprox. ${Math.ceil(hF/4)} dias para girar`;
+    if(document.getElementById('bar-ciclo-total')) document.getElementById('bar-ciclo-total').style.width = p+"%";
+    if(document.getElementById('perc-ciclo')) document.getElementById('perc-ciclo').innerText = p+"% cumprido";
 }
 
 function checkStreak() {
@@ -430,15 +421,12 @@ function checkStreak() {
         if (tasks && tasks.length > 0 && tasks.every(t => t.c)) { streak++; d.setDate(d.getDate() - 1); } 
         else { break; }
     }
-    document.getElementById('streak-val').innerText = streak;
+    if(document.getElementById('streak-val')) document.getElementById('streak-val').innerText = streak;
 }
 
 function navDay(dir) {
     const h = new Date(); h.setHours(0,0,0,0);
     if (dir === 0) vDate = new Date(); else { let am = new Date(h); am.setDate(h.getDate() + 1); vDate = am; }
-    const ehH = vDate.toLocaleDateString() === h.toLocaleDateString();
-    document.getElementById('btn-hoje').style.display = ehH ? 'none' : 'inline-flex';
-    document.getElementById('btn-amanha').style.display = ehH ? 'inline-flex' : 'none';
     renderDiario(vDate);
 }
 
@@ -470,3 +458,4 @@ function salvarExtra() {
     renderDiario(vDate);
     updateDashboard();
 }
+
