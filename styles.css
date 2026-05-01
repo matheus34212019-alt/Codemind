@@ -184,3 +184,18 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
     border-radius: 6px;
     line-height: 1.2;
 }
+#grid-semanal {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 15px;
+}
+.day-column {
+    min-width: 220px;
+    flex: 1;
+}
+.sim-task {
+    white-space: normal;
+    word-wrap: break-word;
+    line-height: 1.3;
+}
