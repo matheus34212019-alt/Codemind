@@ -132,7 +132,7 @@ function renderDiario(date) {
         btnReplan.style.display = temAtr ? "inline-flex" : "none";
     }
   }
-}
+
 
 function toggleTimer(id) {
     if (timers[id]) { 
