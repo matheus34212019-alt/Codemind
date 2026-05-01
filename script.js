@@ -107,7 +107,7 @@ function renderDiario(date) {
                 <div style="font-size:0.85rem; color:var(--text-sec); margin-bottom:10px;">${t.a}</div>
                 <div style="display:flex; align-items:center; gap:10px;">
                     <
-                                </div>`).join('');
+                                        </div>`).join('');
 
     document.getElementById('lista-diaria').innerHTML += `
         <button class="btn-extra-diario" onclick="abrirModalExtra()">
