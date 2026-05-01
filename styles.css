@@ -161,3 +161,26 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 .day-head span {
     line-height: 1.1;
 }
+/* Ajuste para o Cronograma caber o texto e permitir rolagem lateral */
+#grid-semanal {
+    display: flex;
+    overflow-x: auto; /* Permite rolar para os lados no celular ou telas menores */
+    gap: 10px;
+    align-items: flex-start;
+    padding-bottom: 15px;
+}
+
+.day-column {
+    min-width: 220px; /* Largura mínima para o nome da matéria ser legível */
+    flex: 1;
+}
+
+.sim-task {
+    white-space: normal; /* Permite que o texto quebre a linha se for longo */
+    word-wrap: break-word;
+    font-size: 0.7rem;
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    line-height: 1.2;
+}
