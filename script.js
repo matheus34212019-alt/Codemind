@@ -70,7 +70,7 @@ function renderDiario(date) {
     const hoje = new Date(); hoje.setHours(0,0,0,0);
     const curStr = date.toLocaleDateString();
     
-    // 1. Verificação de Atrasos
+    // Bloqueio por atraso
     let temAtr = false;
     let pD = new Date(hoje); pD.setDate(hoje.getDate() - hoje.getDay());
     for(let i=0; i < hoje.getDay(); i++) {
@@ -78,7 +78,6 @@ function renderDiario(date) {
         if(db.metaFixa[dP.toLocaleDateString()]?.some(t => !t.c)) { temAtr = true; break; }
     }
 
-    // 2. BLOQUEIO DE SEGURANÇA (Se houver atraso e tentar ver o futuro)
     if(date > hoje && temAtr) {
         document.getElementById('lista-diaria').innerHTML = `
             <div class="stat-card" style="text-align:center; border:2px solid red;">
@@ -88,7 +87,6 @@ function renderDiario(date) {
         return;
     }
 
-    // 3. GERAÇÃO DA LISTA DE TAREFAS
     if(!db.metaFixa[curStr]) db.metaFixa[curStr] = getNeuralPool(parseFloat(db.h[date.getDay()]), JSON.parse(JSON.stringify(db.lista)));
     const tasks = db.metaFixa[curStr];
     document.getElementById('meta-status').innerText = `${tasks.reduce((a,b)=>a+b.h,0).toFixed(1)}h / ${db.h[date.getDay()]}h meta`;
@@ -112,33 +110,18 @@ function renderDiario(date) {
     
     const ehHoje = curStr === hoje.toLocaleDateString();
     document.getElementById('view-title').innerText = ehHoje ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
-
-    // 4. LÓGICA DO BOTÃO DE REPLANEJAR (Independente)
-    const btnReplanejar = document.querySelector('.replan-btn');
-    if (btnReplanejar) {
-        if (temAtr) {
-            btnReplanejar.style.display = "inline-flex";
-            btnReplanejar.innerHTML = "<i class='fas fa-exclamation-triangle'></i> REPLANEJAR ATRASOS PENDENTES";
-            btnReplanejar.style.backgroundColor = "#fee2e2"; 
-        } else {
-            btnReplanejar.style.display = "none";
-        }
-    }
-
-    // 5. LÓGICA DO PARABÉNS (Só se tudo estiver OK)
+// No final da renderDiario(date):
     const tarefasConcluidas = tasks.length > 0 && tasks.every(x => x.c);
-    if (tarefasConcluidas && ehHoje) {
-        const lista = document.getElementById('lista-diaria');
+    if(tarefasConcluidas && curStr === hoje.toLocaleDateString()) {
         const divFim = document.createElement('div');
         divFim.className = "stat-card";
-        divFim.style = "text-align:center; background: #f0fdf4; border: 2px dashed #16a34a; margin-top: 20px; padding: 30px; border-radius: 20px;";
+        divFim.style = "text-align:center; background:#eff6ff; border:2px dashed var(--accent); margin-top:20px;";
         divFim.innerHTML = `
-            <div style="font-size: 3rem; margin-bottom: 10px;">🏆</div>
-            <h2 style="color: #16a34a; font-weight: 800; margin-bottom: 10px;">MISSÃO CUMPRIDA!</h2>
-            <p style="color: #15803d; font-weight: 600; margin-bottom: 20px;">Excelente trabalho, Matheus! Todos os alvos de hoje foram atingidos.</p>
-            <button class="btn" onclick="navDay(1)" style="background: #16a34a;"><i class="fas fa-arrow-right"></i> ADIANTAR ESTUDOS DE AMANHÃ</button>
+            <h3>🚀 Missão Cumprida!</h3>
+            <p>Matheus, parabéns pelo plantão finalizado.</p>
+            <button class="btn" onclick="navDay(1)">ADIANTAR MATÉRIAS DE AMANHÃ</button>
         `;
-        lista.appendChild(divFim);
+        document.getElementById('lista-diaria').appendChild(divFim);
     }
 }
 
@@ -240,79 +223,28 @@ function replanejarAgora() {
     save(); alert("Plantão Replanejado!"); init();
 }
 
+// CRONOGRAMA PLANTÃO (DOM-SÁB COM ATRASOS EM VERMELHO)
 function renderSemanal() {
     const dN = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
-    let hoje = new Date(); hoje.setHours(0,0,0,0);
-    
-    // Encontra o domingo da semana atual
-    let pD = new Date(hoje); 
-    pD.setDate(hoje.getDate() - hoje.getDay());
-    
-    let totalHoras = 0;
-    let totalQuest = 0;
-    let totalAcertos = 0;
-
+    let h = new Date(); h.setHours(0,0,0,0);
+    let pD = new Date(h); pD.setDate(h.getDate() - h.getDay());
     document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(off => {
-        let d = new Date(pD); 
-        d.setDate(pD.getDate() + off);
+        let d = new Date(pD); d.setDate(pD.getDate() + off);
         let k = d.toLocaleDateString();
-        
-        // --- LOGICA DE PREENCHIMENTO AUTOMÁTICO (Sexta e Sábado) ---
-        // Se o dia não tem meta e tem horas configuradas, gera agora
-        if(!db.metaFixa[k]) {
-            const horasConfiguradas = parseFloat(db.h[d.getDay()]);
-            if(horasConfiguradas > 0) {
-                db.metaFixa[k] = getNeuralPool(horasConfiguradas, JSON.parse(JSON.stringify(db.lista)));
-            }
-        }
-
         let tasks = db.metaFixa[k] || [];
-        let isAtr = d < hoje && tasks.some(t => !t.c);
-        
-        // Cálculos de Desempenho
-        tasks.forEach(t => {
-            if(t.c) {
-                totalHoras += t.h;
-                if(t.q) { totalQuest += t.q; totalAcertos += t.ok; }
-            }
-        });
-
+        let isAtr = d < h && tasks.some(t => !t.c);
         return `
             <div class="day-column">
-                <div class="day-head ${isAtr ? 'atrasado' : ''}">
-                    <span style="font-weight:800;">${dN[d.getDay()]}</span><br>
-                    <span style="font-size:0.7rem;">${k.slice(0,5)}</span>
-                </div>
-                <div class="tasks-container-semanal" style="padding: 10px; display: flex; flex-direction: column; gap: 10px;">
-                    ${tasks.length > 0 ? tasks.map(x => {
-                        // Cores originais do seu sistema
-                        const cores = { 'E': '#3b82f6', 'Rev': '#f59e0b', 'Ex': '#10b981' };
-                        const corCard = (d < hoje && !x.c) ? '#ef4444' : (cores[x.k] || '#3b82f6');
-                        
-                        return `
-                        <div style="background: ${corCard}; color: white; padding: 12px; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                                <b style="font-size: 0.75rem; text-transform: uppercase;">${x.m}</b>
-                                <span style="font-size: 0.65rem; background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 4px;">${x.h}h</span>
-                            </div>
-                            <div style="font-size: 0.7rem; line-height: 1.2; opacity: 0.9;">${x.a}</div>
-                            ${x.c && x.q ? `<div style="font-size:0.6rem; margin-top:5px; font-weight:700;">🎯 ${x.ok}/${x.q}</div>` : ''}
-                        </div>`;
-                    }).join('') : ''}
-                </div>
+                <div class="day-head ${isAtr ? 'atrasado' : ''}">${dN[d.getDay()]}<br>${k.slice(0,5)}</div>
+                ${tasks.map(x => `
+                    <div class="sim-task tag-${x.k==='Ex'?'ex':(x.k==='Rev'?'rev':'e')} ${!x.c && d < h ? 'atrasado' : ''}">
+                        <b>${x.m}</b><br>${x.a}
+                    </div>`).join('')}
             </div>`;
     }).join('');
-
-    // Atualiza os cards de resumo no topo
-    if(document.getElementById('sem-horas')) document.getElementById('sem-horas').innerText = totalHoras.toFixed(1) + 'h';
-    if(document.getElementById('sem-quest')) document.getElementById('sem-quest').innerText = totalQuest;
-    if(document.getElementById('sem-prec')) {
-        const perc = totalQuest > 0 ? Math.round((totalAcertos/totalQuest)*100) : 0;
-        document.getElementById('sem-prec').innerText = perc + '%';
-    }
-    
-    save(); // Salva as metas geradas de sexta e sábado permanentemente
 }
+
+// MOTOR DE INTELIGÊNCIA (NEURAL POOL)
 function getNeuralPool(limit, simList) {
     let pool = []; let somaH = 0; if(!db.ciclo.length) return pool;
     let localList = JSON.parse(JSON.stringify(simList));
