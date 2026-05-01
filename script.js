@@ -249,105 +249,98 @@ function renderSemanal() {
     const parts = db.inicioCiclo.split('/');
     const dataInicio = new Date(parts[2], parts[1] - 1, parts[0]);
 
-    let totalHorasSemana = 0, totalQuest = 0, totalAcertos = 0;
-
     document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(off => {
         let d = new Date(pD); d.setDate(pD.getDate() + off);
         let k = d.toLocaleDateString();
-        const limiteDiario = parseFloat(db.h[d.getDay()]) || 0; // Pega o limite de horas que você definiu
+        const limiteDiario = parseFloat(db.h[d.getDay()]) || 0;
         
-        let tasks = [];
-        if (d >= dataInicio) {
-            // Se o dia não foi gerado, o NeuralPool cria respeitando o limiteDiario
-            if(!db.metaFixa[k] && limiteDiario > 0) {
-                db.metaFixa[k] = getNeuralPool(limiteDiario, JSON.parse(JSON.stringify(db.lista)), d);
-            }
-            tasks = db.metaFixa[k] || [];
+        if (d >= dataInicio && !db.metaFixa[k] && limiteDiario > 0) {
+            db.metaFixa[k] = getNeuralPool(limiteDiario, db.lista, d);
         }
 
+        let tasks = db.metaFixa[k] || [];
         let isAtr = d < hoje && tasks.some(t => !t.c);
-        let somaHorasDia = 0;
 
         return `
             <div class="day-column">
                 <div class="day-head ${isAtr ? 'atrasado' : ''}" style="${d.getTime() === hoje.getTime() ? 'background: #dbeafe; border-bottom: 2px solid #2563eb;' : ''}">
                     <span style="font-weight:800; font-size:0.65rem;">${dN[d.getDay()]}</span><br>
                     <span style="font-size:0.55rem; opacity:0.7;">${k.slice(0,5)}</span>
-                    <div style="font-size:0.5rem; font-weight:700; color:var(--accent);">${limiteDiario}h META</div>
                 </div>
                 <div class="tasks-container-semanal" style="padding: 6px; display: flex; flex-direction: column; gap: 6px; background: ${d < dataInicio ? '#f8fafc' : '#fff'}; min-height: 250px;">
                     ${tasks.map(x => {
-                        somaHorasDia += x.h;
-                        if(x.c) { totalHorasSemana += x.h; if(x.q){ totalQuest += x.q; totalAcertos += t.ok; } }
-                        
                         const cores = { 'E': '#3b82f6', 'Rev': '#f59e0b', 'Ex': '#10b981' };
                         const corCard = (d < hoje && !x.c) ? '#ef4444' : (cores[x.k] || '#3b82f6');
-                        
                         return `
                         <div style="background: ${corCard}; color: white; padding: 6px 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); ${x.c ? 'opacity:0.5' : ''}; min-height: 50px;">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2px; gap: 4px;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap: 4px;">
                                 <b style="font-size: 0.55rem; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">${x.m}</b>
                                 <span style="font-size: 0.5rem; background: rgba(0,0,0,0.2); padding: 1px 3px; border-radius: 3px; font-weight: 800;">${x.h}h</span>
                             </div>
-                            <div style="font-size: 0.55rem; line-height: 1.1; opacity: 0.9;">${x.a}</div>
-                            <div style="font-size: 0.45rem; margin-top: 3px; font-weight: 700; background: rgba(255,255,255,0.1); display: inline-block; padding: 1px 3px; border-radius: 2px;">
-                                ${x.k === 'E' ? 'CICLO 1' : 'CICLO 2'}
-                            </div>
+                            <div style="font-size: 0.55rem; line-height: 1.1; opacity: 0.9; margin: 2px 0;">${x.a}</div>
+                            <div style="font-size: 0.45rem; font-weight: 700; text-transform: uppercase; opacity: 0.8;">${x.l}</div>
                         </div>`;
                     }).join('')}
-                    ${d >= dataInicio && tasks.length === 0 ? '<div style="text-align:center; margin-top:20px; font-size:0.5rem; color:#cbd5e1;">FOLGA</div>' : ''}
                     ${d < dataInicio ? '<div style="text-align:center; margin-top:20px; font-size:0.5rem; color:#cbd5e1; font-weight:700;">FORA DO CICLO</div>' : ''}
                 </div>
             </div>`;
     }).join('');
-
-    // Atualiza indicadores globais
-    if(document.getElementById('sem-horas')) document.getElementById('sem-horas').innerText = totalHorasSemana.toFixed(1) + 'h';
-    if(document.getElementById('sem-quest')) document.getElementById('sem-quest').innerText = totalQuest;
-    if(document.getElementById('sem-prec')) {
-        const perc = totalQuest > 0 ? Math.round((totalAcertos/totalQuest)*100) : 0;
-        document.getElementById('sem-prec').innerText = perc + '%';
-    }
     save();
 }
-function getNeuralPool(limit, simList) {
-    let pool = []; let somaH = 0; if(!db.ciclo.length) return pool;
-    let localList = JSON.parse(JSON.stringify(simList));
-    let safety = 0;
-    while(somaH < limit && safety < 100) {
-        safety++; let addedAny = false;
-        for(let m of db.ciclo) {
-            if(somaH >= limit) break;
-            let pending = localList.find(x => x.m === m && !x.f);
-            if(pending) {
-                const rito = [
-                    {k:'E', l:'Estudo', h: parseFloat(pending.h.E)}, 
-                    {k:'Rev', l:'Revisão', h: parseFloat(pending.h.Rev)}, 
-                    {k:'Ex', l:'Exercícios', h: parseFloat(pending.h.Ex)}
-                ];
-                for(let s of rito) {
-                    if(!pending.done[s.k]) {
-                        if(s.k === 'E') {
-                            let al = Math.min(s.h - (pending.hF || 0), limit - somaH);
-                            if(al > 0) { 
-                                pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: al, c: false }); 
-                                pending.hF = (pending.hF || 0) + al; 
-                                if(pending.hF >= s.h - 0.05) pending.done.E = true; 
-                                somaH += al; addedAny = true; 
-                            }
-                        } else if(somaH + s.h <= limit + 0.1) {
-                            pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: s.h, c: false });
-                            pending.done[s.k] = true; somaH += s.h; addedAny = true; 
-                            if(s.k === 'Ex') pending.f = true;
-                        }
-                        break; 
-                    }
+}
+function getNeuralPool(limiteHoras, listaMaterias, dataAlvo) {
+    let pool = [];
+    let horasAcumuladas = 0;
+
+    // Ordena matérias para priorizar o que começou e não terminou
+    listaMaterias.sort((a, b) => (b.horasEstudadas || 0) - (a.horasEstudadas || 0));
+
+    for (let mat of listaMaterias) {
+        if (horasAcumuladas >= limiteHoras) break;
+
+        // LÓGICA DO CICLO 1
+        if (!mat.concluidoCiclo1) {
+            // 1. ESTUDO: Só sai daqui quando horasEstudadas >= horasMeta
+            if ((mat.horasEstudadas || 0) < mat.horasMeta) {
+                let horasRestantes = mat.horasMeta - (mat.horasEstudadas || 0);
+                let horasHoje = Math.min(horasRestantes, limiteHoras - horasAcumuladas);
+                
+                pool.push({
+                    m: mat.materia,
+                    a: mat.assunto,
+                    h: horasHoje,
+                    k: 'E', // Estudo
+                    l: 'Ciclo 1'
+                });
+                horasAcumuladas += horasHoje;
+            } 
+            // 2. REVISÃO: Só aparece após o estudo completo
+            else if (!mat.revisaoFeita) {
+                if (horasAcumuladas + 1 <= limiteHoras) {
+                    pool.push({ m: mat.materia, a: mat.assunto, h: 1, k: 'Rev', l: 'Ciclo 1' });
+                    horasAcumuladas += 1;
                 }
             }
+            // 3. EXERCÍCIOS: O "Grand Finale" do Ciclo 1
+            else if (!mat.exerciciosFeitos) {
+                if (horasAcumuladas + 1 <= limiteHoras) {
+                    pool.push({ m: mat.materia, a: mat.assunto, h: 1, k: 'Ex', l: 'Ciclo 1' });
+                    horasAcumuladas += 1;
+                }
+            }
+        } 
+        // LÓGICA DO CICLO 2 (Repetição Espaçada)
+        else {
+            // Aqui entra a regra dos 3, 7, 21 dias (Rev + Ex)
+            // Implementação simplificada para o pool:
+            if (horasAcumuladas + 1 <= limiteHoras) {
+                pool.push({ m: mat.materia, a: mat.assunto, h: 1, k: 'Rev', l: 'Ciclo 2' });
+                horasAcumuladas += 1;
+            }
         }
-        if(!addedAny) break;
     }
     return pool;
+}
 }
 
 // FERRAMENTAS DE CONFIGURAÇÃO E PERFORMANCE
