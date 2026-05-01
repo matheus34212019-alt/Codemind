@@ -388,6 +388,15 @@ function navDay(dir) {
     document.getElementById('btn-amanha').style.display = ehH ? 'inline-flex' : 'none';
     renderDiario(vDate);
 }
+function abrirModalExtra() {
+    // Limpa os campos antes de abrir
+    document.getElementById('extra-mat').value = '';
+    document.getElementById('extra-ass').value = '';
+    document.getElementById('extra-tempo').value = '';
+    
+    // Mostra o modal (Certifique-se de que o ID do seu modal extra seja este)
+    document.getElementById('modal-extra').style.display = 'flex';
+}
 
 function salvarExtra() {
     const m = document.getElementById('extra-mat').value;
