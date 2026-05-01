@@ -315,24 +315,36 @@ function getNeuralPool(limiteHoras, listaMaterias, dataAlvo) {
     let pool = [];
     let horasAcumuladas = 0;
 
+    // Ordena matérias para priorizar o que começou e não terminou
     listaMaterias.sort((a, b) => (b.horasEstudadas || 0) - (a.horasEstudadas || 0));
 
     for (let mat of listaMaterias) {
         if (horasAcumuladas >= limiteHoras) break;
 
+        // LÓGICA DO CICLO 1
         if (!mat.concluidoCiclo1) {
+            // 1. ESTUDO: Só sai daqui quando horasEstudadas >= horasMeta
             if ((mat.horasEstudadas || 0) < mat.horasMeta) {
                 let horasRestantes = mat.horasMeta - (mat.horasEstudadas || 0);
                 let horasHoje = Math.min(horasRestantes, limiteHoras - horasAcumuladas);
-                pool.push({ m: mat.materia, a: mat.assunto, h: horasHoje, k: 'E', l: 'Ciclo 1' });
+                
+                pool.push({
+                    m: mat.materia,
+                    a: mat.assunto,
+                    h: horasHoje,
+                    k: 'E', // Estudo
+                    l: 'Ciclo 1'
+                });
                 horasAcumuladas += horasHoje;
             } 
+            // 2. REVISÃO: Só aparece após o estudo completo
             else if (!mat.revisaoFeita) {
                 if (horasAcumuladas + 1 <= limiteHoras) {
                     pool.push({ m: mat.materia, a: mat.assunto, h: 1, k: 'Rev', l: 'Ciclo 1' });
                     horasAcumuladas += 1;
                 }
             }
+            // 3. EXERCÍCIOS: O "Grand Finale" do Ciclo 1
             else if (!mat.exerciciosFeitos) {
                 if (horasAcumuladas + 1 <= limiteHoras) {
                     pool.push({ m: mat.materia, a: mat.assunto, h: 1, k: 'Ex', l: 'Ciclo 1' });
@@ -340,7 +352,10 @@ function getNeuralPool(limiteHoras, listaMaterias, dataAlvo) {
                 }
             }
         } 
+        // LÓGICA DO CICLO 2 (Repetição Espaçada)
         else {
+            // Aqui entra a regra dos 3, 7, 21 dias (Rev + Ex)
+            // Implementação simplificada para o pool:
             if (horasAcumuladas + 1 <= limiteHoras) {
                 pool.push({ m: mat.materia, a: mat.assunto, h: 1, k: 'Rev', l: 'Ciclo 2' });
                 horasAcumuladas += 1;
@@ -348,6 +363,7 @@ function getNeuralPool(limiteHoras, listaMaterias, dataAlvo) {
         }
     }
     return pool;
+}
 }
 
 // FERRAMENTAS DE CONFIGURAÇÃO E PERFORMANCE
