@@ -185,40 +185,17 @@ function atualizarAssuntosExtra() {
     const assuntos = db.lista.filter(x => x.m === matSelecionada).map(x => x.a);
     selectAss.innerHTML = assuntos.map(a => `<option value="${a}">${a}</option>`).join('');
 }
-
-function cliqueTask(dateStr, index) {
-    const task = db.metaFixa[dateStr][index];
-    task.c = !task.c; 
-
-    if (task.k === 'E' && task.l === 'Ciclo 1') {
-        const mat = db.lista.find(m => m.materia === task.m && m.assunto === task.a);
-        if (mat) {
-            if (task.c) {
-                mat.horasEstudadas = (mat.horasEstudadas || 0) + task.h;
-            } else {
-                mat.horasEstudadas = Math.max(0, (mat.horasEstudadas || 0) - task.h);
-            }
-            if (mat.horasEstudadas >= mat.horasMeta) {
-                mat.estudoConcluido = true; 
-            }
-        }
+function cliqueTask(dK, idx) {
+    const t = db.metaFixa[dK][idx];
+    if(!t.c && t.k === 'Ex') {
+        exPendente = { dK, idx };
+        document.getElementById('label-ex-assunto').innerText = `${t.m} - ${t.a}`;
+        document.getElementById('modal-exercicio').style.display = 'flex';
+        document.getElementById('ex-total').oninput = calcCebraspe;
+        document.getElementById('ex-acertos').oninput = calcCebraspe;
+    } else { 
+        t.c = !t.c; save(); updateDashboard(); renderDiario(vDate); 
     }
-
-    if (task.l === 'Ciclo 1') {
-        const mat = db.lista.find(m => m.materia === task.m && m.assunto === task.a);
-        if (mat) {
-            if (task.k === 'Rev') mat.revisaoFeita = task.c;
-            if (task.k === 'Ex') {
-                mat.exerciciosFeitos = task.c;
-                if (task.c && mat.estudoConcluido && mat.revisaoFeita) {
-                    mat.concluidoCiclo1 = true;
-                }
-            }
-        }
-    }
-
-    save();
-    renderDiario(vDate); 
 }
 
 function calcCebraspe() {
@@ -310,7 +287,7 @@ function renderSemanal() {
     }).join('');
     save();
 }
-
+}
 function getNeuralPool(limiteHoras, listaMaterias, dataAlvo) {
     let pool = [];
     let horasAcumuladas = 0;
