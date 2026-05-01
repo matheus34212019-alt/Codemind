@@ -364,7 +364,7 @@ function getNeuralPool(limiteHoras, listaMaterias, dataAlvo) {
     }
     return pool;
 }
-}
+
 
 // FERRAMENTAS DE CONFIGURAÇÃO E PERFORMANCE
 function impEdital() {
