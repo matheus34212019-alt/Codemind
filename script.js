@@ -107,9 +107,8 @@ function renderDiario(date) {
                 <div style="font-size:0.85rem; color:var(--text-sec); margin-bottom:10px;">${t.a}</div>
                 <div style="display:flex; align-items:center; gap:10px;">
                     <
-                        </div>`).join('');
+                                </div>`).join('');
 
-    // Botão extra dentro da lista diária
     document.getElementById('lista-diaria').innerHTML += `
         <button class="btn-extra-diario" onclick="abrirModalExtra()">
             <i class="fas fa-plus-circle"></i> ESTUDOU ALGO FORA DO PLANEJADO?
@@ -118,6 +117,7 @@ function renderDiario(date) {
 
     const ehHoje = curStr === hoje.toLocaleDateString();
     document.getElementById('view-title').innerText = ehHoje ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
+}
 
     const tarefasConcluidas = tasks.length > 0 && tasks.every(x => x.c);
     if(tarefasConcluidas && curStr === hoje.toLocaleDateString()) {
