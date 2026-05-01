@@ -89,26 +89,26 @@ function renderDiario(date) {
     }
 
     // 3. GERAÇÃO DA LISTA DE TAREFAS
-    if(!db.metaFixa[curStr]) db.metaFixa[curStr] = getNeuralPool(parseFloat(db.h[date.getDay()]), JSON.parse(JSON.stringify(db.lista)));
+    if(!db.metaFixa[curStr]) db.metaFixa[curStr] = getNeuralPool(parseFloat(db.h[date.getDay()]), db.lista, date);
     const tasks = db.metaFixa[curStr];
     document.getElementById('meta-status').innerText = `${tasks.reduce((a,b)=>a+b.h,0).toFixed(1)}h / ${db.h[date.getDay()]}h meta`;
     
     document.getElementById('lista-diaria').innerHTML = tasks.map((t, i) => `
-        <div class="task-card" style="border-left-color:var(--color-${t.k==='Ex'?'ex':(t.k==='Rev'?'rev':'e')})">
-            <div style="flex:1;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <span class="tag tag-${t.k==='Ex'?'ex':(t.k==='Rev'?'rev':'e')}">${t.l}</span>
-                    <small style="font-weight:700;">${curStr}</small>
+            <div class="task-card" style="border-left-color:var(--color-${t.k==='Ex'?'ex':(t.k==='Rev'?'rev':'e')})">
+                <div style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <span class="tag tag-${t.k==='Ex'?'ex':(t.k==='Rev'?'rev':'e')}">${t.l}</span>
+                        <small style="font-weight:700;">${curStr}</small>
+                    </div>
+                    <div style="font-weight:800; font-size:1.1rem;">${t.m}</div>
+                    <div style="font-size:0.85rem; color:var(--text-sec); margin-bottom:10px;">${t.a}</div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <button class="btn btn-sm btn-outline" id="btn-t-${i}" onclick="toggleTimer(${i})"><i class="fas fa-play"></i></button>
+                        <span id="time-${i}" style="font-family:monospace; font-weight:800; color:var(--accent);">00:00</span>
+                    </div>
                 </div>
-                <div style="font-weight:800; font-size:1.1rem;">${t.m}</div>
-                <div style="font-size:0.85rem; color:var(--text-sec); margin-bottom:10px;">${t.a}</div>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <button class="btn btn-sm btn-outline" id="btn-t-${i}" onclick="toggleTimer(${i})"><i class="fas fa-play"></i></button>
-                    <span id="time-${i}" style="font-family:monospace; font-weight:800; color:var(--accent);">00:00</span>
-                </div>
-            </div>
-            <input type="checkbox" ${t.c ? 'checked' : ''} onclick="cliqueTask('${curStr}', ${i})">
-        </div>`).join('');
+                <input type="checkbox" ${t.c ? 'checked' : ''} onclick="cliqueTask('${curStr}', ${i})">
+            </div>`).join('');
     
     const ehHoje = curStr === hoje.toLocaleDateString();
     document.getElementById('view-title').innerText = ehHoje ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
@@ -291,23 +291,20 @@ function renderSemanal() {
                     <span style="font-size:0.55rem; opacity:0.7;">${k.slice(0,5)}</span>
                 </div>
                 <div class="tasks-container-semanal" style="padding: 6px; display: flex; flex-direction: column; gap: 6px; background: ${d < dataInicio ? '#f8fafc' : '#fff'}; min-height: 250px;">
-                    ${tasks.map(x => {
-                        const cores = { 'E': '#3b82f6', 'Rev': '#f59e0b', 'Ex': '#10b981' };
-                        const corCard = (d < hoje && !x.c) ? '#ef4444' : (cores[x.k] || '#3b82f6');
-                        return `
-                        <div style="background: ${corCard}; color: white; padding: 6px 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); ${x.c ? 'opacity:0.5' : ''}; min-height: 50px;">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap: 4px;">
-                                <b style="font-size: 0.55rem; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">${x.m}</b>
-                                <span style="font-size: 0.5rem; background: rgba(0,0,0,0.2); padding: 1px 3px; border-radius: 3px; font-weight: 800;">${x.h}h</span>
-                            </div>
-                            <div style="font-size: 0.55rem; line-height: 1.1; opacity: 0.9; margin: 2px 0;">${x.a}</div>
-                            <div style="font-size: 0.45rem; font-weight: 700; text-transform: uppercase; opacity: 0.8;">${x.l}</div>
-                        </div>`;
-                    }).join('')}
-                    ${d < dataInicio ? '<div style="text-align:center; margin-top:20px; font-size:0.5rem; color:#cbd5e1; font-weight:700;">FORA DO CICLO</div>' : ''}
-                </div>
-            </div>`;
-    }).join('');
+                    // Localize este trecho dentro da função renderSemanal
+${tasks.map(x => {
+    const cores = { 'E': '#3b82f6', 'Rev': '#f59e0b', 'Ex': '#10b981' };
+    const corCard = (d < hoje && !x.c) ? '#ef4444' : (cores[x.k] || '#3b82f6');
+    return `
+    <div style="background: ${corCard}; color: white; padding: 6px 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); ${x.c ? 'opacity:0.5' : ''}; min-height: 50px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap: 4px;">
+            <b style="font-size: 0.55rem; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">${x.m}</b>
+            <span style="font-size: 0.5rem; background: rgba(0,0,0,0.2); padding: 1px 3px; border-radius: 3px; font-weight: 800;">${x.h}h</span>
+        </div>
+        <div style="font-size: 0.55rem; line-height: 1.1; opacity: 0.9; margin: 2px 0;">${x.a}</div>
+        <div style="font-size: 0.45rem; font-weight: 700; text-transform: uppercase; opacity: 0.8;">${x.l}</div>
+    </div>`;
+}).join('')}
     save();
 }
 
