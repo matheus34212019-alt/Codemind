@@ -115,7 +115,8 @@ function renderDiario(date) {
     
     const ehHoje = curStr === hoje.toLocaleDateString();
     document.getElementById('view-title').innerText = ehHoje ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
-// No final da renderDiario(date):
+
+    // No final da renderDiario(date):
     const tarefasConcluidas = tasks.length > 0 && tasks.every(x => x.c);
     if(tarefasConcluidas && curStr === hoje.toLocaleDateString()) {
         const divFim = document.createElement('div');
@@ -127,13 +128,8 @@ function renderDiario(date) {
             <button class="btn" onclick="navDay(1)">ADIANTAR MATÉRIAS DE AMANHÃ</button>
         `;
         document.getElementById('lista-diaria').appendChild(divFim);
-      const btnReplan = document.querySelector('.replan-btn');
-    if (btnReplan) {
-        btnReplan.style.display = temAtr ? "inline-flex" : "none";
     }
-        
-  
-
+} // <--- CORREÇÃO: Fechei a função renderDiario aqui
 
 function toggleTimer(id) {
     if (timers[id]) { 
@@ -157,6 +153,7 @@ function toggleTimer(id) {
 
 // MODAIS E EXERCÍCIOS CEBRASPE
 function fecharModais() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
+
 function abrirModalExtra() {
     const selectMat = document.getElementById('extra-mat');
     const materiasUnicas = [...new Set(db.lista.map(x => x.m))];
@@ -165,6 +162,8 @@ function abrirModalExtra() {
         materiasUnicas.map(m => `<option value="${m}">${m}</option>`).join('');
     
     document.getElementById('modal-extra').style.display = 'flex';
+} // <--- CORREÇÃO: Fechei a função abrirModalExtra aqui
+
 function atualizarAssuntosExtra() {
     const matSelecionada = document.getElementById('extra-mat').value;
     const selectAss = document.getElementById('extra-ass');
@@ -174,10 +173,7 @@ function atualizarAssuntosExtra() {
         return;
     }
     
-    // Filtra os assuntos da sua lista original baseada na matéria escolhida
     const assuntos = db.lista.filter(x => x.m === matSelecionada).map(x => x.a);
-    
-    // Remove duplicados e preenche o select
     const assuntosUnicos = [...new Set(assuntos)];
     selectAss.innerHTML = assuntosUnicos.map(a => `<option value="${a}">${a}</option>`).join('');
 }
@@ -397,15 +393,6 @@ function navDay(dir) {
     document.getElementById('btn-amanha').style.display = ehH ? 'inline-flex' : 'none';
     renderDiario(vDate);
 }
-function abrirModalExtra() {
-    // Limpa os campos antes de abrir
-    document.getElementById('extra-mat').value = '';
-    document.getElementById('extra-ass').value = '';
-    document.getElementById('extra-tempo').value = '';
-    
-    // Mostra o modal (Certifique-se de que o ID do seu modal extra seja este)
-    document.getElementById('modal-extra').style.display = 'flex';
-}
 
 function salvarExtra() {
     const m = document.getElementById('extra-mat').value;
@@ -422,9 +409,7 @@ function salvarExtra() {
     db.metaFixa[hj].push({ 
         m: m.toUpperCase(), a: a, l: tiposL[tipoK] || "Extra", 
         k: tipoK, h: tempoHoras, c: true, extra: true 
-    }
+    }); // <--- CORREÇÃO: Fechei o parênteses do push aqui
     
     save(); fecharModais(); renderDiario(vDate); updateDashboard();
-}
-
-
+} // <--- CORREÇÃO: Adicionei a chave final do arquivo aqui
