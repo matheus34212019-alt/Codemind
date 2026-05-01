@@ -310,7 +310,7 @@ function renderSemanal() {
     }).join('');
     save();
 }
-}
+
 function getNeuralPool(limiteHoras, listaMaterias, dataAlvo) {
     let pool = [];
     let horasAcumuladas = 0;
