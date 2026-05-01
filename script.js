@@ -131,7 +131,8 @@ function renderDiario(date) {
     if (btnReplan) {
         btnReplan.style.display = temAtr ? "inline-flex" : "none";
     }
-  }
+        
+  
 
 
 function toggleTimer(id) {
@@ -421,7 +422,7 @@ function salvarExtra() {
     db.metaFixa[hj].push({ 
         m: m.toUpperCase(), a: a, l: tiposL[tipoK] || "Extra", 
         k: tipoK, h: tempoHoras, c: true, extra: true 
-    });
+    }
     
     save(); fecharModais(); renderDiario(vDate); updateDashboard();
 }
