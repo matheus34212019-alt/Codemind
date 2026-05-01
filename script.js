@@ -127,7 +127,11 @@ function renderDiario(date) {
             <button class="btn" onclick="navDay(1)">ADIANTAR MATÉRIAS DE AMANHÃ</button>
         `;
         document.getElementById('lista-diaria').appendChild(divFim);
+      const btnReplan = document.querySelector('.replan-btn');
+    if (btnReplan) {
+        btnReplan.style.display = temAtr ? "inline-flex" : "none";
     }
+  }
 }
 
 function toggleTimer(id) {
@@ -160,7 +164,6 @@ function abrirModalExtra() {
         materiasUnicas.map(m => `<option value="${m}">${m}</option>`).join('');
     
     document.getElementById('modal-extra').style.display = 'flex';
-}
 function atualizarAssuntosExtra() {
     const matSelecionada = document.getElementById('extra-mat').value;
     const selectAss = document.getElementById('extra-ass');
@@ -170,9 +173,14 @@ function atualizarAssuntosExtra() {
         return;
     }
     
+    // Filtra os assuntos da sua lista original baseada na matéria escolhida
     const assuntos = db.lista.filter(x => x.m === matSelecionada).map(x => x.a);
-    selectAss.innerHTML = assuntos.map(a => `<option value="${a}">${a}</option>`).join('');
+    
+    // Remove duplicados e preenche o select
+    const assuntosUnicos = [...new Set(assuntos)];
+    selectAss.innerHTML = assuntosUnicos.map(a => `<option value="${a}">${a}</option>`).join('');
 }
+
 function cliqueTask(dK, idx) {
     const t = db.metaFixa[dK][idx];
     if(!t.c && t.k === 'Ex') {
@@ -402,31 +410,20 @@ function salvarExtra() {
     const m = document.getElementById('extra-mat').value;
     const a = document.getElementById('extra-ass').value;
     const tipoK = document.getElementById('extra-tipo').value;
-    const tempoMin = parseFloat(document.getElementById('extra-tempo').value);
+    const tempoHoras = parseFloat(document.getElementById('extra-tempo').value);
     
-    if(!m || !a || isNaN(tempoMin)) { alert("Preencha todos os campos corretamente!"); return; }
+    if(!m || !a || isNaN(tempoHoras)) { alert("Preencha todos os campos!"); return; }
     
     const tiposL = { "E": "Estudo", "Rev": "Revisão", "Ex": "Exercícios" };
     const hj = new Date().toLocaleDateString();
     
-    // Converte minutos para o padrão decimal de horas do sistema (ex: 30min -> 0.5h)
-    const tempoHoras = parseFloat((tempoMin / 60).toFixed(2));
-    
     if(!db.metaFixa[hj]) db.metaFixa[hj] = [];
-    
     db.metaFixa[hj].push({ 
-        m: m.toUpperCase(), 
-        a: a, 
-        l: tiposL[tipoK] || "Extra", 
-        k: tipoK, 
-        h: tempoHoras, 
-        c: true, // Já entra como concluído
-        extra: true 
+        m: m.toUpperCase(), a: a, l: tiposL[tipoK] || "Extra", 
+        k: tipoK, h: tempoHoras, c: true, extra: true 
     });
     
-    save(); 
-    fecharModais(); 
-    renderDiario(vDate);
-    updateDashboard();
+    save(); fecharModais(); renderDiario(vDate); updateDashboard();
 }
+
 
