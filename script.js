@@ -314,6 +314,62 @@ function renderSemanal() {
 function getNeuralPool(limiteHoras, listaMaterias, dataAlvo) {
     let pool = [];
     let horasAcumuladas = 0;
+    listaMaterias.sort((a, b) => (b.hF || 0) - (a.hF || 0));
+
+    for (let mat of listaMaterias) {
+        if (horasAcumuladas >= limiteHoras) break;
+        if (!mat.concluidoCiclo1) {
+            if ((mat.hF || 0) < 3.0) { // Exemplo de meta de 3h
+                let horasRestantes = 3.0 - (mat.hF || 0);
+                let horasHoje = Math.min(horasRestantes, limiteHoras - horasAcumuladas);
+                pool.push({ m: mat.m, a: mat.a, h: horasHoje, k: 'E', l: 'Ciclo 1' });
+                horasAcumuladas += horasHoje;
+            } else if (!mat.done?.Rev) {
+                if (horasAcumuladas + 1 <= limiteHoras) {
+                    pool.push({ m: mat.m, a: mat.a, h: 1, k: 'Rev', l: 'Ciclo 1' });
+                    horasAcumuladas += 1;
+                }
+            } else if (!mat.done?.Ex) {
+                if (horasAcumuladas + 1 <= limiteHoras) {
+                    pool.push({ m: mat.m, a: mat.a, h: 1, k: 'Ex', l: 'Ciclo 1' });
+                    horasAcumuladas += 1;
+                }
+            }
+        } else {
+            if (horasAcumuladas + 1 <= limiteHoras) {
+                pool.push({ m: mat.m, a: mat.a, h: 1, k: 'Rev', l: 'Ciclo 2' });
+                horasAcumuladas += 1;
+            }
+        }
+    }
+    return pool;
+}
+
+function cliqueTask(dateStr, index) {
+    const task = db.metaFixa[dateStr][index];
+    task.c = !task.c; 
+    const mat = db.lista.find(m => m.m === task.m && m.a === task.a);
+    if (mat) {
+        if (task.k === 'E' && task.l === 'Ciclo 1') {
+            if (task.c) mat.hF = (mat.hF || 0) + task.h;
+            else mat.hF = Math.max(0, (mat.hF || 0) - task.h);
+            if (mat.hF >= 3.0) mat.done.E = true; 
+        }
+        if (task.l === 'Ciclo 1') {
+            if (task.k === 'Rev') mat.done.Rev = task.c;
+            if (task.k === 'Ex') {
+                mat.done.Ex = task.c;
+                if (task.c && mat.done.E && mat.done.Rev) mat.concluidoCiclo1 = true;
+            }
+        }
+    }
+    save();
+    renderDiario(vDate); 
+}
+
+function getNeuralPool(limiteHoras, listaMaterias, dataAlvo) {
+    let pool = [];
+    let horasAcumuladas = 0;
 
     // Ordena matérias para priorizar o que começou e não terminou
     listaMaterias.sort((a, b) => (b.horasEstudadas || 0) - (a.horasEstudadas || 0));
