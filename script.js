@@ -106,13 +106,15 @@ function renderDiario(date) {
                 <div style="font-weight:800; font-size:1.1rem;">${t.m}</div>
                 <div style="font-size:0.85rem; color:var(--text-sec); margin-bottom:10px;">${t.a}</div>
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <button class="btn btn-sm btn-outline" id="btn-t-${i}" onclick="toggleTimer(${i})"><i class="fas fa-play"></i></button>
-                    <span id="time-${i}" style="font-family:monospace; font-weight:800; color:var(--accent);">00:00</span>
-                </div>
-            </div>
-            <input type="checkbox" ${t.c ? 'checked' : ''} onclick="cliqueTask('${curStr}', ${i})">
+                    <
         </div>`).join('');
-    
+        // Botão extra dentro da lista diária
+    document.getElementById('lista-diaria').innerHTML += `
+        <button class="btn-extra-diario" onclick="abrirModalExtra()">
+            <i class="fas fa-plus-circle"></i> ESTUDOU ALGO FORA DO PLANEJADO?
+        </button>
+    `;
+
     const ehHoje = curStr === hoje.toLocaleDateString();
     document.getElementById('view-title').innerText = ehHoje ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
 
