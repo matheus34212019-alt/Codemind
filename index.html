@@ -151,14 +151,21 @@
                     <div class="stat-card"><canvas id="c2"></canvas></div>
                 </div>
             </div>
-
             <div id="edital" class="page">
                 <div class="stat-card">
                     <h3>Importar Edital</h3>
-                    <input type="text" id="add-mat" placeholder="Nome da Matéria">
-                    <textarea id="add-ass" placeholder="Cole os assuntos aqui..."></textarea>
+                    <input type="text" id="add-mat" placeholder="Nome da Matéria" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                    <textarea id="add-ass" placeholder="Cole os assuntos aqui (um por linha)..." style="width: 100%; height: 100px; margin-bottom: 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--border); font-family: inherit;"></textarea>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-size: 0.75rem; font-weight: 700; display: block; margin-bottom: 5px; color: var(--text-sec);">Horas por Assunto (Teoria):</label>
+                        <input type="number" id="add-horas" value="1.5" step="0.5" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                    </div>
+
                     <button class="btn" style="width:100%;" onclick="impEdital()">PROCESSAR CARGA</button>
                 </div>
+            </div>
+
             </div>
             <div id="ciclo" class="page">
                 <div class="stat-card"><h3>Matérias em Giro</h3><div id="check-c"></div><button class="btn" style="width:100%;" onclick="saveC()">ATIVAR CICLO</button></div>
