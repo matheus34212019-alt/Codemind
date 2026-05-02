@@ -167,30 +167,22 @@
             </div>
         </div>
 
+        
         <div id="ciclo" class="page">
             <div class="stats-grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="stat-card">
-                    <h3>Matérias Disponíveis</h3>
+                    <h3><i class="fas fa-list" style="color: #22c55e;"></i> Matérias Disponíveis</h3>
                     <div id="pool-materias" class="drag-container"></div>
                 </div>
-                <div class="stat-card" style="border: 2px dashed var(--accent);">
-                    <h3>Ciclo Ativo (Arraste para ordenar)</h3>
+                <div class="stat-card">
+                    <h3><i class="fas fa-retweet" style="color: #8b5cf6;"></i> Ciclo Ativo</h3>
                     <div id="area-ciclo" class="drag-container" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-                    <button class="btn" style="width:100%; margin-top: 15px;" onclick="saveC()">SALVAR ORDEM</button>
+                    <button class="btn" style="width:100%; margin-top: 15px; background: #8b5cf6; border:none;" onclick="saveC()">
+                        <i class="fas fa-check-circle"></i> SALVAR ORDEM DO CICLO
+                    </button>
                 </div>
             </div>
         </div>
-
-        <div id="config-h" class="page">
-
-                <div class="stat-card">
-                    <h3><i class="fas fa-clock"></i> Carga Horária Semanal</h3>
-                    <p style="font-size: 0.75rem; color: var(--text-sec); margin-bottom: 20px;">Defina quantas horas você pode estudar em cada dia da semana.</p>
-                    <div id="grid-h-in" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-bottom: 20px;">
-                        </div>
-                    <button class="btn" style="width:100%;" onclick="saveH()">SALVAR CONFIGURAÇÃO DE HORAS</button>
-                </div>
-            </div>
 
         <div id="sinalizar" class="page">
             <div class="stat-card">
