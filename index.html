@@ -18,50 +18,48 @@
         </div>
     </div>
 
-   <!-- MODAL ESTUDO EXTRA ATUALIZADO -->
-<div id="modal-extra" class="modal-overlay">
-    <div class="modal-box" style="width: 500px;">
-        <i class="fas fa-times modal-close" onclick="fecharModais()"></i>
-        <h3 style="margin-bottom:20px;"><i class="fas fa-plus-circle"></i> Inserir Atividade Extra</h3>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <div>
-                <label style="font-size: 0.75rem; font-weight: 700;">Disciplina:</label>
-                <select id="extra-mat" onchange="atualizarAssuntosExtra()">
-                    <option value="">Selecione a Matéria</option>
-                </select>
+    <div id="modal-extra" class="modal-overlay">
+        <div class="modal-box" style="width: 500px;">
+            <i class="fas fa-times modal-close" onclick="fecharModais()"></i>
+            <h3 style="margin-bottom:20px;"><i class="fas fa-plus-circle"></i> Inserir Atividade Extra</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="font-size: 0.75rem; font-weight: 700;">Disciplina:</label>
+                    <select id="extra-mat" onchange="atualizarAssuntosExtra()">
+                        <option value="">Selecione a Matéria</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.75rem; font-weight: 700;">Assunto:</label>
+                    <select id="extra-ass">
+                        <option value="">Selecione o Assunto</option>
+                    </select>
+                </div>
             </div>
-            <div>
-                <label style="font-size: 0.75rem; font-weight: 700;">Assunto:</label>
-                <select id="extra-ass">
-                    <option value="">Selecione o Assunto</option>
-                </select>
-            </div>
-        </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
-            <div>
-                <label style="font-size: 0.75rem; font-weight: 700;">Modalidade:</label>
-                <select id="extra-tipo">
-                    <option value="E">Estudo</option>
-                    <option value="Rev">Revisão</option>
-                    <option value="Ex">Exercícios</option>
-                </select>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <div>
+                    <label style="font-size: 0.75rem; font-weight: 700;">Modalidade:</label>
+                    <select id="extra-tipo">
+                        <option value="E">Estudo</option>
+                        <option value="Rev">Revisão</option>
+                        <option value="Ex">Exercícios</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.75rem; font-weight: 700;">Tempo:</label>
+                    <select id="extra-tempo">
+                        <option value="0.5">30 min</option>
+                        <option value="1.0" selected>60 min</option>
+                        <option value="1.5">90 min</option>
+                        <option value="2.0">2 horas</option>
+                    </select>
+                </div>
             </div>
-            <div>
-                <label style="font-size: 0.75rem; font-weight: 700;">Tempo:</label>
-                <select id="extra-tempo">
-                    <option value="0.5">30 minutos</option>
-                    <option value="1.0" selected>60 minutos</option>
-                    <option value="1.5">90 minutos</option>
-                    <option value="2.0">2 horas</option>
-                </select>
-            </div>
+            <button class="btn" style="width:100%; margin-top: 25px;" onclick="salvarExtra()">INCLUIR NO PLANTÃO</button>
         </div>
-
-        <button class="btn" style="width:100%; margin-top: 25px;" onclick="salvarExtra()">INCLUIR NO PLANTÃO</button>
     </div>
-</div>
 
     <div id="modal-exercicio" class="modal-overlay">
         <div class="modal-box">
@@ -69,8 +67,8 @@
             <h3 style="margin-bottom:10px;"><i class="fas fa-pen-to-square"></i> Registro de Desempenho</h3>
             <p id="label-ex-assunto" style="font-size:0.85rem; color:var(--text-sec); margin-bottom:15px;"></p>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                <div><label>Questões Feitas</label><input type="number" id="ex-total"></div>
-                <div><label>Corretas</label><input type="number" id="ex-acertos"></div>
+                <div><label>Questões</label><input type="number" id="ex-total"></div>
+                <div><label>Acertos</label><input type="number" id="ex-acertos"></div>
             </div>
             <div id="cebraspe-feedback" class="feedback-box">Aguardando dados...</div>
             <button class="btn" style="width:100%;" onclick="confirmarExercicio()">REGISTRAR RESULTADO</button>
@@ -80,7 +78,7 @@
     <aside class="sidebar">
         <div class="logo-box"><i class="fas fa-shield-halved"></i> PLANTÃO POLÍCIA</div>
         <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-calendar-day"></i><span>Painel Hoje</span></div>
-        <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-week"></i><span>Cronograma Plantão</span></div>
+        <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-week"></i><span>Cronograma</span></div>
         <div class="nav-item" onclick="showTab('performance', this)"><i class="fas fa-chart-pie"></i><span>Performance</span></div>
         <div class="nav-item" onclick="toggleSub()"><i class="fas fa-sliders"></i><span>Meu Plano</span><i class="fas fa-chevron-down" style="margin-left:auto;"></i></div>
         <div id="sub-plano" class="submenu">
@@ -130,34 +128,22 @@
                 </div>
                 <p id="meta-status" class="meta-sub"></p>
                 <div id="lista-diaria"></div>
-                
-
-           <!-- COLE ESTE BLOCO NO LUGAR DO ANTIGO -->
-<div id="semanal" class="page">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
-        <div>
-            <h2 style="margin-bottom: 10px;">Cronograma Plantão</h2>
-            <!-- Legenda das Cores -->
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <span style="font-size: 0.7rem; display: flex; align-items: center; gap: 4px;"><i class="fas fa-square" style="color: var(--color-e);"></i> Estudo</span>
-                <span style="font-size: 0.7rem; display: flex; align-items: center; gap: 4px;"><i class="fas fa-square" style="color: var(--color-rev);"></i> Revisão</span>
-                <span style="font-size: 0.7rem; display: flex; align-items: center; gap: 4px;"><i class="fas fa-square" style="color: var(--color-ex);"></i> Exercícios</span>
-                <span style="font-size: 0.7rem; display: flex; align-items: center; gap: 4px;"><i class="fas fa-square" style="color: #ef4444;"></i> ATRASADO</span>
             </div>
-        </div>
 
-        <!-- Card de Desempenho da Semana -->
-        <div id="stats-semanal" style="display: flex; gap: 20px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
-            <div style="text-align: center;"><small style="display:block; font-weight:700;">HORAS</small><span id="sem-horas" style="color: var(--accent); font-weight:800;">0h</span></div>
-            <div style="text-align: center;"><small style="display:block; font-weight:700;">QUESTÕES</small><span id="sem-quest" style="color: var(--accent); font-weight:800;">0</span></div>
-            <div style="text-align: center;"><small style="display:block; font-weight:700;">PRECISÃO</small><span id="sem-prec" style="color: #10b981; font-weight:800;">0%</span></div>
-        </div>
-    </div>
-
-    <div id="grid-semanal" class="weekly-grid">
-        <!-- O JavaScript vai preencher aqui -->
-    </div>
-</div>
+            <div id="semanal" class="page">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+                    <div>
+                        <h2>Cronograma Plantão</h2>
+                        <div style="display: flex; gap: 10px;">
+                            <span style="font-size: 0.7rem;"><i class="fas fa-square" style="color: var(--color-e);"></i> Teoria</span>
+                            <span style="font-size: 0.7rem;"><i class="fas fa-square" style="color: var(--color-rev);"></i> Rev</span>
+                            <span style="font-size: 0.7rem;"><i class="fas fa-square" style="color: var(--color-ex);"></i> Ex</span>
+                            <span style="font-size: 0.7rem;"><i class="fas fa-square" style="color: #ef4444;"></i> ATRASO</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="grid-semanal" class="weekly-grid"></div>
+            </div>
 
             <div id="performance" class="page">
                 <div class="stats-grid">
@@ -169,27 +155,21 @@
             <div id="edital" class="page">
                 <div class="stat-card">
                     <h3>Importar Edital</h3>
-                    <input type="text" id="add-mat" placeholder="Nome da Matéria (Ex: Direito Penal)">
-                    <textarea id="add-ass" placeholder="Cole os assuntos aqui, um por linha..." style="height:150px;"></textarea>
+                    <input type="text" id="add-mat" placeholder="Nome da Matéria">
+                    <textarea id="add-ass" placeholder="Cole os assuntos aqui..."></textarea>
                     <button class="btn" style="width:100%;" onclick="impEdital()">PROCESSAR CARGA</button>
                 </div>
             </div>
-
             <div id="ciclo" class="page">
-                <div class="stat-card"><h3>Matérias em Giro</h3><div id="check-c"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveC()">ATIVAR CICLO</button></div>
+                <div class="stat-card"><h3>Matérias em Giro</h3><div id="check-c"></div><button class="btn" style="width:100%;" onclick="saveC()">ATIVAR CICLO</button></div>
             </div>
-
             <div id="config-h" class="page">
-                <div class="stat-card"><h3>Carga Horária Semanal</h3><div id="grid-h-in"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveH()">SALVAR CONFIGURAÇÃO</button></div>
+                <div class="stat-card"><h3>Carga Horária Semanal</h3><div id="grid-h-in"></div><button class="btn" style="width:100%;" onclick="saveH()">SALVAR</button></div>
             </div>
-
-            <div id="sinalizar" class="page"><h2>Sinalização da Base (Geral)</h2><div id="tree"></div></div>
-
-            <div id="fluxo" class="page"><h2>Ajustar Carga por Matéria</h2><div id="fluxo-content"></div></div>
-
+            <div id="sinalizar" class="page"><h2>Sinalização da Base</h2><div id="tree"></div></div>
+            <div id="fluxo" class="page"><h2>Ajustar Fluxos</h2><div id="fluxo-content"></div></div>
         </div>
     </main>
-
     <script src="script.js"></script>
 </body>
 </html>
