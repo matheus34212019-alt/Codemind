@@ -70,7 +70,7 @@ function renderDiario(date) {
     const hoje = new Date(); hoje.setHours(0,0,0,0);
     const curStr = date.toLocaleDateString();
     
-    // 1. Verificação de Atrasos
+    // Bloqueio por atraso
     let temAtr = false;
     let pD = new Date(hoje); pD.setDate(hoje.getDate() - hoje.getDay());
     for(let i=0; i < hoje.getDay(); i++) {
@@ -78,7 +78,6 @@ function renderDiario(date) {
         if(db.metaFixa[dP.toLocaleDateString()]?.some(t => !t.c)) { temAtr = true; break; }
     }
 
-    // 2. BLOQUEIO DE SEGURANÇA (Se houver atraso e tentar ver o futuro)
     if(date > hoje && temAtr) {
         document.getElementById('lista-diaria').innerHTML = `
             <div class="stat-card" style="text-align:center; border:2px solid red;">
@@ -88,7 +87,6 @@ function renderDiario(date) {
         return;
     }
 
-    // 3. GERAÇÃO DA LISTA DE TAREFAS
     if(!db.metaFixa[curStr]) db.metaFixa[curStr] = getNeuralPool(parseFloat(db.h[date.getDay()]), JSON.parse(JSON.stringify(db.lista)));
     const tasks = db.metaFixa[curStr];
     document.getElementById('meta-status').innerText = `${tasks.reduce((a,b)=>a+b.h,0).toFixed(1)}h / ${db.h[date.getDay()]}h meta`;
@@ -112,35 +110,32 @@ function renderDiario(date) {
     
     const ehHoje = curStr === hoje.toLocaleDateString();
     document.getElementById('view-title').innerText = ehHoje ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
-
-    // 4. LÓGICA DO BOTÃO DE REPLANEJAR (Independente)
-    const btnReplanejar = document.querySelector('.replan-btn');
-    if (btnReplanejar) {
-        if (temAtr) {
-            btnReplanejar.style.display = "inline-flex";
-            btnReplanejar.innerHTML = "<i class='fas fa-exclamation-triangle'></i> REPLANEJAR ATRASOS PENDENTES";
-            btnReplanejar.style.backgroundColor = "#fee2e2"; 
-        } else {
-            btnReplanejar.style.display = "none";
-        }
-    }
-
-    // 5. LÓGICA DO PARABÉNS (Só se tudo estiver OK)
+// --- CÓDIGO DE CONCLUSÃO DO PLANTÃO (Substitua no final da renderDiario) ---
     const tarefasConcluidas = tasks.length > 0 && tasks.every(x => x.c);
-    if (tarefasConcluidas && ehHoje) {
+    
+    if (tarefasConcluidas && curStr === hoje.toLocaleDateString()) {
         const lista = document.getElementById('lista-diaria');
+        
+        // Criamos o card de congratulações
         const divFim = document.createElement('div');
         divFim.className = "stat-card";
         divFim.style = "text-align:center; background: #f0fdf4; border: 2px dashed #16a34a; margin-top: 20px; padding: 30px; border-radius: 20px;";
+        
         divFim.innerHTML = `
             <div style="font-size: 3rem; margin-bottom: 10px;">🏆</div>
             <h2 style="color: #16a34a; font-weight: 800; margin-bottom: 10px;">MISSÃO CUMPRIDA!</h2>
-            <p style="color: #15803d; font-weight: 600; margin-bottom: 20px;">Excelente trabalho, Matheus! Todos os alvos de hoje foram atingidos.</p>
-            <button class="btn" onclick="navDay(1)" style="background: #16a34a;"><i class="fas fa-arrow-right"></i> ADIANTAR ESTUDOS DE AMANHÃ</button>
+            <p style="color: #15803d; font-weight: 600; margin-bottom: 20px;">
+                Excelente trabalho, Matheus! Todos os alvos de hoje foram atingidos com sucesso.
+            </p>
+            <button class="btn" onclick="navDay(1)" style="background: #16a34a; box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.3);">
+                <i class="fas fa-arrow-right"></i> ADIANTAR ESTUDOS DE AMANHÃ
+            </button>
         `;
+        
         lista.appendChild(divFim);
     }
-}
+} // <--- Certifique-se de que esta chave fecha a função renderDiario
+
 
 function toggleTimer(id) {
     if (timers[id]) { 
@@ -185,40 +180,17 @@ function atualizarAssuntosExtra() {
     const assuntos = db.lista.filter(x => x.m === matSelecionada).map(x => x.a);
     selectAss.innerHTML = assuntos.map(a => `<option value="${a}">${a}</option>`).join('');
 }
-
-function cliqueTask(dateStr, index) {
-    const task = db.metaFixa[dateStr][index];
-    task.c = !task.c; 
-
-    if (task.k === 'E' && task.l === 'Ciclo 1') {
-        const mat = db.lista.find(m => m.materia === task.m && m.assunto === task.a);
-        if (mat) {
-            if (task.c) {
-                mat.horasEstudadas = (mat.horasEstudadas || 0) + task.h;
-            } else {
-                mat.horasEstudadas = Math.max(0, (mat.horasEstudadas || 0) - task.h);
-            }
-            if (mat.horasEstudadas >= mat.horasMeta) {
-                mat.estudoConcluido = true; 
-            }
-        }
+function cliqueTask(dK, idx) {
+    const t = db.metaFixa[dK][idx];
+    if(!t.c && t.k === 'Ex') {
+        exPendente = { dK, idx };
+        document.getElementById('label-ex-assunto').innerText = `${t.m} - ${t.a}`;
+        document.getElementById('modal-exercicio').style.display = 'flex';
+        document.getElementById('ex-total').oninput = calcCebraspe;
+        document.getElementById('ex-acertos').oninput = calcCebraspe;
+    } else { 
+        t.c = !t.c; save(); updateDashboard(); renderDiario(vDate); 
     }
-
-    if (task.l === 'Ciclo 1') {
-        const mat = db.lista.find(m => m.materia === task.m && m.assunto === task.a);
-        if (mat) {
-            if (task.k === 'Rev') mat.revisaoFeita = task.c;
-            if (task.k === 'Ex') {
-                mat.exerciciosFeitos = task.c;
-                if (task.c && mat.estudoConcluido && mat.revisaoFeita) {
-                    mat.concluidoCiclo1 = true;
-                }
-            }
-        }
-    }
-
-    save();
-    renderDiario(vDate); 
 }
 
 function calcCebraspe() {
@@ -263,108 +235,67 @@ function replanejarAgora() {
     save(); alert("Plantão Replanejado!"); init();
 }
 
+// CRONOGRAMA PLANTÃO (DOM-SÁB COM ATRASOS EM VERMELHO)
 function renderSemanal() {
     const dN = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
-    let hoje = new Date(); hoje.setHours(0,0,0,0);
-    let pD = new Date(hoje); pD.setDate(hoje.getDate() - hoje.getDay());
-
-    if(!db.inicioCiclo) { db.inicioCiclo = hoje.toLocaleDateString(); save(); }
-    const parts = db.inicioCiclo.split('/');
-    const dataInicio = new Date(parts[2], parts[1] - 1, parts[0]);
-
+    let h = new Date(); h.setHours(0,0,0,0);
+    let pD = new Date(h); pD.setDate(h.getDate() - h.getDay());
     document.getElementById('grid-semanal').innerHTML = [0,1,2,3,4,5,6].map(off => {
         let d = new Date(pD); d.setDate(pD.getDate() + off);
         let k = d.toLocaleDateString();
-        const limiteDiario = parseFloat(db.h[d.getDay()]) || 0;
-        
-        if (d >= dataInicio && !db.metaFixa[k] && limiteDiario > 0) {
-            db.metaFixa[k] = getNeuralPool(limiteDiario, db.lista, d);
-        }
-
         let tasks = db.metaFixa[k] || [];
-        let isAtr = d < hoje && tasks.some(t => !t.c);
-
+        let isAtr = d < h && tasks.some(t => !t.c);
         return `
             <div class="day-column">
-                <div class="day-head ${isAtr ? 'atrasado' : ''}" style="${d.getTime() === hoje.getTime() ? 'background: #dbeafe; border-bottom: 2px solid #2563eb;' : ''}">
-                    <span style="font-weight:800; font-size:0.65rem;">${dN[d.getDay()]}</span><br>
-                    <span style="font-size:0.55rem; opacity:0.7;">${k.slice(0,5)}</span>
-                </div>
-                <div class="tasks-container-semanal" style="padding: 6px; display: flex; flex-direction: column; gap: 6px; background: ${d < dataInicio ? '#f8fafc' : '#fff'}; min-height: 250px;">
-                    ${tasks.map(x => {
-                        const cores = { 'E': '#3b82f6', 'Rev': '#f59e0b', 'Ex': '#10b981' };
-                        const corCard = (d < hoje && !x.c) ? '#ef4444' : (cores[x.k] || '#3b82f6');
-                        return `
-                        <div style="background: ${corCard}; color: white; padding: 6px 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); ${x.c ? 'opacity:0.5' : ''}; min-height: 50px;">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap: 4px;">
-                                <b style="font-size: 0.55rem; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">${x.m}</b>
-                                <span style="font-size: 0.5rem; background: rgba(0,0,0,0.2); padding: 1px 3px; border-radius: 3px; font-weight: 800;">${x.h}h</span>
-                            </div>
-                            <div style="font-size: 0.55rem; line-height: 1.1; opacity: 0.9; margin: 2px 0;">${x.a}</div>
-                            <div style="font-size: 0.45rem; font-weight: 700; text-transform: uppercase; opacity: 0.8;">${x.l}</div>
-                        </div>`;
-                    }).join('')}
-                    ${d < dataInicio ? '<div style="text-align:center; margin-top:20px; font-size:0.5rem; color:#cbd5e1; font-weight:700;">FORA DO CICLO</div>' : ''}
-                </div>
+                <div class="day-head ${isAtr ? 'atrasado' : ''}">${dN[d.getDay()]}<br>${k.slice(0,5)}</div>
+                ${tasks.map(x => `
+                    <div class="sim-task tag-${x.k==='Ex'?'ex':(x.k==='Rev'?'rev':'e')} ${!x.c && d < h ? 'atrasado' : ''}">
+                        <b>${x.m}</b><br>${x.a}
+                    </div>`).join('')}
             </div>`;
     }).join('');
-    save();
 }
 
-function getNeuralPool(limiteHoras, listaMaterias, dataAlvo) {
-    let pool = [];
-    let horasAcumuladas = 0;
-
-    // Ordena matérias para priorizar o que começou e não terminou
-    listaMaterias.sort((a, b) => (b.horasEstudadas || 0) - (a.horasEstudadas || 0));
-
-    for (let mat of listaMaterias) {
-        if (horasAcumuladas >= limiteHoras) break;
-
-        // LÓGICA DO CICLO 1
-        if (!mat.concluidoCiclo1) {
-            // 1. ESTUDO: Só sai daqui quando horasEstudadas >= horasMeta
-            if ((mat.horasEstudadas || 0) < mat.horasMeta) {
-                let horasRestantes = mat.horasMeta - (mat.horasEstudadas || 0);
-                let horasHoje = Math.min(horasRestantes, limiteHoras - horasAcumuladas);
-                
-                pool.push({
-                    m: mat.materia,
-                    a: mat.assunto,
-                    h: horasHoje,
-                    k: 'E', // Estudo
-                    l: 'Ciclo 1'
-                });
-                horasAcumuladas += horasHoje;
-            } 
-            // 2. REVISÃO: Só aparece após o estudo completo
-            else if (!mat.revisaoFeita) {
-                if (horasAcumuladas + 1 <= limiteHoras) {
-                    pool.push({ m: mat.materia, a: mat.assunto, h: 1, k: 'Rev', l: 'Ciclo 1' });
-                    horasAcumuladas += 1;
+// MOTOR DE INTELIGÊNCIA (NEURAL POOL)
+function getNeuralPool(limit, simList) {
+    let pool = []; let somaH = 0; if(!db.ciclo.length) return pool;
+    let localList = JSON.parse(JSON.stringify(simList));
+    let safety = 0;
+    while(somaH < limit && safety < 100) {
+        safety++; let addedAny = false;
+        for(let m of db.ciclo) {
+            if(somaH >= limit) break;
+            let pending = localList.find(x => x.m === m && !x.f);
+            if(pending) {
+                const rito = [
+                    {k:'E', l:'Estudo', h: parseFloat(pending.h.E)}, 
+                    {k:'Rev', l:'Revisão', h: parseFloat(pending.h.Rev)}, 
+                    {k:'Ex', l:'Exercícios', h: parseFloat(pending.h.Ex)}
+                ];
+                for(let s of rito) {
+                    if(!pending.done[s.k]) {
+                        if(s.k === 'E') {
+                            let al = Math.min(s.h - (pending.hF || 0), limit - somaH);
+                            if(al > 0) { 
+                                pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: al, c: false }); 
+                                pending.hF = (pending.hF || 0) + al; 
+                                if(pending.hF >= s.h - 0.05) pending.done.E = true; 
+                                somaH += al; addedAny = true; 
+                            }
+                        } else if(somaH + s.h <= limit + 0.1) {
+                            pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: s.h, c: false });
+                            pending.done[s.k] = true; somaH += s.h; addedAny = true; 
+                            if(s.k === 'Ex') pending.f = true;
+                        }
+                        break; 
+                    }
                 }
-            }
-            // 3. EXERCÍCIOS: O "Grand Finale" do Ciclo 1
-            else if (!mat.exerciciosFeitos) {
-                if (horasAcumuladas + 1 <= limiteHoras) {
-                    pool.push({ m: mat.materia, a: mat.assunto, h: 1, k: 'Ex', l: 'Ciclo 1' });
-                    horasAcumuladas += 1;
-                }
-            }
-        } 
-        // LÓGICA DO CICLO 2 (Repetição Espaçada)
-        else {
-            // Aqui entra a regra dos 3, 7, 21 dias (Rev + Ex)
-            // Implementação simplificada para o pool:
-            if (horasAcumuladas + 1 <= limiteHoras) {
-                pool.push({ m: mat.materia, a: mat.assunto, h: 1, k: 'Rev', l: 'Ciclo 2' });
-                horasAcumuladas += 1;
             }
         }
+        if(!addedAny) break;
     }
     return pool;
 }
-
 
 // FERRAMENTAS DE CONFIGURAÇÃO E PERFORMANCE
 function impEdital() {
