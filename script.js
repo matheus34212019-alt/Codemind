@@ -434,10 +434,19 @@ function allowDrop(ev) { ev.preventDefault(); }
 function drag(ev) { ev.dataTransfer.setData("text", ev.target.innerText); }
 function drop(ev) {
     ev.preventDefault();
-    let data = ev.dataTransfer.setData("text");
-    if(![...document.getElementById('area-ciclo').children].some(el => el.innerText === data)) {
+    let data = ev.dataTransfer.getData("text").trim(); // Limpa espaços
+    
+    // Verifica se a matéria já está na lista visual do ciclo
+    const itensAtuais = [...document.getElementById('area-ciclo').children];
+    const jaExiste = itensAtuais.some(el => el.innerText.trim() === data);
+    
+    if(!jaExiste) {
         renderItemCiclo(data, 'area-ciclo');
+    } else {
+        alert("Esta matéria já está no ciclo!");
     }
+}
+
 }
 
 function renderItemCiclo(nome, containerId) {
