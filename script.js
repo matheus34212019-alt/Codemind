@@ -345,13 +345,49 @@ function renderFluxo() {
         <div class="stat-card"><b>${m}</b><br><small>Estudo | Rev | Ex</small></div>`).join('');
 }
 
-function renderCiclo() {
-    const mats = [...new Set(db.lista.map(x => x.m))];
-    document.getElementById('check-c').innerHTML = mats.map(m => `
-        <label><input type="checkbox" class="ckc" value="${m}" ${db.ciclo.includes(m)?'checked':''}> ${m}</label>`).join('');
+// 1. FUNÇÕES DE SUPORTE AO ARRASTO (ADICIONE NO FINAL DO ARQUIVO)
+function allowDrop(ev) { ev.preventDefault(); }
+function drag(ev) { ev.dataTransfer.setData("text", ev.target.innerText); }
+function drop(ev) {
+    ev.preventDefault();
+    let data = ev.dataTransfer.getData("text");
+    // Evita duplicados na área do ciclo
+    if(![...document.getElementById('area-ciclo').children].some(el => el.innerText === data)) {
+        renderItemCiclo(data, 'area-ciclo');
+    }
 }
 
-function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); db.metaFixa = {}; save(); init(); }
+function renderItemCiclo(nome, containerId) {
+    const div = document.createElement('div');
+    div.className = 'drag-item';
+    div.draggable = true;
+    div.ondragstart = drag;
+    div.innerHTML = `${nome} <i class="fas fa-bars" style="color:#cbd5e1"></i>`;
+    document.getElementById(containerId).appendChild(div);
+}
+
+// 2. SUBSTITUA A FUNÇÃO renderCiclo ATUAL POR ESTA:
+function renderCiclo() {
+    const todas = [...new Set(db.lista.map(x => x.m))];
+    const pool = document.getElementById('pool-materias');
+    const area = document.getElementById('area-ciclo');
+    if(!pool || !area) return;
+    pool.innerHTML = ''; area.innerHTML = '';
+    
+    todas.forEach(m => renderItemCiclo(m, 'pool-materias'));
+    db.ciclo.forEach(m => renderItemCiclo(m, 'area-ciclo'));
+}
+
+// 3. SUBSTITUA A FUNÇÃO saveC ATUAL POR ESTA:
+function saveC() {
+    const itens = document.getElementById('area-ciclo').children;
+    db.ciclo = Array.from(itens).map(el => el.innerText.trim());
+    db.metaFixa = {}; // Reseta o cronograma para aplicar a nova ordem
+    save();
+    init();
+    alert("Ordem do Ciclo salva! O cronograma foi atualizado.");
+}
+
 
 function renderHInputs() {
     const dN = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
