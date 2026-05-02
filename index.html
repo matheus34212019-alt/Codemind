@@ -191,24 +191,19 @@
                     <button class="btn" style="width:100%;" onclick="saveH()">SALVAR CONFIGURAÇÃO DE HORAS</button>
                 </div>
             </div>
-            ```
 
----
+        <div id="sinalizar" class="page">
+            <div class="stat-card">
+                <h2><i class="fas fa-map-marker-alt"></i> Sinalização da Base</h2>
+                <div id="tree"></div>
+            </div>
+        </div>
 
-### 4. Como o seu arquivo deve terminar:
-Após essa substituição, o final do seu arquivo deve seguir esta ordem (como mostrado na sua foto):
-
-1.  Aba de **Sinalizar** (`id="sinalizar"`)
-2.  Aba de **Fluxo** (`id="fluxo"`)
-3.  Fechamento da `main` (`</main>`)
-4.  Script (`<script src="script.js"></script>`)
-5.  Fechamento do `body` e `html`
-
-### 🛡️ Verificação de Segurança
-Se após colar isso você não conseguir ver os números das horas, certifique-se de que no seu **script.js** existe a função `renderHInputs()` que é responsável por colocar os números dentro desse quadro.
-
-            <div id="sinalizar" class="page"><h2>Sinalização da Base</h2><div id="tree"></div></div>
-            <div id="fluxo" class="page"><h2>Ajustar Fluxos</h2><div id="fluxo-content"></div></div>
+        <div id="fluxo" class="page">
+            <div class="stat-card">
+                <h2><i class="fas fa-sync"></i> Ajustar Fluxos</h2>
+                <div id="fluxo-content"></div>
+            </div>
         </div>
     </main>
     <script src="script.js"></script>
