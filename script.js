@@ -21,12 +21,16 @@ const save = () => localStorage.setItem('prf_v120', JSON.stringify(db));
 // ==========================================
 // 2. ACESSO E INICIALIZAÇÃO
 // ==========================================
-function checkAccess() { 
-    if(document.getElementById('pass-input').value === "123") { 
-        document.getElementById('login-screen').style.display='none'; 
-        init(); 
-    } 
+function login() {
+    const p = document.getElementById('pass').value;
+    if (p === '123') { 
+        document.getElementById('login-screen').style.display = 'none';
+        init();
+    } else {
+        alert("Senha incorreta!");
+    }
 }
+
 
 function init() { 
     renderDiario(vDate); 
