@@ -1,201 +1,295 @@
-// ==========================================
-// CONFIGURAÇÕES GLOBAIS E ESTADO DO SISTEMA
-// ==========================================
-let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-let cronogramaSemanal = JSON.parse(localStorage.getItem('cronogramaSemanal')) || {};
-let timers = {};
-let intervals = {};
-let currentTab = 'diario';
-
-// ==========================================
-// INICIALIZAÇÃO
-// ==========================================
-window.onload = () => {
-    carregarDados();
-    renderDiario();
-    renderSemanal();
-    configurarAbas();
+// ==========================================================================
+// BANCO DE DADOS, CICLOS E VARIÁVEIS GLOBAIS
+// ==========================================================================
+let db = JSON.parse(localStorage.getItem('prf_v120')) || { 
+    lista: [], 
+    ciclo: [], 
+    h: { 1:4, 2:4, 3:4, 4:4, 5:4, 6:4, 0:4 }, 
+    metaFixa: {} 
 };
 
-function carregarDados() {
-    // Aqui você pode integrar com seu Firebase ou LocalStorage real
-    console.log("Sistema Carregado - Preparado para Missão PRF");
+let vDate = new Date();
+let timers = {};
+let exPendente = null;
+
+const save = () => localStorage.setItem('prf_v120', JSON.stringify(db));
+
+// ==========================================================================
+// ACESSO E CONTROLE DE TELAS
+// ==========================================================================
+function checkAccess() {
+    const input = document.getElementById('pass-input');
+    if (input && input.value === "123") {
+        document.getElementById('login-screen').style.display = 'none';
+        init();
+    }
 }
 
-// ==========================================
-// 1. PAINEL DIÁRIO (MISSÃO DE HOJE)
-// ==========================================
-function renderDiario(dataStr) {
-    const hoje = new Date();
-    const curStr = dataStr || hoje.toLocaleDateString();
-    const container = document.getElementById('lista-diaria');
-    
-    if (!container) return;
+function init() {
+    renderDiario(vDate);
+    updateDashboard();
+}
 
-    // Renderização das Matérias e Assuntos
-    container.innerHTML = tasks.length > 0 ? tasks.map((t, i) => `
-        <div class="task-card">
+// ==========================================================================
+// SISTEMA DE NAVEGAÇÃO (PAGINAÇÃO)
+// ==========================================================================
+function showTab(id, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-el').forEach(n => n.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+
+    // Gatilhos de renderização por aba
+    if (id === 'semanal') renderSemanal();
+    if (id === 'ciclo') renderCiclo();
+    if (id === 'config-h') renderHInputs();
+    if (id === 'sinalizar') renderTree();
+    if (id === 'fluxo') renderFluxo();
+    updateDashboard();
+}
+
+// ==========================================================================
+// INTELIGÊNCIA DO CICLO (NEURAL POOL)
+// ==========================================================================
+function getNeuralPool(metaHoras, pool) {
+    let dia = [];
+    let hRestante = metaHoras;
+    let limit = 0;
+    while (hRestante > 0 && pool.length > 0 && limit < 20) {
+        let t = pool.shift();
+        if (t.h <= hRestante) {
+            dia.push(t);
+            hRestante -= t.h;
+        } else {
+            pool.unshift(t);
+            break;
+        }
+        limit++;
+    }
+    return dia;
+}
+
+// ==========================================================================
+// DASHBOARD E INDICADORES
+// ==========================================================================
+function updateDashboard() {
+    let hoje = new Date();
+    let tT = 0, cT = 0, hS = 0, tQ = 0, aQ = 0;
+    
+    // Cálculo da semana (Domingo a Sábado)
+    let pd = new Date(hoje);
+    pd.setDate(hoje.getDate() - hoje.getDay());
+
+    for (let i = 0; i < 7; i++) {
+        let d = new Date(pd);
+        d.setDate(pd.getDate() + i);
+        let tasks = db.metaFixa[d.toLocaleDateString()] || [];
+        tasks.forEach(t => {
+            tT++;
+            if (t.c) cT++;
+            hS += t.h;
+            if (t.perf) {
+                tQ += t.perf.t;
+                aQ += t.perf.a;
+            }
+        });
+    }
+
+    document.getElementById('prog-dia').innerText = tT > 0 ? Math.round((cT / tT) * 100) + "%" : "0%";
+    document.getElementById('bar-dia').style.width = tT > 0 ? (cT / tT) * 100 + "%" : "0%";
+    document.getElementById('horas-hoje').innerText = hS.toFixed(1) + "h";
+    document.getElementById('precisao-dia').innerText = tQ > 0 ? Math.round((aQ / tQ) * 100) + "%" : "0%";
+}
+
+// ==========================================================================
+// PAINEL DIÁRIO (MISSÃO DE HOJE) - ONDE ESTAVA O ERRO
+// ==========================================================================
+function renderDiario(date) {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const curStr = date.toLocaleDateString();
+
+    // Verificação de Atrasos para Bloqueio
+    let temAtraso = false;
+    let pD = new Date(hoje);
+    pD.setDate(hoje.getDate() - hoje.getDay());
+    for (let i = 0; i < hoje.getDay(); i++) {
+        let dP = new Date(pD);
+        dP.setDate(pD.getDate() + i);
+        if (db.metaFixa[dP.toLocaleDateString()]?.some(t => !t.c)) {
+            temAtraso = true;
+            break;
+        }
+    }
+
+    // Lógica de bloqueio de tela
+    if (date > hoje && temAtraso) {
+        document.getElementById('lista-diaria').innerHTML = `
+            <div class="stat-card" style="text-align:center; border:2px solid #ff4444; background:#fff5f5;">
+                <h3 style="color:#cc0000;">ACESSO BLOQUEADO 🚫</h3>
+                <p>Matheus, conclua os plantões atrasados antes de avançar para o próximo dia.</p>
+                <button class="btn" onclick="navDay(-1)">VOLTAR PARA HOJE</button>
+            </div>`;
+        return;
+    }
+
+    // Inicialização da meta do dia se não existir
+    if (!db.metaFixa[curStr]) {
+        let poolCopy = JSON.parse(JSON.stringify(db.lista));
+        db.metaFixa[curStr] = getNeuralPool(parseFloat(db.h[date.getDay()]), poolCopy);
+    }
+
+    const tasks = db.metaFixa[curStr];
+    
+    // Renderização dos cards de matérias
+    document.getElementById('lista-diaria').innerHTML = tasks.map((t, i) => `
+        <div class="task-card" style="border-left: 5px solid var(--color-${t.k === 'Ex' ? 'ex' : (t.k === 'Rev' ? 'rev' : 'a')})">
             <div style="flex:1;">
-                <div style="font-weight:800; color:var(--primary); margin-bottom:5px; text-transform:uppercase;">
-                    ${t.materia || 'Matéria Não Definida'}
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span class="tag tag-${t.k === 'Ex' ? 'ex' : (t.k === 'Rev' ? 'rev' : 'e')}">${t.l}</span>
+                    <small style="font-weight:700;">${curStr}</small>
                 </div>
-                <div style="font-size:13px; color:#555; font-weight:600;">
-                    ${t.assunto || 'Assunto pendente'}
-                </div>
-                <div style="display:flex; align-items:center; gap:12px; margin-top:10px;">
+                <div style="font-weight:800; font-size:1.1rem; color:var(--primary);">${t.m}</div>
+                <div style="font-size:0.85rem; color:var(--text-sec); margin-bottom:10px;">${t.a}</div>
+                
+                <div style="display:flex; align-items:center; gap:10px;">
                     <button class="btn btn-sm btn-outline" id="btn-t-${i}" onclick="toggleTimer(${i})">
                         <i class="fas fa-play"></i>
                     </button>
-                    <span id="time-${i}" style="font-family:'Courier New', monospace; font-weight:800; color:var(--accent); font-size:16px;">
-                        ${t.tempo || '00:00:00'}
-                    </span>
+                    <span id="time-${i}" style="font-family:monospace; font-weight:800; color:var(--accent);">00:00</span>
                 </div>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
-                <input type="checkbox" class="task-check" ${t.concluido ? 'checked' : ''} 
-                    onclick="cliqueTask('${curStr}', ${i})">
-                <span style="font-size:10px; color:#999;">${t.meta || '60min'}</span>
-            </div>
-        </div>`).join('') : '<p style="text-align:center; color:#999; padding:20px;">Nenhuma missão para hoje.</p>';
+            <input type="checkbox" class="task-check" ${t.c ? 'checked' : ''} onclick="cliqueTask('${curStr}', ${i})">
+        </div>`).join('');
 
-    // ADIÇÃO DO BOTÃO EXTRA (EXIGÊNCIA: VISUAL AZUL TRACEJADO)
-    container.innerHTML += `
+    // BOTÃO EXTRA (EXIGÊNCIA: VISUAL AZUL TRACEJADO)
+    document.getElementById('lista-diaria').innerHTML += `
         <button class="btn-extra-diario" onclick="abrirModalExtra()">
             <i class="fas fa-plus-circle"></i> ESTUDOU ALGO FORA DO PLANEJADO?
-        </button>
-    `;
+        </button>`;
 
-    // Atualização do Título Dinâmico
+    // Atualização do título e Status de Finalização
     const ehHoje = curStr === hoje.toLocaleDateString();
-    const viewTitle = document.getElementById('view-title');
-    if (viewTitle) {
-        viewTitle.innerText = ehHoje ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
+    document.getElementById('view-title').innerText = ehHoje ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
+
+    if (tasks.length > 0 && tasks.every(x => x.c) && ehHoje) {
+        const checkFinal = document.createElement('div');
+        checkFinal.className = "stat-card";
+        checkFinal.style = "text-align:center; background:#e3f2fd; border:2px dashed #2196f3; margin-top:20px;";
+        checkFinal.innerHTML = `<h3>🚀 Plantão Concluído!</h3><p>Todas as metas batidas.</p>`;
+        document.getElementById('lista-diaria').appendChild(checkFinal);
     }
 }
 
-// ==========================================
-// 2. CRONOGRAMA SEMANAL (TABELA DE PLANTÃO)
-// ==========================================
+// ==========================================================================
+// CRONÔMETRO INDIVIDUAL
+// ==========================================================================
+function toggleTimer(id) {
+    if (timers[id]) {
+        clearInterval(timers[id].interval);
+        delete timers[id];
+        document.getElementById(`btn-t-${id}`).innerHTML = '<i class="fas fa-play"></i>';
+    } else {
+        let display = document.getElementById(`time-${id}`);
+        let p = display.innerText.split(':');
+        let sec = parseInt(p[0]) * 60 + parseInt(p[1]);
+        timers[id] = {
+            interval: setInterval(() => {
+                sec++;
+                let m = Math.floor(sec / 60).toString().padStart(2, '0');
+                let s = (sec % 60).toString().padStart(2, '0');
+                display.innerText = `${m}:${s}`;
+            }, 1000)
+        };
+        document.getElementById(`btn-t-${id}`).innerHTML = '<i class="fas fa-pause"></i>';
+    }
+}
+
+// ==========================================================================
+// CRONOGRAMA SEMANAL (PLANTÃO)
+// ==========================================================================
 function renderSemanal() {
-    const container = document.getElementById('cronograma-semanal');
-    if (!container) return;
+    const diasSemana = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
+    let hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    let primeiroDia = new Date(hoje);
+    primeiroDia.setDate(hoje.getDate() - hoje.getDay());
 
-    const dias = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
-    
     let html = `
-        <div class="semanal-wrapper">
-            <table class="semanal-table">
-                <thead>
-                    <tr>
-                        <th>DIA DA SEMANA</th>
-                        <th>CONTEÚDO PROGRAMADO</th>
-                        <th>STATUS</th>
-                    </tr>
-                </thead>
-                <tbody>
-    `;
+        <table class="semanal-table">
+            <thead>
+                <tr>
+                    <th>DIA</th>
+                    <th>PLANTÃO PREVISTO</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
+            <tbody>`;
 
-    dias.forEach(dia => {
-        const conteudo = cronogramaSemanal[dia] || "Revisão Geral / Exercícios";
+    for (let i = 0; i < 7; i++) {
+        let d = new Date(primeiroDia);
+        d.setDate(primeiroDia.getDate() + i);
+        let s = d.toLocaleDateString();
+        let tasks = db.metaFixa[s] || [];
+        let atrasado = d < hoje && tasks.some(t => !t.c);
+        
         html += `
             <tr>
-                <td style="font-weight:800; color:var(--primary);">${dia.toUpperCase()}</td>
-                <td>${conteudo}</td>
-                <td><span class="status-badge">ATIVO</span></td>
-            </tr>
-        `;
-    });
+                <td style="font-weight:800; color:${atrasado ? '#ff4444' : 'var(--primary)'}">${diasSemana[i]}</td>
+                <td><small>${tasks.length > 0 ? tasks.map(t => t.m).slice(0, 2).join(', ') : 'Folga'}</small></td>
+                <td><span class="status-badge" style="background:${atrasado ? '#ff4444' : '#4CAF50'}">
+                    ${atrasado ? 'PENDENTE' : (tasks.length > 0 && tasks.every(t => t.c) ? 'OK' : 'ATIVO')}
+                </span></td>
+            </tr>`;
+    }
 
-    html += `</tbody></table></div>`;
-    container.innerHTML = html;
+    html += `</tbody></table>`;
+    document.getElementById('grid-semanal').innerHTML = html;
 }
 
-// ==========================================
-// 3. SISTEMA DE CRONÔMETRO
-// ==========================================
-function toggleTimer(id) {
-    const btn = document.getElementById(`btn-t-${id}`);
-    const icon = btn.querySelector('i');
-    
-    if (intervals[id]) {
-        clearInterval(intervals[id]);
-        delete intervals[id];
-        icon.className = 'fas fa-play';
-        btn.classList.remove('active-timer');
+// ==========================================================================
+// FUNÇÕES DE APOIO E MODAIS
+// ==========================================================================
+function navDay(dir) {
+    vDate.setDate(vDate.getDate() + dir);
+    renderDiario(vDate);
+}
+
+function cliqueTask(data, idx) {
+    const t = db.metaFixa[data][idx];
+    if (!t.c && t.k === 'Ex') {
+        exPendente = { dK: data, idx };
+        document.getElementById('label-ex-assunto').innerText = `${t.m} - ${t.a}`;
+        document.getElementById('modal-exercicio').style.display = 'flex';
     } else {
-        if (!timers[id]) timers[id] = parseTimeToSeconds(tasks[id].tempo || "00:00:00");
-        
-        intervals[id] = setInterval(() => {
-            timers[id]++;
-            const formatado = formatSeconds(timers[id]);
-            document.getElementById(`time-${id}`).innerText = formatado;
-            tasks[id].tempo = formatado;
-        }, 1000);
-        
-        icon.className = 'fas fa-pause';
-        btn.classList.add('active-timer');
+        t.c = !t.c;
+        save();
+        updateDashboard();
+        renderDiario(vDate);
     }
 }
 
-function parseTimeToSeconds(tempo) {
-    const p = tempo.split(':');
-    return (+p[0]) * 3600 + (+p[1]) * 60 + (+p[2]);
-}
-
-function formatSeconds(s) {
-    return new Date(s * 1000).toISOString().substr(11, 8);
-}
-
-// ==========================================
-// 4. GESTÃO DE MODAIS E INTERAÇÃO
-// ==========================================
 function abrirModalExtra() {
     const modal = document.getElementById('modal-extra');
-    if (modal) {
-        modal.style.display = 'flex';
-    } else {
-        console.log("Modal não encontrado no HTML");
+    if(modal) modal.style.display = 'flex';
+}
+
+function fecharModais() {
+    document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+}
+
+// Função de salvar exercícios Cebraspe (A-E ou C/E)
+function confirmarExercicio() {
+    if (exPendente) {
+        const t = db.metaFixa[exPendente.dK][exPendente.idx];
+        t.c = true;
+        t.perf = {
+            t: parseInt(document.getElementById('ex-total').value) || 0,
+            a: parseInt(document.getElementById('ex-acertos').value) || 0
+        };
+        save();
+        fecharModais();
+        updateDashboard();
+        renderDiario(vDate);
     }
-}
-
-function cliqueTask(data, index) {
-    tasks[index].concluido = !tasks[index].concluido;
-    salvarProgresso();
-    renderDiario(data);
-}
-
-function salvarProgresso() {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-    // Se usar Firebase: db.collection('usuarios').doc(uid).update({ tasks });
-}
-
-// ==========================================
-// 5. NAVEGAÇÃO ENTRE ABAS
-// ==========================================
-function configurarAbas() {
-    const tabs = document.querySelectorAll('.tab-item');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            const target = tab.dataset.target;
-            mostrarSecao(target);
-        });
-    });
-}
-
-function mostrarSecao(secao) {
-    document.querySelectorAll('.view-section').forEach(s => s.style.display = 'none');
-    const target = document.getElementById(`section-${secao}`);
-    if (target) target.style.display = 'block';
-}
-
-// ==========================================
-// 6. FUNÇÕES ADICIONAIS (ESTRUTURA COMPLETA)
-// ==========================================
-// Aqui entram as lógicas de ciclo, gráficos e impEdital se necessário
-function calcularDesempenho() {
-    const total = tasks.length;
-    const concluidas = tasks.filter(t => t.concluido).length;
-    return (concluidas / total) * 100;
 }
