@@ -300,11 +300,9 @@ function getNeuralPool(limit, simList) {
     return pool;
 }
 
-// Localize este trecho no seu script.js e substitua se estiver diferente:
 function impEdital() {
     const m = document.getElementById('add-mat').value.toUpperCase(); 
     const txt = document.getElementById('add-ass').value;
-    // Captura o novo campo que você acabou de criar no HTML:
     const hTeoria = parseFloat(document.getElementById('add-horas').value) || 1.5;
 
     if(!m || !txt.trim()) return;
@@ -313,7 +311,7 @@ function impEdital() {
         db.lista.push({ 
             m, 
             a: a.trim(), 
-            h: {E: hTeoria, Rev: 1.0, Ex: 1.0}, // Aplica o valor dinâmico aqui
+            h: {E: hTeoria, Rev: 1.0, Ex: 1.0}, 
             f: false, 
             done: {E: false, Rev: false, Ex: false}, 
             hF: 0 
@@ -324,10 +322,10 @@ function impEdital() {
     save(); 
     alert("Matéria Integrada com " + hTeoria + "h de teoria!"); 
     
-    // Limpa os campos para nova inserção
     document.getElementById('add-mat').value = '';
     document.getElementById('add-ass').value = '';
 }
+
 function renderTree() {
     const mats = [...new Set(db.lista.map(x => x.m))];
     document.getElementById('tree').innerHTML = mats.map(m => `
@@ -430,4 +428,44 @@ function salvarExtra() {
     if(!db.metaFixa[hj]) db.metaFixa[hj] = [];
     db.metaFixa[hj].push({ m: m.toUpperCase(), a: a, l: "Extra", k: tK, h: tH, c: true });
     save(); fecharModais(); renderDiario(vDate); updateDashboard();
+}
+// --- FUNÇÕES DE SUPORTE AO ARRASTO (DRAG AND DROP) ---
+function allowDrop(ev) { ev.preventDefault(); }
+function drag(ev) { ev.dataTransfer.setData("text", ev.target.innerText); }
+function drop(ev) {
+    ev.preventDefault();
+    let data = ev.dataTransfer.setData("text");
+    if(![...document.getElementById('area-ciclo').children].some(el => el.innerText === data)) {
+        renderItemCiclo(data, 'area-ciclo');
+    }
+}
+
+function renderItemCiclo(nome, containerId) {
+    const div = document.createElement('div');
+    div.className = 'drag-item';
+    div.draggable = true;
+    div.ondragstart = drag;
+    div.innerHTML = `${nome} <i class="fas fa-bars" style="color:#cbd5e1"></i>`;
+    document.getElementById(containerId).appendChild(div);
+}
+
+// --- SUBSTITUIÇÃO DAS FUNÇÕES DE CICLO ---
+function renderCiclo() {
+    const todas = [...new Set(db.lista.map(x => x.m))];
+    const pool = document.getElementById('pool-materias');
+    const area = document.getElementById('area-ciclo');
+    if(!pool || !area) return;
+    pool.innerHTML = ''; area.innerHTML = '';
+    
+    todas.forEach(m => renderItemCiclo(m, 'pool-materias'));
+    db.ciclo.forEach(m => renderItemCiclo(m, 'area-ciclo'));
+}
+
+function saveC() {
+    const itens = document.getElementById('area-ciclo').children;
+    db.ciclo = Array.from(itens).map(el => el.innerText.trim());
+    db.metaFixa = {}; 
+    save();
+    init();
+    alert("Ordem do Ciclo salva! O cronograma foi atualizado.");
 }
