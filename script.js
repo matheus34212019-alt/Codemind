@@ -300,16 +300,34 @@ function getNeuralPool(limit, simList) {
     return pool;
 }
 
+// Localize este trecho no seu script.js e substitua se estiver diferente:
 function impEdital() {
     const m = document.getElementById('add-mat').value.toUpperCase(); 
     const txt = document.getElementById('add-ass').value;
-    if(!m || !txt.trim()) return;
-    txt.split('\n').filter(l => l.trim().length > 1).forEach(a => { 
-        db.lista.push({ m, a: a.trim(), h: {E:1.5, Rev:1.0, Ex:1.0}, f: false, done: {E:false, Rev:false, Ex:false}, hF: 0 }); 
-    });
-    db.metaFixa = {}; save(); alert("Matéria Integrada!"); 
-}
+    // Captura o novo campo que você acabou de criar no HTML:
+    const hTeoria = parseFloat(document.getElementById('add-horas').value) || 1.5;
 
+    if(!m || !txt.trim()) return;
+
+    txt.split('\n').filter(l => l.trim().length > 1).forEach(a => { 
+        db.lista.push({ 
+            m, 
+            a: a.trim(), 
+            h: {E: hTeoria, Rev: 1.0, Ex: 1.0}, // Aplica o valor dinâmico aqui
+            f: false, 
+            done: {E: false, Rev: false, Ex: false}, 
+            hF: 0 
+        }); 
+    });
+    
+    db.metaFixa = {}; 
+    save(); 
+    alert("Matéria Integrada com " + hTeoria + "h de teoria!"); 
+    
+    // Limpa os campos para nova inserção
+    document.getElementById('add-mat').value = '';
+    document.getElementById('add-ass').value = '';
+}
 function renderTree() {
     const mats = [...new Set(db.lista.map(x => x.m))];
     document.getElementById('tree').innerHTML = mats.map(m => `
