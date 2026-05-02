@@ -150,29 +150,63 @@
                     <div class="stat-card"><canvas id="c1"></canvas></div>
                     <div class="stat-card"><canvas id="c2"></canvas></div>
                 </div>
-            </div>
-            <div id="edital" class="page">
-                <div class="stat-card">
-                    <h3>Importar Edital</h3>
-                    <input type="text" id="add-mat" placeholder="Nome da Matéria" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
-                    <textarea id="add-ass" placeholder="Cole os assuntos aqui (um por linha)..." style="width: 100%; height: 100px; margin-bottom: 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--border); font-family: inherit;"></textarea>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label style="font-size: 0.75rem; font-weight: 700; display: block; margin-bottom: 5px; color: var(--text-sec);">Horas por Assunto (Teoria):</label>
-                        <input type="number" id="add-horas" value="1.5" step="0.5" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
-                    </div>
+                    </div> 
 
-                    <button class="btn" style="width:100%;" onclick="impEdital()">PROCESSAR CARGA</button>
+        <div id="edital" class="page">
+            <div class="stat-card">
+                <h3><i class="fas fa-file-import"></i> Importar Edital</h3>
+                <input type="text" id="add-mat" placeholder="Nome da Matéria" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                <textarea id="add-ass" placeholder="Cole os assuntos aqui (um por linha)..." style="width: 100%; height: 100px; margin-bottom: 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--border); font-family: inherit;"></textarea>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 0.75rem; font-weight: 700; display: block; margin-bottom: 5px; color: var(--text-sec);">Horas por Assunto (Teoria):</label>
+                    <input type="number" id="add-horas" value="1.5" step="0.5" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                </div>
+
+                <button class="btn" style="width:100%;" onclick="impEdital()">PROCESSAR CARGA</button>
+            </div>
+        </div>
+
+        <div id="ciclo" class="page">
+            <div class="stats-grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="stat-card">
+                    <h3>Matérias Disponíveis</h3>
+                    <div id="pool-materias" class="drag-container"></div>
+                </div>
+                <div class="stat-card" style="border: 2px dashed var(--accent);">
+                    <h3>Ciclo Ativo (Arraste para ordenar)</h3>
+                    <div id="area-ciclo" class="drag-container" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                    <button class="btn" style="width:100%; margin-top: 15px;" onclick="saveC()">SALVAR ORDEM</button>
                 </div>
             </div>
+        </div>
 
+        <div id="config-h" class="page">
+
+                <div class="stat-card">
+                    <h3><i class="fas fa-clock"></i> Carga Horária Semanal</h3>
+                    <p style="font-size: 0.75rem; color: var(--text-sec); margin-bottom: 20px;">Defina quantas horas você pode estudar em cada dia da semana.</p>
+                    <div id="grid-h-in" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-bottom: 20px;">
+                        </div>
+                    <button class="btn" style="width:100%;" onclick="saveH()">SALVAR CONFIGURAÇÃO DE HORAS</button>
+                </div>
             </div>
-            <div id="ciclo" class="page">
-                <div class="stat-card"><h3>Matérias em Giro</h3><div id="check-c"></div><button class="btn" style="width:100%;" onclick="saveC()">ATIVAR CICLO</button></div>
-            </div>
-            <div id="config-h" class="page">
-                <div class="stat-card"><h3>Carga Horária Semanal</h3><div id="grid-h-in"></div><button class="btn" style="width:100%;" onclick="saveH()">SALVAR</button></div>
-            </div>
+            ```
+
+---
+
+### 4. Como o seu arquivo deve terminar:
+Após essa substituição, o final do seu arquivo deve seguir esta ordem (como mostrado na sua foto):
+
+1.  Aba de **Sinalizar** (`id="sinalizar"`)
+2.  Aba de **Fluxo** (`id="fluxo"`)
+3.  Fechamento da `main` (`</main>`)
+4.  Script (`<script src="script.js"></script>`)
+5.  Fechamento do `body` e `html`
+
+### 🛡️ Verificação de Segurança
+Se após colar isso você não conseguir ver os números das horas, certifique-se de que no seu **script.js** existe a função `renderHInputs()` que é responsável por colocar os números dentro desse quadro.
+
             <div id="sinalizar" class="page"><h2>Sinalização da Base</h2><div id="tree"></div></div>
             <div id="fluxo" class="page"><h2>Ajustar Fluxos</h2><div id="fluxo-content"></div></div>
         </div>
