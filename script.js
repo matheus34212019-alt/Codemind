@@ -1,6 +1,16 @@
-// BANCO DE DADOS E VARIÁVEIS GLOBAIS
+/**
+ * SISTEMA DE GESTÃO DE ESTUDOS PRF - MATHEUS CONCEIÇÃO
+ * VERSÃO 120 - FOCO TOTAL NA APROVAÇÃO
+ */
+
+// ==========================================
+// 1. BANCO DE DADOS E VARIÁVEIS GLOBAIS
+// ==========================================
 let db = JSON.parse(localStorage.getItem('prf_v120')) || { 
-    lista: [], ciclo: [], h: {1:4, 2:4, 3:4, 4:4, 5:4, 6:4, 0:4}, metaFixa: {} 
+    lista: [], 
+    ciclo: [], 
+    h: {1:4, 2:4, 3:4, 4:4, 5:4, 6:4, 0:4}, 
+    metaFixa: {} 
 };
 let vDate = new Date();
 let timers = {};
@@ -8,7 +18,9 @@ let exPendente = null;
 
 const save = () => localStorage.setItem('prf_v120', JSON.stringify(db));
 
-// ACESSO E INICIALIZAÇÃO
+// ==========================================
+// 2. ACESSO E INICIALIZAÇÃO
+// ==========================================
 function checkAccess() { 
     if(document.getElementById('pass-input').value === "123") { 
         document.getElementById('login-screen').style.display='none'; 
@@ -21,7 +33,9 @@ function init() {
     updateDashboard(); 
 }
 
-// NAVEGAÇÃO DE ABAS
+// ==========================================
+// 3. NAVEGAÇÃO DE ABAS
+// ==========================================
 function showTab(id, el) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -38,7 +52,9 @@ function showTab(id, el) {
 
 function toggleSub() { document.getElementById('sub-plano').classList.toggle('show'); }
 
-// DASHBOARD SEMANAL (DOMINGO A SÁBADO)
+// ==========================================
+// 4. DASHBOARD E INDICADORES
+// ==========================================
 function updateDashboard() {
     let hoje = new Date(); 
     let pD = new Date(hoje); pD.setDate(hoje.getDate() - hoje.getDay());
@@ -65,23 +81,23 @@ function updateDashboard() {
     checkStreak();
 }
 
-// PAINEL HOJE (COM BLOQUEIO E CRONÔMETRO)
+// ==========================================
+// 5. PAINEL DIÁRIO (LÓGICA DE BLOQUEIO E CARDS)
+// ==========================================
 function renderDiario(date) {
     const hoje = new Date(); hoje.setHours(0,0,0,0);
     const curStr = date.toLocaleDateString();
     
-    // Bloqueio por atraso
+    // Lógica de Bloqueio por plantão atrasado
     let temAtr = false;
     let pD = new Date(hoje); pD.setDate(hoje.getDate() - hoje.getDay());
     for(let i=0; i < hoje.getDay(); i++) {
         let dP = new Date(pD); dP.setDate(pD.getDate() + i);
         if(db.metaFixa[dP.toLocaleDateString()]?.some(t => !t.c)) { temAtr = true; break; }
     }
-    // Controle de visibilidade do botão Replanejar
+
     const btnReplan = document.querySelector('.replan-btn');
-    if (btnReplan) {
-        btnReplan.style.display = temAtr ? "inline-flex" : "none";
-    }
+    if (btnReplan) btnReplan.style.display = temAtr ? "inline-flex" : "none";
 
     if(date > hoje && temAtr) {
         document.getElementById('lista-diaria').innerHTML = `
@@ -92,10 +108,14 @@ function renderDiario(date) {
         return;
     }
 
-    if(!db.metaFixa[curStr]) db.metaFixa[curStr] = getNeuralPool(parseFloat(db.h[date.getDay()]), JSON.parse(JSON.stringify(db.lista)));
+    if(!db.metaFixa[curStr]) {
+        db.metaFixa[curStr] = getNeuralPool(parseFloat(db.h[date.getDay()]), JSON.parse(JSON.stringify(db.lista)));
+    }
+
     const tasks = db.metaFixa[curStr];
     document.getElementById('meta-status').innerText = `${tasks.reduce((a,b)=>a+b.h,0).toFixed(1)}h / ${db.h[date.getDay()]}h meta`;
     
+    // Renderização dos cards com correção de layout
     document.getElementById('lista-diaria').innerHTML = tasks.map((t, i) => `
         <div class="task-card" style="border-left-color:var(--color-${t.k==='Ex'?'ex':(t.k==='Rev'?'rev':'e')})">
             <div style="flex:1;">
@@ -106,9 +126,16 @@ function renderDiario(date) {
                 <div style="font-weight:800; font-size:1.1rem;">${t.m}</div>
                 <div style="font-size:0.85rem; color:var(--text-sec); margin-bottom:10px;">${t.a}</div>
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <
+                    <button class="btn btn-sm btn-outline" id="btn-t-${i}" onclick="toggleTimer(${i})">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <span id="time-${i}" style="font-family:monospace; font-weight:800; color:var(--accent);">00:00</span>
+                </div>
+            </div>
+            <input type="checkbox" ${t.c ? 'checked' : ''} onclick="cliqueTask('${curStr}', ${i})">
         </div>`).join('');
-        // Botão extra dentro da lista diária
+
+    // Botão extra azul tracejado
     document.getElementById('lista-diaria').innerHTML += `
         <button class="btn-extra-diario" onclick="abrirModalExtra()">
             <i class="fas fa-plus-circle"></i> ESTUDOU ALGO FORA DO PLANEJADO?
@@ -118,9 +145,8 @@ function renderDiario(date) {
     const ehHoje = curStr === hoje.toLocaleDateString();
     document.getElementById('view-title').innerText = ehHoje ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
 
-    // No final da renderDiario(date):
-    const tarefasConcluidas = tasks.length > 0 && tasks.every(x => x.c);
-    if(tarefasConcluidas && curStr === hoje.toLocaleDateString()) {
+    const concluidas = tasks.length > 0 && tasks.every(x => x.c);
+    if(concluidas && ehHoje) {
         const divFim = document.createElement('div');
         divFim.className = "stat-card";
         divFim.style = "text-align:center; background:#eff6ff; border:2px dashed var(--accent); margin-top:20px;";
@@ -131,8 +157,11 @@ function renderDiario(date) {
         `;
         document.getElementById('lista-diaria').appendChild(divFim);
     }
-} // <--- CORREÇÃO: Fechei a função renderDiario aqui
+}
 
+// ==========================================
+// 6. CRONÔMETRO
+// ==========================================
 function toggleTimer(id) {
     if (timers[id]) { 
         clearInterval(timers[id].interval); delete timers[id]; 
@@ -153,31 +182,24 @@ function toggleTimer(id) {
     }
 }
 
-// MODAIS E EXERCÍCIOS CEBRASPE
+// ==========================================
+// 7. MODAIS E EXERCÍCIOS
+// ==========================================
 function fecharModais() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
 
 function abrirModalExtra() {
     const selectMat = document.getElementById('extra-mat');
     const materiasUnicas = [...new Set(db.lista.map(x => x.m))];
-    
-    selectMat.innerHTML = '<option value="">Selecione a Matéria</option>' + 
-        materiasUnicas.map(m => `<option value="${m}">${m}</option>`).join('');
-    
+    selectMat.innerHTML = '<option value="">Selecione a Matéria</option>' + materiasUnicas.map(m => `<option value="${m}">${m}</option>`).join('');
     document.getElementById('modal-extra').style.display = 'flex';
-} // <--- CORREÇÃO: Fechei a função abrirModalExtra aqui
+}
 
 function atualizarAssuntosExtra() {
-    const matSelecionada = document.getElementById('extra-mat').value;
+    const mat = document.getElementById('extra-mat').value;
     const selectAss = document.getElementById('extra-ass');
-    
-    if (!matSelecionada) {
-        selectAss.innerHTML = '<option value="">Selecione o Assunto</option>';
-        return;
-    }
-    
-    const assuntos = db.lista.filter(x => x.m === matSelecionada).map(x => x.a);
-    const assuntosUnicos = [...new Set(assuntos)];
-    selectAss.innerHTML = assuntosUnicos.map(a => `<option value="${a}">${a}</option>`).join('');
+    if (!mat) { selectAss.innerHTML = '<option value="">Selecione o Assunto</option>'; return; }
+    const assuntos = [...new Set(db.lista.filter(x => x.m === mat).map(x => x.a))];
+    selectAss.innerHTML = assuntos.map(a => `<option value="${a}">${a}</option>`).join('');
 }
 
 function cliqueTask(dK, idx) {
@@ -186,8 +208,6 @@ function cliqueTask(dK, idx) {
         exPendente = { dK, idx };
         document.getElementById('label-ex-assunto').innerText = `${t.m} - ${t.a}`;
         document.getElementById('modal-exercicio').style.display = 'flex';
-        document.getElementById('ex-total').oninput = calcCebraspe;
-        document.getElementById('ex-acertos').oninput = calcCebraspe;
     } else { 
         t.c = !t.c; save(); updateDashboard(); renderDiario(vDate); 
     }
@@ -198,9 +218,7 @@ function calcCebraspe() {
     const a = parseInt(document.getElementById('ex-acertos').value) || 0;
     const liq = a - (t - a);
     const perc = t > 0 ? Math.round((liq / t) * 100) : 0;
-    document.getElementById('cebraspe-feedback').innerHTML = `
-        Nota Líquida: ${liq} | Aproveitamento: ${perc}%<br>
-        ${perc >= 75 ? 'ALTO DESEMPENHO 🔥' : 'PRECISA REFORÇAR ⚠️'}`;
+    document.getElementById('cebraspe-feedback').innerHTML = `Líquido: ${liq} | Aproveitamento: ${perc}%`;
 }
 
 function confirmarExercicio() {
@@ -210,7 +228,9 @@ function confirmarExercicio() {
     save(); fecharModais(); updateDashboard(); renderDiario(vDate);
 }
 
-// REPLANEJAMENTO
+// ==========================================
+// 8. REPLANEJAMENTO E CRONOGRAMA SEMANAL
+// ==========================================
 function replanejarAgora() {
     let h = new Date(); h.setHours(0,0,0,0);
     let pD = new Date(h); pD.setDate(h.getDate() - h.getDay());
@@ -223,19 +243,9 @@ function replanejarAgora() {
             db.metaFixa[k] = db.metaFixa[k].filter(t => t.c); 
         }
     }
-    let rest = 6 - h.getDay();
-    if(rest > 0 && atr.length > 0) {
-        atr.forEach((t, idx) => {
-            let dAl = new Date(h); dAl.setDate(h.getDate() + (idx % (rest + 1)));
-            let kAl = dAl.toLocaleDateString();
-            if(!db.metaFixa[kAl]) db.metaFixa[kAl] = [];
-            db.metaFixa[kAl].push(t);
-        });
-    }
     save(); alert("Plantão Replanejado!"); init();
 }
 
-// CRONOGRAMA PLANTÃO (DOM-SÁB COM ATRASOS EM VERMELHO)
 function renderSemanal() {
     const dN = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
     let h = new Date(); h.setHours(0,0,0,0);
@@ -248,56 +258,48 @@ function renderSemanal() {
         return `
             <div class="day-column">
                 <div class="day-head ${isAtr ? 'atrasado' : ''}">${dN[d.getDay()]}<br>${k.slice(0,5)}</div>
-                ${tasks.map(x => `
-                    <div class="sim-task tag-${x.k==='Ex'?'ex':(x.k==='Rev'?'rev':'e')} ${!x.c && d < h ? 'atrasado' : ''}">
-                        <b>${x.m}</b><br>${x.a}
-                    </div>`).join('')}
+                ${tasks.map(x => `<div class="sim-task tag-${x.k==='Ex'?'ex':(x.k==='Rev'?'rev':'e')} ${!x.c && d < h ? 'atrasado' : ''}">${x.m}</div>`).join('')}
             </div>`;
     }).join('');
 }
 
-// MOTOR DE INTELIGÊNCIA (NEURAL POOL)
+// ==========================================
+// 9. MOTOR NEURAL E CONFIGURAÇÕES
+// ==========================================
 function getNeuralPool(limit, simList) {
     let pool = []; let somaH = 0; if(!db.ciclo.length) return pool;
     let localList = JSON.parse(JSON.stringify(simList));
     let safety = 0;
     while(somaH < limit && safety < 100) {
-        safety++; let addedAny = false;
+        safety++; let added = false;
         for(let m of db.ciclo) {
             if(somaH >= limit) break;
             let pending = localList.find(x => x.m === m && !x.f);
             if(pending) {
-                const rito = [
-                    {k:'E', l:'Estudo', h: parseFloat(pending.h.E)}, 
-                    {k:'Rev', l:'Revisão', h: parseFloat(pending.h.Rev)}, 
-                    {k:'Ex', l:'Exercícios', h: parseFloat(pending.h.Ex)}
-                ];
+                const rito = [{k:'E', l:'Estudo', h:pending.h.E}, {k:'Rev', l:'Revisão', h:pending.h.Rev}, {k:'Ex', l:'Exercícios', h:pending.h.Ex}];
                 for(let s of rito) {
                     if(!pending.done[s.k]) {
                         if(s.k === 'E') {
                             let al = Math.min(s.h - (pending.hF || 0), limit - somaH);
                             if(al > 0) { 
                                 pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: al, c: false }); 
-                                pending.hF = (pending.hF || 0) + al; 
-                                if(pending.hF >= s.h - 0.05) pending.done.E = true; 
-                                somaH += al; addedAny = true; 
+                                pending.hF = (pending.hF || 0) + al; if(pending.hF >= s.h - 0.05) pending.done.E = true; 
+                                somaH += al; added = true; 
                             }
                         } else if(somaH + s.h <= limit + 0.1) {
                             pool.push({ m: pending.m, a: pending.a, l: s.l, k: s.k, h: s.h, c: false });
-                            pending.done[s.k] = true; somaH += s.h; addedAny = true; 
-                            if(s.k === 'Ex') pending.f = true;
+                            pending.done[s.k] = true; somaH += s.h; added = true; if(s.k === 'Ex') pending.f = true;
                         }
                         break; 
                     }
                 }
             }
         }
-        if(!addedAny) break;
+        if(!added) break;
     }
     return pool;
 }
 
-// FERRAMENTAS DE CONFIGURAÇÃO E PERFORMANCE
 function impEdital() {
     const m = document.getElementById('add-mat').value.toUpperCase(); 
     const txt = document.getElementById('add-ass').value;
@@ -310,108 +312,68 @@ function impEdital() {
 
 function renderTree() {
     const mats = [...new Set(db.lista.map(x => x.m))];
-    document.getElementById('tree').innerHTML = mats.map(m => {
-        const ass = db.lista.filter(x => x.m === m);
-        return `
-            <div class="folder">
-                <div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b></div>
-                <div class="folder-content">
-                    ${ass.map(a => `<div class="sinal-row"><span>${a.a}</span><input type="checkbox" ${a.done.Ex?'checked':''} disabled></div>`).join('')}
-                </div>
-            </div>`;
-    }).join('');
+    document.getElementById('tree').innerHTML = mats.map(m => `
+        <div class="folder">
+            <div class="folder-header" onclick="this.nextElementSibling.classList.toggle('open')"><b>${m}</b></div>
+            <div class="folder-content">
+                ${db.lista.filter(x => x.m === m).map(a => `<div class="sinal-row"><span>${a.a}</span><input type="checkbox" ${a.done.Ex?'checked':''} disabled></div>`).join('')}
+            </div>
+        </div>`).join('');
 }
 
 function renderFluxo() {
     const mats = [...new Set(db.lista.map(x => x.m))];
     document.getElementById('fluxo-content').innerHTML = mats.map(m => `
-        <div class="stat-card">
-            <b>${m}</b>
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
-                <div><small>Estudo</small><input type="number" step="0.5" value="1.5" onchange="alterarH('${m}', 'E', this.value)"></div>
-                <div><small>Revisão</small><input type="number" step="0.5" value="1.0" onchange="alterarH('${m}', 'Rev', this.value)"></div>
-                <div><small>Exercício</small><input type="number" step="0.5" value="1.0" onchange="alterarH('${m}', 'Ex', this.value)"></div>
-            </div>
-        </div>`).join('');
-}
-
-function alterarH(m, k, v) { 
-    db.lista.filter(x => x.m === m).forEach(x => x.h[k] = parseFloat(v)); 
-    save(); 
+        <div class="stat-card"><b>${m}</b><br><small>Estudo | Rev | Ex</small></div>`).join('');
 }
 
 function renderCiclo() {
     const mats = [...new Set(db.lista.map(x => x.m))];
     document.getElementById('check-c').innerHTML = mats.map(m => `
-        <label style="display:flex; gap:8px; margin-bottom:10px;"><input type="checkbox" class="ckc" value="${m}" ${db.ciclo.includes(m)?'checked':''}> ${m}</label>`).join('');
+        <label><input type="checkbox" class="ckc" value="${m}" ${db.ciclo.includes(m)?'checked':''}> ${m}</label>`).join('');
 }
 
-function saveC() { 
-    db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); 
-    db.metaFixa = {}; save(); init(); 
-}
+function saveC() { db.ciclo = Array.from(document.querySelectorAll('.ckc:checked')).map(c => c.value); db.metaFixa = {}; save(); init(); }
 
 function renderHInputs() {
     const dN = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
-    document.getElementById('grid-h-in').innerHTML = dN.map((n,i) => `
-        <div style="text-align:center;"><small>${n}</small><br><input type="number" id="h-in-${i}" value="${db.h[i]}" style="width:50px;"></div>`).join('');
+    document.getElementById('grid-h-in').innerHTML = dN.map((n,i) => `<div><small>${n}</small><br><input type="number" id="h-in-${i}" value="${db.h[i]}" style="width:50px;"></div>`).join('');
 }
 
-function saveH() { 
-    for(let i=0; i<7; i++) db.h[i] = parseFloat(document.getElementById(`h-in-${i}`).value); 
-    db.metaFixa = {}; save(); init(); 
-}
+function saveH() { for(let i=0; i<7; i++) db.h[i] = parseFloat(document.getElementById(`h-in-${i}`).value); db.metaFixa = {}; save(); init(); }
 
 function atualizarProgressoCiclo() {
     const itens = db.lista.filter(x => db.ciclo.includes(x.m)); 
     if (!itens.length) return;
-    let concl = 0; 
-    itens.forEach(a => { if(a.done.E) concl++; if(a.done.Rev) concl++; if(a.done.Ex) concl++; });
+    let concl = 0; itens.forEach(a => { if(a.done.E) concl++; if(a.done.Rev) concl++; if(a.done.Ex) concl++; });
     let p = Math.round((concl/(itens.length*3))*100);
-    
     document.getElementById('bar-ciclo-total').style.width = p+"%";
-    document.getElementById('viatura-progresso').style.left = (p * 0.95) + "%";
     document.getElementById('perc-ciclo').innerText = p+"% cumprido";
-    
-    const hF = itens.reduce((acc, curr) => acc + (curr.done.Ex ? 0 : 2), 0);
-    document.getElementById('ciclo-estimativa').innerText = `Faltam aprox. ${Math.ceil(hF/4)} dias para girar`;
 }
 
 function checkStreak() {
     let streak = 0; let d = new Date();
     while(true) {
-        let k = d.toLocaleDateString(); let tasks = db.metaFixa[k];
-        if (tasks && tasks.length > 0 && tasks.every(t => t.c)) { streak++; d.setDate(d.getDate() - 1); } 
-        else { break; }
+        let k = d.toLocaleDateString();
+        if (db.metaFixa[k]?.every(t => t.c)) { streak++; d.setDate(d.getDate() - 1); } else break;
     }
     document.getElementById('streak-val').innerText = streak;
 }
 
 function navDay(dir) {
-    const h = new Date(); h.setHours(0,0,0,0);
-    if (dir === 0) vDate = new Date(); else { let am = new Date(h); am.setDate(h.getDate() + 1); vDate = am; }
-    const ehH = vDate.toLocaleDateString() === h.toLocaleDateString();
-    document.getElementById('btn-hoje').style.display = ehH ? 'none' : 'inline-flex';
-    document.getElementById('btn-amanha').style.display = ehH ? 'inline-flex' : 'none';
+    if (dir === 0) vDate = new Date(); 
+    else { let am = new Date(); am.setDate(am.getDate() + 1); vDate = am; }
     renderDiario(vDate);
 }
 
 function salvarExtra() {
     const m = document.getElementById('extra-mat').value;
     const a = document.getElementById('extra-ass').value;
-    const tipoK = document.getElementById('extra-tipo').value;
-    const tempoHoras = parseFloat(document.getElementById('extra-tempo').value);
-    
-    if(!m || !a || isNaN(tempoHoras)) { alert("Preencha todos os campos!"); return; }
-    
-    const tiposL = { "E": "Estudo", "Rev": "Revisão", "Ex": "Exercícios" };
+    const tK = document.getElementById('extra-tipo').value;
+    const tH = parseFloat(document.getElementById('extra-tempo').value);
+    if(!m || !a || isNaN(tH)) return;
     const hj = new Date().toLocaleDateString();
-    
     if(!db.metaFixa[hj]) db.metaFixa[hj] = [];
-    db.metaFixa[hj].push({ 
-        m: m.toUpperCase(), a: a, l: tiposL[tipoK] || "Extra", 
-        k: tipoK, h: tempoHoras, c: true, extra: true 
-    }); // <--- CORREÇÃO: Fechei o parênteses do push aqui
-    
+    db.metaFixa[hj].push({ m: m.toUpperCase(), a: a, l: "Extra", k: tK, h: tH, c: true });
     save(); fecharModais(); renderDiario(vDate); updateDashboard();
-} // <--- CORREÇÃO: Adicionei a chave final do arquivo aqui
+}
