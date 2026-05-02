@@ -1,187 +1,195 @@
-/**
- * SISTEMA DE GESTÃO DE ESTUDOS PRF - MATHEUS CONCEIÇÃO
- * ESTRUTURA COMPLETA E INTEGRADA (2000+ LINHAS DE LÓGICA)
- */
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plantão Polícia v.120</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="login-screen">
+        <div class="login-card">
+            <h2 style="font-weight:800; margin-bottom:20px;">PLANTÃO POLÍCIA</h2>
+            <input type="password" id="pass-input" placeholder="Chave de Acesso" style="text-align:center; letter-spacing: 5px;">
+            <button class="btn" style="width:100%; margin-top:25px;" onclick="checkAccess()">ENTRAR NO SISTEMA</button>
+        </div>
+    </div>
 
-// ==========================================
-// 1. ESTADO E BANCO DE DADOS
-// ==========================================
-let db = JSON.parse(localStorage.getItem('prf_v120')) || { 
-    perfil: { nome: "Matheus", streak: 0, xp: 0 },
-    lista: [], 
-    ciclo: [], 
-    h: { 1:4, 2:4, 3:4, 4:4, 5:4, 6:4, 0:4 }, 
-    metaFixa: {},
-    config: { bloqueioAtraso: true }
-};
+   <!-- MODAL ESTUDO EXTRA ATUALIZADO -->
+<div id="modal-extra" class="modal-overlay">
+    <div class="modal-box" style="width: 500px;">
+        <i class="fas fa-times modal-close" onclick="fecharModais()"></i>
+        <h3 style="margin-bottom:20px;"><i class="fas fa-plus-circle"></i> Inserir Atividade Extra</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+                <label style="font-size: 0.75rem; font-weight: 700;">Disciplina:</label>
+                <select id="extra-mat" onchange="atualizarAssuntosExtra()">
+                    <option value="">Selecione a Matéria</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 0.75rem; font-weight: 700;">Assunto:</label>
+                <select id="extra-ass">
+                    <option value="">Selecione o Assunto</option>
+                </select>
+            </div>
+        </div>
 
-let vDate = new Date();
-let timers = {};
-let activeIntervals = {};
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+            <div>
+                <label style="font-size: 0.75rem; font-weight: 700;">Modalidade:</label>
+                <select id="extra-tipo">
+                    <option value="E">Estudo</option>
+                    <option value="Rev">Revisão</option>
+                    <option value="Ex">Exercícios</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 0.75rem; font-weight: 700;">Tempo:</label>
+                <select id="extra-tempo">
+                    <option value="0.5">30 minutos</option>
+                    <option value="1.0" selected>60 minutos</option>
+                    <option value="1.5">90 minutos</option>
+                    <option value="2.0">2 horas</option>
+                </select>
+            </div>
+        </div>
 
-const save = () => localStorage.setItem('prf_v120', JSON.stringify(db));
+        <button class="btn" style="width:100%; margin-top: 25px;" onclick="salvarExtra()">INCLUIR NO PLANTÃO</button>
+    </div>
+</div>
 
-// ==========================================
-// 2. MOTOR DE INTELIGÊNCIA (NEURAL POOL)
-// ==========================================
-function getNeuralPool(metaHoras, pool) {
-    let dia = [];
-    let hRestante = metaHoras;
-    let limit = 0;
-    
-    // Organiza prioridades (Revisões > Exercícios > Teoria)
-    pool.sort((a, b) => (a.k === 'Rev' ? -1 : 1));
+    <div id="modal-exercicio" class="modal-overlay">
+        <div class="modal-box">
+            <i class="fas fa-times modal-close" onclick="fecharModais()"></i>
+            <h3 style="margin-bottom:10px;"><i class="fas fa-pen-to-square"></i> Registro de Desempenho</h3>
+            <p id="label-ex-assunto" style="font-size:0.85rem; color:var(--text-sec); margin-bottom:15px;"></p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div><label>Questões Feitas</label><input type="number" id="ex-total"></div>
+                <div><label>Corretas</label><input type="number" id="ex-acertos"></div>
+            </div>
+            <div id="cebraspe-feedback" class="feedback-box">Aguardando dados...</div>
+            <button class="btn" style="width:100%;" onclick="confirmarExercicio()">REGISTRAR RESULTADO</button>
+        </div>
+    </div>
 
-    while (hRestante > 0 && pool.length > 0 && limit < 50) {
-        let t = pool.shift();
-        if (t.h <= hRestante) {
-            dia.push(t);
-            hRestante -= t.h;
-        } else {
-            pool.unshift(t);
-            break;
-        }
-        limit++;
-    }
-    return dia;
-}
+    <aside class="sidebar">
+        <div class="logo-box"><i class="fas fa-shield-halved"></i> PLANTÃO POLÍCIA</div>
+        <div class="nav-item active" onclick="showTab('diaria', this)"><i class="fas fa-calendar-day"></i><span>Painel Hoje</span></div>
+        <div class="nav-item" onclick="showTab('semanal', this)"><i class="fas fa-calendar-week"></i><span>Cronograma Plantão</span></div>
+        <div class="nav-item" onclick="showTab('performance', this)"><i class="fas fa-chart-pie"></i><span>Performance</span></div>
+        <div class="nav-item" onclick="toggleSub()"><i class="fas fa-sliders"></i><span>Meu Plano</span><i class="fas fa-chevron-down" style="margin-left:auto;"></i></div>
+        <div id="sub-plano" class="submenu">
+            <div class="sub-link" onclick="showTab('edital')">Importar Edital</div>
+            <div class="sub-link" onclick="showTab('ciclo')">Ciclo Ativo</div>
+            <div class="sub-link" onclick="showTab('config-h')">Horas Diárias</div>
+            <div class="sub-link" onclick="showTab('sinalizar')">Sinalizar Base</div>
+            <div class="sub-link" onclick="showTab('fluxo')">Ajustar Fluxos</div>
+        </div>
+    </aside>
 
-// ==========================================
-// 3. RENDERIZAÇÃO DO PAINEL DIÁRIO (MISSÃO)
-// ==========================================
-function renderDiario(date) {
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    const curStr = date.toLocaleDateString();
-    const container = document.getElementById('lista-diaria');
-
-    if (!container) return;
-
-    // Lógica de Bloqueio por Atraso
-    let temAtraso = false;
-    let pD = new Date(hoje);
-    pD.setDate(hoje.getDate() - hoje.getDay());
-
-    for (let i = 0; i < hoje.getDay(); i++) {
-        let dP = new Date(pD);
-        dP.setDate(pD.getDate() + i);
-        let sP = dP.toLocaleDateString();
-        if (db.metaFixa[sP] && db.metaFixa[sP].some(t => !t.c)) {
-            temAtraso = true;
-            break;
-        }
-    }
-
-    if (date > hoje && temAtraso && db.config.bloqueioAtraso) {
-        container.innerHTML = `
-            <div class="stat-card" style="text-align:center; border:2px solid #e74c3c;">
-                <h3 style="color:#e74c3c;">BLOQUEADO 🚫</h3>
-                <p>Conclua os atrasos da semana para liberar os próximos dias.</p>
-                <button class="btn" onclick="navDay(-1)">VOLTAR</button>
-            </div>`;
-        return;
-    }
-
-    if (!db.metaFixa[curStr]) {
-        let poolCopy = JSON.parse(JSON.stringify(db.lista));
-        db.metaFixa[curStr] = getNeuralPool(parseFloat(db.h[date.getDay()]), poolCopy);
-        save();
-    }
-
-    const tasks = db.metaFixa[curStr];
-
-    // RENDERIZAÇÃO DOS CARDS (CORREÇÃO DE LAYOUT)
-    container.innerHTML = tasks.map((t, i) => `
-        <div class="task-card" style="border-left: 6px solid var(--color-${t.k === 'Ex' ? 'ex' : (t.k === 'Rev' ? 'rev' : 'a')})">
-            <div style="flex:1;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <span class="tag tag-${t.k === 'Ex' ? 'ex' : (t.k === 'Rev' ? 'rev' : 'e')}">${t.l || 'TEORIA'}</span>
-                    <small style="font-weight:700; color:#999;">${t.h}h</small>
+    <main class="main">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <small>Missão da Semana</small>
+                    <div id="prog-dia" class="stat-val">0%</div>
+                    <div class="bar-container"><div id="bar-dia" class="bar-fill"></div></div>
                 </div>
-                <div style="font-weight:900; font-size:1.2rem; color:var(--primary);">${t.m}</div>
-                <div style="font-size:0.9rem; color:var(--text-sec); margin-bottom:12px;">${t.a}</div>
+                <div class="stat-card"><small>Horas Acumuladas</small><div id="horas-hoje" class="stat-val">0.0h</div></div>
+                <div class="stat-card"><small>Precisão de Tiro</small><div id="precisao-dia" class="stat-val" style="color:#10b981">0%</div></div>
+            </div>
+
+            <div id="diaria" class="page active">
+                <div class="welcome-box">
+                    <h3 style="margin:0;">FORÇA E HONRA, MATHEUS! 👮‍♂️</h3>
+                    <div id="streak-info"><i class="fas fa-fire"></i> STREAK: <span id="streak-val">0</span> DIAS</div>
+                </div>
+
+                <div class="stat-card cycle-card">
+                    <div style="display:flex; justify-content:space-between;"><small>Perseguição ao Edital</small><span id="ciclo-estimativa"></span></div>
+                    <div class="road-bg">
+                        <div id="viatura-progresso"><i class="fas fa-car-police"></i></div>
+                        <div id="bar-ciclo-total" class="road-fill"></div>
+                    </div>
+                    <div id="perc-ciclo" class="perc-text">0% cumprido</div>
+                </div>
+
+                <div class="nav-days">
+                    <button id="btn-hoje" class="btn btn-outline btn-sm" onclick="navDay(0)" style="display:none;"><i class="fas fa-undo"></i> VOLTAR PARA HOJE</button>
+                    <button id="btn-amanha" class="btn btn-sm" onclick="navDay(1)">VER AMANHÃ <i class="fas fa-arrow-right"></i></button>
+                </div>
+
+                <div class="page-header">
+                    <h1 id="view-title">Missão de Hoje 🚓</h1>
+                    <button class="btn btn-sm btn-outline replan-btn" onclick="replanejarAgora()"><i class="fas fa-rotate"></i> REPLANEJAR ATRASOS</button>
+                </div>
+                <p id="meta-status" class="meta-sub"></p>
+                <div id="lista-diaria"></div>
                 
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <button class="btn-timer" id="btn-t-${i}" onclick="toggleTimer(${i})">
-                        <i class="fas ${activeIntervals[i] ? 'fa-pause' : 'fa-play'}"></i>
-                    </button>
-                    <span id="time-${i}" style="font-family:monospace; font-weight:800; color:var(--accent);">${t.tempoReal || '00:00:00'}</span>
+
+           <!-- COLE ESTE BLOCO NO LUGAR DO ANTIGO -->
+<div id="semanal" class="page">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+        <div>
+            <h2 style="margin-bottom: 10px;">Cronograma Plantão</h2>
+            <!-- Legenda das Cores -->
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <span style="font-size: 0.7rem; display: flex; align-items: center; gap: 4px;"><i class="fas fa-square" style="color: var(--color-e);"></i> Estudo</span>
+                <span style="font-size: 0.7rem; display: flex; align-items: center; gap: 4px;"><i class="fas fa-square" style="color: var(--color-rev);"></i> Revisão</span>
+                <span style="font-size: 0.7rem; display: flex; align-items: center; gap: 4px;"><i class="fas fa-square" style="color: var(--color-ex);"></i> Exercícios</span>
+                <span style="font-size: 0.7rem; display: flex; align-items: center; gap: 4px;"><i class="fas fa-square" style="color: #ef4444;"></i> ATRASADO</span>
+            </div>
+        </div>
+
+        <!-- Card de Desempenho da Semana -->
+        <div id="stats-semanal" style="display: flex; gap: 20px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+            <div style="text-align: center;"><small style="display:block; font-weight:700;">HORAS</small><span id="sem-horas" style="color: var(--accent); font-weight:800;">0h</span></div>
+            <div style="text-align: center;"><small style="display:block; font-weight:700;">QUESTÕES</small><span id="sem-quest" style="color: var(--accent); font-weight:800;">0</span></div>
+            <div style="text-align: center;"><small style="display:block; font-weight:700;">PRECISÃO</small><span id="sem-prec" style="color: #10b981; font-weight:800;">0%</span></div>
+        </div>
+    </div>
+
+    <div id="grid-semanal" class="weekly-grid">
+        <!-- O JavaScript vai preencher aqui -->
+    </div>
+</div>
+
+            <div id="performance" class="page">
+                <div class="stats-grid">
+                    <div class="stat-card"><canvas id="c1"></canvas></div>
+                    <div class="stat-card"><canvas id="c2"></canvas></div>
                 </div>
             </div>
-            <div class="check-area">
-                <input type="checkbox" class="task-check" ${t.c ? 'checked' : ''} onclick="cliqueTask('${curStr}', ${i})">
+
+            <div id="edital" class="page">
+                <div class="stat-card">
+                    <h3>Importar Edital</h3>
+                    <input type="text" id="add-mat" placeholder="Nome da Matéria (Ex: Direito Penal)">
+                    <textarea id="add-ass" placeholder="Cole os assuntos aqui, um por linha..." style="height:150px;"></textarea>
+                    <button class="btn" style="width:100%;" onclick="impEdital()">PROCESSAR CARGA</button>
+                </div>
             </div>
-        </div>`).join('');
 
-    // BOTÃO EXTRA (AZUL TRACEJADO)
-    container.innerHTML += `
-        <button class="btn-extra-diario" onclick="abrirModalExtra()">
-            <i class="fas fa-plus-circle"></i> ESTUDOU ALGO FORA DO PLANEJADO?
-        </button>`;
+            <div id="ciclo" class="page">
+                <div class="stat-card"><h3>Matérias em Giro</h3><div id="check-c"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveC()">ATIVAR CICLO</button></div>
+            </div>
 
-    document.getElementById('view-title').innerText = curStr === hoje.toLocaleDateString() ? "Missão de Hoje 🚓" : "Missão de Amanhã 📅";
-}
+            <div id="config-h" class="page">
+                <div class="stat-card"><h3>Carga Horária Semanal</h3><div id="grid-h-in"></div><button class="btn" style="width:100%; margin-top:20px;" onclick="saveH()">SALVAR CONFIGURAÇÃO</button></div>
+            </div>
 
-// ==========================================
-// 4. CRONOGRAMA SEMANAL (TABELA)
-// ==========================================
-function renderSemanal() {
-    const grid = document.getElementById('grid-semanal');
-    if (!grid) return;
+            <div id="sinalizar" class="page"><h2>Sinalização da Base (Geral)</h2><div id="tree"></div></div>
 
-    const diasNomes = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
-    let h = new Date(); h.setHours(0,0,0,0);
-    let pD = new Date(h); pD.setDate(h.getDate() - h.getDay());
+            <div id="fluxo" class="page"><h2>Ajustar Carga por Matéria</h2><div id="fluxo-content"></div></div>
 
-    let html = `<table class="semanal-table"><thead><tr><th>DIA</th><th>MATÉRIAS</th><th>STATUS</th></tr></thead><tbody>`;
+        </div>
+    </main>
 
-    for (let i = 0; i < 7; i++) {
-        let d = new Date(pD);
-        d.setDate(pD.getDate() + i);
-        let s = d.toLocaleDateString();
-        let tasks = db.metaFixa[s] || [];
-        let atrasado = d < h && tasks.some(t => !t.c);
-
-        html += `
-            <tr>
-                <td style="font-weight:900; color:${atrasado ? '#e74c3c' : 'var(--primary)'}">${diasNomes[i]}</td>
-                <td style="font-size:11px;">${tasks.length > 0 ? tasks.map(t => t.m).join(' • ') : '---'}</td>
-                <td><span class="status-badge" style="background:${atrasado ? '#e74c3c' : '#2ecc71'}">${atrasado ? 'PENDENTE' : 'OK'}</span></td>
-            </tr>`;
-    }
-    grid.innerHTML = html + `</tbody></table>`;
-}
-
-// ==========================================
-// 5. CRONÔMETRO E FUNÇÕES DE APOIO
-// ==========================================
-function toggleTimer(id) {
-    const curStr = vDate.toLocaleDateString();
-    const task = db.metaFixa[curStr][id];
-
-    if (activeIntervals[id]) {
-        clearInterval(activeIntervals[id]);
-        delete activeIntervals[id];
-        renderDiario(vDate);
-    } else {
-        let [hh, mm, ss] = (task.tempoReal || "00:00:00").split(':').map(Number);
-        let total = hh * 3600 + mm * 60 + ss;
-
-        activeIntervals[id] = setInterval(() => {
-            total++;
-            let h = Math.floor(total / 3600).toString().padStart(2, '0');
-            let m = Math.floor((total % 3600) / 60).toString().padStart(2, '0');
-            let s = (total % 60).toString().padStart(2, '0');
-            task.tempoReal = `${h}:${m}:${s}`;
-            document.getElementById(`time-${id}`).innerText = task.tempoReal;
-        }, 1000);
-        document.getElementById(`btn-t-${id}`).innerHTML = '<i class="fas fa-pause"></i>';
-    }
-}
-
-function navDay(dir) { vDate.setDate(vDate.getDate() + dir); renderDiario(vDate); }
-function cliqueTask(d, i) { db.metaFixa[d][i].c = !db.metaFixa[d][i].c; save(); renderDiario(vDate); }
-function abrirModalExtra() { document.getElementById('modal-extra').style.display = 'flex'; }
-function fecharModais() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-
-window.onload = () => { renderDiario(vDate); renderSemanal(); };
+    <script src="script.js"></script>
+</body>
+</html>
