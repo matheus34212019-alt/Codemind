@@ -102,14 +102,18 @@
                 <div class="stat-card"><small>Precisão de Tiro</small><div id="precisao-dia" class="stat-val" style="color:#10b981">0%</div></div>
             </div>
 
-            <div id="diaria" class="page active">
-                <div class="welcome-box">
-                    <h3 style="margin:0;">FORÇA E HONRA, MATHEUS! 👮‍♂️</h3>
-                    <div class="login-card">
-    <h2>Acesso Restrito</h2>
-    <input type="password" id="pass" placeholder="Digite sua senha" style="width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid var(--border);">
-    <button class="btn" style="width: 100%;" onclick="login()">ENTRAR NO SISTEMA</button>
-</div>
+                    <div id="login-screen" style="position: fixed; inset: 0; background: #1a1c24; z-index: 99999; display: flex; align-items: center; justify-content: center;">
+            <div class="stat-card" style="width: 350px; text-align: center; background: #252836; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+                <h2 style="color: white; margin-bottom: 20px;">Acesso Restrito</h2>
+                <input type="password" id="pass" placeholder="Senha de Acesso" style="width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 10px; border: 1px solid #3f445e; background: #1a1c24; color: white;">
+                <button class="btn" style="width: 100%; padding: 15px; background: #8b5cf6;" onclick="login()">ENTRAR NO SISTEMA</button>
+            </div>
+        </div>
+
+        <div id="diaria" class="page active">
+            <div class="welcome-box">
+                <h3 style="margin:0;">FORÇA E HONRA, MATHEUS! 👮‍♂️</h3>
+            </div>
 
                 <div class="stat-card cycle-card">
                     <div style="display:flex; justify-content:space-between;"><small>Perseguição ao Edital</small><span id="ciclo-estimativa"></span></div>
